@@ -60,39 +60,100 @@ Every feature supports:
 
 ## 🧑‍💻 Development Setup
 
-### Local development
+### ✅ Project Initialization Complete!
 
-1. **Clone repo & install dependencies**
-  ```bash
-  git clone https://github.com/your-username/cooking-assistant.git
-  cd cooking-assistant
-  ```
-   
-2. **Backend (FastAPI + SQLite)**
-  ```bash
-  cd backend
-  pip install -r requirements.txt
-  uvicorn main:app --reload
-  ```
-  API runs at: http://localhost:8000
+The Project Initialization Phase has been implemented. Both backend and frontend are ready to run.
 
-3. **Frontend (React + Vite)**
-  ```bash
-  cd frontend
-  npm install
-  npm run dev
-  ```
-  App runs at: http://localhost:3000
+### Backend Setup (FastAPI + SQLite)
+
+1. **Navigate to backend directory**
+   ```bash
+   cd backend
+   ```
+
+2. **Create virtual environment**
+   ```bash
+   python -m venv venv
+   source venv/bin/activate  # On Windows: venv\Scripts\activate
+   ```
+
+3. **Install dependencies**
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+4. **Configure environment**
+   ```bash
+   cp .env.example .env
+   # Edit .env if needed (optional for development)
+   ```
+
+5. **Run the server**
+   ```bash
+   python -m app.main
+   ```
+
+   API available at: **http://localhost:8000**
+   - API Docs: http://localhost:8000/api/docs
+   - Health Check: http://localhost:8000/api/v1/health
+
+### Frontend Setup (React + Vite)
+
+1. **Navigate to frontend directory**
+   ```bash
+   cd frontend
+   ```
+
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
+
+3. **Configure environment**
+   ```bash
+   cp .env.example .env
+   # Edit .env if needed (optional for development)
+   ```
+
+4. **Start development server**
+   ```bash
+   npm run dev
+   ```
+
+   App available at: **http://localhost:5173**
+
+### Running Tests
+
+**Backend:**
+```bash
+cd backend
+source venv/bin/activate
+pytest
+```
+
+**Frontend:**
+```bash
+cd frontend
+npm test
+```
 
 ## 📌 Roadmap
 
-- Phase 1: Core recipe library (save, edit, share)
+- ✅ **Phase 0**: Project Initialization (COMPLETE!)
+  - Backend: FastAPI + SQLAlchemy + Alembic
+  - Frontend: React + TypeScript + Vite + TailwindCSS
+  - CI/CD: GitHub Actions workflows
+  - Development environment and documentation
+
+- **Phase 1**: Core recipe library (save, edit, share) - NEXT
 - Phase 2: AI recipe builder & semantic recipe search
 - Phase 3: Meal planning + grocery list generator
 - Phase 4: Grocery store optimization & shopping assistant
 - Phase 5: Interactive step-by-step cooking mode
 - Phase 6: Calendar & smart home integrations
 - Phase 7: Mobile app (PWA → Capacitor → React Native)
+
+See [IMPLEMENTATION_PLAN.md](IMPLEMENTATION_PLAN.md) for detailed phase breakdown.
 
 ## 🤝 Contributing
 Contributions are welcome!
