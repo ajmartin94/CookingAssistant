@@ -9,6 +9,9 @@ export default defineConfig({
     environment: 'happy-dom',
     setupFiles: './src/setupTests.ts',
     css: true,
+    env: {
+      VITE_API_URL: 'http://test',
+    },
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json', 'html'],
