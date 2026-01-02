@@ -10,6 +10,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 import logging
 
+from app.config import settings
+from app.api import users, recipes, libraries, sharing
+
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -27,12 +30,7 @@ app = FastAPI(
 # Configure CORS for frontend
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:3000",
-        "http://localhost:5173",  # Vite default port
-        "http://127.0.0.1:3000",
-        "http://127.0.0.1:5173",
-    ],
+    allow_origins=settings.cors_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -62,19 +60,18 @@ async def health_check():
     }
 
 
-# API version 1 router placeholder
-# TODO: Add API routers for recipes, users, meal plans, etc.
-# from app.api import recipes, users, meal_plans
-# app.include_router(recipes.router, prefix="/api/v1", tags=["recipes"])
-# app.include_router(users.router, prefix="/api/v1", tags=["users"])
+# Include API routers
+app.include_router(users.router, prefix="/api/v1")
+app.include_router(recipes.router, prefix="/api/v1")
+app.include_router(libraries.router, prefix="/api/v1")
+app.include_router(sharing.router, prefix="/api/v1")
 
 
 @app.on_event("startup")
 async def startup_event():
     """Initialize services on application startup"""
     logger.info("Starting Cooking Assistant API...")
-    # TODO: Initialize database connection
-    # TODO: Initialize AI services
+    logger.info("API documentation available at /api/docs")
     logger.info("Application startup complete")
 
 
@@ -82,8 +79,6 @@ async def startup_event():
 async def shutdown_event():
     """Cleanup on application shutdown"""
     logger.info("Shutting down Cooking Assistant API...")
-    # TODO: Close database connections
-    # TODO: Cleanup AI services
     logger.info("Application shutdown complete")
 
 
