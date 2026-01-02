@@ -7,21 +7,22 @@
 import apiClient from './api';
 import type { Recipe, RecipeFormData } from '../types';
 
-interface RecipeListParams {
+export interface RecipeListParams {
   library_id?: string;
   cuisine_type?: string;
-  difficulty?: 'easy' | 'medium' | 'hard';
+  difficulty_level?: 'easy' | 'medium' | 'hard';
+  dietary_tag?: string;
   search?: string;
   page?: number;
   page_size?: number;
 }
 
-interface RecipeListResponse {
-  recipes: Recipe[];
+export interface RecipeListResponse {
+  data: Recipe[];
   total: number;
   page: number;
-  page_size: number;
-  total_pages: number;
+  pageSize: number;
+  totalPages: number;
 }
 
 /**
@@ -64,4 +65,13 @@ export const updateRecipe = async (
  */
 export const deleteRecipe = async (recipeId: string): Promise<void> => {
   await apiClient.delete(`/api/v1/recipes/${recipeId}`);
+};
+
+// Export as object for easier imports
+export const recipeApi = {
+  getRecipes,
+  getRecipe,
+  createRecipe,
+  updateRecipe,
+  deleteRecipe,
 };

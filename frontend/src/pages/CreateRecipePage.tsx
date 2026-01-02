@@ -8,7 +8,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import RecipeForm from '../components/recipes/RecipeForm';
 import { recipeApi } from '../services/recipeApi';
-import { RecipeFormData } from '../types';
+import type { RecipeFormData } from '../types';
 
 export default function CreateRecipePage() {
   const navigate = useNavigate();
@@ -24,8 +24,8 @@ export default function CreateRecipePage() {
 
       // Navigate to the newly created recipe
       navigate(`/recipes/${createdRecipe.id}`);
-    } catch (err: any) {
-      setError(err.message || 'Failed to create recipe');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to create recipe');
       setIsSubmitting(false);
     }
   };

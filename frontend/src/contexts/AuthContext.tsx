@@ -4,7 +4,10 @@
  * Manages user authentication state and provides auth functions
  */
 
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+/* eslint-disable react-refresh/only-export-components */
+
+import { createContext, useContext, useState, useEffect } from 'react';
+import type { ReactNode } from 'react';
 import * as authApi from '../services/authApi';
 import type { User } from '../types';
 
@@ -44,7 +47,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         try {
           const userData = await authApi.getCurrentUser();
           setUser(userData);
-        } catch (error) {
+        } catch {
           // Token is invalid, remove it
           localStorage.removeItem('auth_token');
         }
@@ -63,14 +66,14 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       // Fetch user data
       const userData = await authApi.getCurrentUser();
       setUser(userData);
-    } catch (error) {
+    } catch {
       throw new Error('Login failed. Please check your credentials.');
     }
   };
 
   const register = async (username: string, email: string, password: string, fullName?: string) => {
     try {
-      const userData = await authApi.register({
+      await authApi.register({
         username,
         email,
         password,
@@ -79,9 +82,12 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
       // Auto-login after registration
       await login(username, password);
-    } catch (error: any) {
-      if (error.response?.data?.detail) {
-        throw new Error(error.response.data.detail);
+    } catch (error) {
+      if (error && typeof error === 'object' && 'response' in error) {
+        const axiosError = error as { response?: { data?: { detail?: string } } };
+        if (axiosError.response?.data?.detail) {
+          throw new Error(axiosError.response.data.detail);
+        }
       }
       throw new Error('Registration failed. Please try again.');
     }
@@ -96,9 +102,12 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     try {
       const updatedUser = await authApi.updateProfile(data);
       setUser(updatedUser);
-    } catch (error: any) {
-      if (error.response?.data?.detail) {
-        throw new Error(error.response.data.detail);
+    } catch (error) {
+      if (error && typeof error === 'object' && 'response' in error) {
+        const axiosError = error as { response?: { data?: { detail?: string } } };
+        if (axiosError.response?.data?.detail) {
+          throw new Error(axiosError.response.data.detail);
+        }
       }
       throw new Error('Profile update failed. Please try again.');
     }

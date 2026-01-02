@@ -7,7 +7,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { recipeApi } from '../services/recipeApi';
-import { Recipe } from '../types';
+import type { Recipe } from '../types';
 import { useAuth } from '../contexts/AuthContext';
 
 export default function RecipeDetailPage() {
@@ -34,8 +34,8 @@ export default function RecipeDetailPage() {
         setError(null);
         const data = await recipeApi.getRecipe(id);
         setRecipe(data);
-      } catch (err: any) {
-        setError(err.message || 'Failed to fetch recipe');
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Failed to fetch recipe');
       } finally {
         setLoading(false);
       }
@@ -58,8 +58,8 @@ export default function RecipeDetailPage() {
       setDeleting(true);
       await recipeApi.deleteRecipe(id);
       navigate('/recipes');
-    } catch (err: any) {
-      setError(err.message || 'Failed to delete recipe');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to delete recipe');
       setDeleting(false);
     }
   };

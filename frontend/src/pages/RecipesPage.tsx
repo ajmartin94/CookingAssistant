@@ -8,7 +8,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import RecipeCard from '../components/recipes/RecipeCard';
 import { recipeApi } from '../services/recipeApi';
-import { Recipe } from '../types';
+import type { Recipe } from '../types';
 
 export default function RecipesPage() {
   const navigate = useNavigate();
@@ -39,15 +39,15 @@ export default function RecipesPage() {
           page_size: 12,
           search: searchQuery || undefined,
           cuisine_type: cuisineFilter || undefined,
-          difficulty_level: difficultyFilter || undefined,
+          difficulty_level: difficultyFilter ? (difficultyFilter as 'easy' | 'medium' | 'hard') : undefined,
           dietary_tag: dietaryFilter || undefined,
         });
 
         setRecipes(response.data);
         setTotalPages(response.totalPages);
         setTotal(response.total);
-      } catch (err: any) {
-        setError(err.message || 'Failed to fetch recipes');
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Failed to fetch recipes');
       } finally {
         setLoading(false);
       }

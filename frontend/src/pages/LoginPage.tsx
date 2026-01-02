@@ -32,8 +32,8 @@ export default function LoginPage() {
         await register(username, email, password, fullName);
       }
       navigate('/recipes');
-    } catch (err: any) {
-      setError(err.message || 'An error occurred');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'An error occurred');
     } finally {
       setIsLoading(false);
     }

@@ -8,7 +8,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import RecipeForm from '../components/recipes/RecipeForm';
 import { recipeApi } from '../services/recipeApi';
-import { Recipe, RecipeFormData } from '../types';
+import type { Recipe, RecipeFormData } from '../types';
 
 export default function EditRecipePage() {
   const { id } = useParams<{ id: string }>();
@@ -33,8 +33,8 @@ export default function EditRecipePage() {
         setError(null);
         const data = await recipeApi.getRecipe(id);
         setRecipe(data);
-      } catch (err: any) {
-        setError(err.message || 'Failed to fetch recipe');
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Failed to fetch recipe');
       } finally {
         setLoading(false);
       }
@@ -55,8 +55,8 @@ export default function EditRecipePage() {
 
       // Navigate to the updated recipe
       navigate(`/recipes/${updatedRecipe.id}`);
-    } catch (err: any) {
-      setError(err.message || 'Failed to update recipe');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to update recipe');
       setIsSubmitting(false);
     }
   };

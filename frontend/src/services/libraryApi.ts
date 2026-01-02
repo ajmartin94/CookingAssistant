@@ -5,7 +5,7 @@
  */
 
 import apiClient from './api';
-import type { RecipeLibrary } from '../types';
+import type { RecipeLibrary, Recipe } from '../types';
 
 interface LibraryFormData {
   name: string;
@@ -14,7 +14,7 @@ interface LibraryFormData {
 }
 
 interface LibraryDetailResponse extends RecipeLibrary {
-  recipes: any[]; // Will contain Recipe objects
+  recipes: Recipe[];
 }
 
 /**

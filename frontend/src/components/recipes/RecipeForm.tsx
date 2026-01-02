@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { RecipeFormData, Ingredient, Instruction } from '../../types';
+import React, { useState } from 'react';
+import type { RecipeFormData, Ingredient, Instruction } from '../../types';
 
 interface RecipeFormProps {
   initialData?: RecipeFormData;
