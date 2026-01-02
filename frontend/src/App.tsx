@@ -9,6 +9,9 @@ import { AuthProvider, useAuth } from './contexts/AuthContext';
 import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
 import RecipesPage from './pages/RecipesPage';
+import RecipeDetailPage from './pages/RecipeDetailPage';
+import CreateRecipePage from './pages/CreateRecipePage';
+import EditRecipePage from './pages/EditRecipePage';
 import './App.css';
 
 function App() {
@@ -75,6 +78,9 @@ function AppContent() {
         <Route path="/" element={<HomePage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/recipes" element={<RecipesPage />} />
+        <Route path="/recipes/create" element={<CreateRecipePage />} />
+        <Route path="/recipes/:id" element={<RecipeDetailPage />} />
+        <Route path="/recipes/:id/edit" element={<EditRecipePage />} />
         <Route path="/libraries" element={<ComingSoonPage title="Libraries" />} />
         <Route path="/planning" element={<ComingSoonPage title="Meal Planning" />} />
         <Route path="/cooking" element={<ComingSoonPage title="Cooking Mode" />} />
