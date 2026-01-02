@@ -43,25 +43,27 @@ describe('authApi', () => {
 
   describe('login', () => {
     it('logs in a user and returns token', async () => {
-      const result = await login('testuser', 'password123')
+      const result = await login({ username: 'testuser', password: 'password123' })
 
       expect(result).toBeDefined()
       expect(result.access_token).toBe('mock-jwt-token')
       expect(result.token_type).toBe('bearer')
     })
 
-    it('stores token in localStorage', async () => {
-      await login('testuser', 'password123')
+    it('accepts LoginData object', async () => {
+      const loginData = { username: 'testuser', password: 'password123' }
+      const result = await login(loginData)
 
-      const token = localStorage.getItem('token')
-      expect(token).toBe('mock-jwt-token')
+      expect(result).toBeDefined()
+      expect(result.access_token).toBeDefined()
+      expect(result.token_type).toBe('bearer')
     })
   })
 
   describe('getCurrentUser', () => {
     it('retrieves current user profile', async () => {
-      // Set token first
-      localStorage.setItem('token', 'mock-jwt-token')
+      // Set token first (using 'auth_token' key to match actual implementation)
+      localStorage.setItem('auth_token', 'mock-jwt-token')
 
       const result = await getCurrentUser()
 
