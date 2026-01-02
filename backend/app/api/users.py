@@ -24,7 +24,9 @@ from app.utils.dependencies import CurrentUser
 router = APIRouter(prefix="/users", tags=["users"])
 
 
-@router.post("/register", response_model=UserResponse, status_code=status.HTTP_201_CREATED)
+@router.post(
+    "/register", response_model=UserResponse, status_code=status.HTTP_201_CREATED
+)
 async def register_user(
     user_create: UserCreate,
     db: Annotated[AsyncSession, Depends(get_db)],
@@ -77,9 +79,7 @@ async def login(
         )
 
     # Create access token
-    access_token = create_access_token(
-        data={"sub": user.username, "user_id": user.id}
-    )
+    access_token = create_access_token(data={"sub": user.username, "user_id": user.id})
 
     return Token(access_token=access_token, token_type="bearer")
 

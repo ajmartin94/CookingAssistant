@@ -9,7 +9,12 @@ from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.database import get_db
-from app.schemas.library import LibraryCreate, LibraryResponse, LibraryUpdate, LibraryDetailResponse
+from app.schemas.library import (
+    LibraryCreate,
+    LibraryResponse,
+    LibraryUpdate,
+    LibraryDetailResponse,
+)
 from app.services.library_service import (
     get_library,
     get_libraries,
@@ -28,7 +33,9 @@ async def list_libraries(
     db: Annotated[AsyncSession, Depends(get_db)],
     current_user: CurrentUser,
     skip: int = Query(0, ge=0, description="Number of items to skip"),
-    limit: int = Query(50, ge=1, le=100, description="Maximum number of items to return"),
+    limit: int = Query(
+        50, ge=1, le=100, description="Maximum number of items to return"
+    ),
 ):
     """
     List user's recipe libraries

@@ -4,7 +4,7 @@ Share Schemas
 Pydantic schemas for recipe/library sharing data validation and serialization.
 """
 
-from pydantic import BaseModel, Field, ConfigDict
+from pydantic import BaseModel, ConfigDict
 from datetime import datetime
 from typing import Optional
 from app.models.share import SharePermission

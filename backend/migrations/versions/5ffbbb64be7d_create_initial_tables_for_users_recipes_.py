@@ -5,14 +5,15 @@ Revises:
 Create Date: 2026-01-02 01:24:51.713277
 
 """
+
 from typing import Sequence, Union
 
-from alembic import op
-import sqlalchemy as sa
+from alembic import op  # noqa: F401
+import sqlalchemy as sa  # noqa: F401
 
 
 # revision identifiers, used by Alembic.
-revision: str = '5ffbbb64be7d'
+revision: str = "5ffbbb64be7d"
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None

@@ -35,4 +35,6 @@ class RecipeLibrary(Base):
     )
 
     def __repr__(self) -> str:
-        return f"<RecipeLibrary(id={self.id}, name={self.name}, owner_id={self.owner_id})>"
+        return (
+            f"<RecipeLibrary(id={self.id}, name={self.name}, owner_id={self.owner_id})>"
+        )

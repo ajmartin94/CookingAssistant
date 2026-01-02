@@ -7,7 +7,6 @@ API versioning, and health check endpoints.
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
 import logging
 
 from app.config import settings
@@ -24,7 +23,7 @@ app = FastAPI(
     version="1.0.0",
     docs_url="/api/docs",
     redoc_url="/api/redoc",
-    openapi_url="/api/openapi.json"
+    openapi_url="/api/openapi.json",
 )
 
 # Configure CORS for frontend
@@ -45,7 +44,7 @@ async def root():
         "message": "Welcome to Cooking Assistant API",
         "version": "1.0.0",
         "docs": "/api/docs",
-        "health": "/api/v1/health"
+        "health": "/api/v1/health",
     }
 
 
@@ -53,11 +52,7 @@ async def root():
 @app.get("/api/v1/health")
 async def health_check():
     """Health check endpoint for monitoring"""
-    return {
-        "status": "healthy",
-        "service": "cooking-assistant-api",
-        "version": "1.0.0"
-    }
+    return {"status": "healthy", "service": "cooking-assistant-api", "version": "1.0.0"}
 
 
 # Include API routers
@@ -84,10 +79,7 @@ async def shutdown_event():
 
 if __name__ == "__main__":
     import uvicorn
+
     uvicorn.run(
-        "app.main:app",
-        host="0.0.0.0",
-        port=8000,
-        reload=True,
-        log_level="info"
+        "app.main:app", host="0.0.0.0", port=8000, reload=True, log_level="info"
     )

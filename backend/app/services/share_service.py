@@ -7,7 +7,7 @@ Business logic for recipe and library sharing.
 from datetime import datetime
 from typing import Optional
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, or_
+from sqlalchemy import select
 from fastapi import HTTPException, status
 
 from app.models.share import RecipeShare
@@ -15,7 +15,9 @@ from app.models.user import User
 from app.schemas.share import ShareCreate
 
 
-async def get_share_by_token(db: AsyncSession, share_token: str) -> Optional[RecipeShare]:
+async def get_share_by_token(
+    db: AsyncSession, share_token: str
+) -> Optional[RecipeShare]:
     """
     Get a share by its token
 

@@ -24,7 +24,6 @@ from app.services.share_service import (
 from app.services.recipe_service import get_recipe
 from app.services.library_service import get_library
 from app.utils.dependencies import CurrentUser
-from app.config import settings
 
 router = APIRouter(prefix="/shares", tags=["sharing"])
 
@@ -89,7 +88,9 @@ async def list_my_shares(
     current_user: CurrentUser,
     db: Annotated[AsyncSession, Depends(get_db)],
     skip: int = Query(0, ge=0, description="Number of items to skip"),
-    limit: int = Query(50, ge=1, le=100, description="Maximum number of items to return"),
+    limit: int = Query(
+        50, ge=1, le=100, description="Maximum number of items to return"
+    ),
 ):
     """
     List shares created by the current user
@@ -105,7 +106,9 @@ async def list_shares_with_me(
     current_user: CurrentUser,
     db: Annotated[AsyncSession, Depends(get_db)],
     skip: int = Query(0, ge=0, description="Number of items to skip"),
-    limit: int = Query(50, ge=1, le=100, description="Maximum number of items to return"),
+    limit: int = Query(
+        50, ge=1, le=100, description="Maximum number of items to return"
+    ),
 ):
     """
     List content shared with the current user

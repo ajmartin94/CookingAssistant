@@ -29,7 +29,9 @@ class User(Base):
     )
 
     # Relationships
-    recipes = relationship("Recipe", back_populates="owner", cascade="all, delete-orphan")
+    recipes = relationship(
+        "Recipe", back_populates="owner", cascade="all, delete-orphan"
+    )
     libraries = relationship(
         "RecipeLibrary", back_populates="owner", cascade="all, delete-orphan"
     )

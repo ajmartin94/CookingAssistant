@@ -79,7 +79,9 @@ class Recipe(Base):
     # Relationships
     owner = relationship("User", back_populates="recipes")
     library = relationship("RecipeLibrary", back_populates="recipes")
-    shares = relationship("RecipeShare", back_populates="recipe", cascade="all, delete-orphan")
+    shares = relationship(
+        "RecipeShare", back_populates="recipe", cascade="all, delete-orphan"
+    )
 
     def __repr__(self) -> str:
         return f"<Recipe(id={self.id}, title={self.title}, owner_id={self.owner_id})>"

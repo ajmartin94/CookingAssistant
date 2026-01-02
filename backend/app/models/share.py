@@ -35,17 +35,24 @@ class RecipeShare(Base):
     )
 
     # Sharing metadata
-    shared_by_id = Column(String(36), ForeignKey("users.id"), nullable=False, index=True)
+    shared_by_id = Column(
+        String(36), ForeignKey("users.id"), nullable=False, index=True
+    )
     shared_with_id = Column(
         String(36), ForeignKey("users.id"), nullable=True, index=True
     )  # Null for public shares
 
     # Unique token for link-based sharing
     share_token = Column(
-        String(64), unique=True, nullable=False, default=lambda: secrets.token_urlsafe(32)
+        String(64),
+        unique=True,
+        nullable=False,
+        default=lambda: secrets.token_urlsafe(32),
     )
 
-    permission = Column(Enum(SharePermission), default=SharePermission.VIEW, nullable=False)
+    permission = Column(
+        Enum(SharePermission), default=SharePermission.VIEW, nullable=False
+    )
 
     # Optional expiration
     expires_at = Column(DateTime, nullable=True)

@@ -28,7 +28,12 @@ class Settings(BaseSettings):
     access_token_expire_minutes: int = 30
 
     # CORS Settings
-    cors_origins: list[str] = ["http://localhost:3000", "http://localhost:5173", "http://127.0.0.1:3000", "http://127.0.0.1:5173"]
+    cors_origins: list[str] = [
+        "http://localhost:3000",
+        "http://localhost:5173",
+        "http://127.0.0.1:3000",
+        "http://127.0.0.1:5173",
+    ]
 
     @field_validator("cors_origins", mode="before")
     @classmethod
@@ -57,10 +62,7 @@ class Settings(BaseSettings):
     rate_limit_per_minute: int = 60
 
     model_config = SettingsConfigDict(
-        env_file=".env",
-        env_file_encoding="utf-8",
-        case_sensitive=False,
-        extra="ignore"
+        env_file=".env", env_file_encoding="utf-8", case_sensitive=False, extra="ignore"
     )
 
 
