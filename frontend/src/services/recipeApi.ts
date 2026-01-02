@@ -18,11 +18,11 @@ export interface RecipeListParams {
 }
 
 export interface RecipeListResponse {
-  data: Recipe[];
+  recipes: Recipe[];
   total: number;
   page: number;
-  pageSize: number;
-  totalPages: number;
+  page_size: number;
+  total_pages: number;
 }
 
 /**

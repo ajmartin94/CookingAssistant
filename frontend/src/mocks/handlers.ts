@@ -44,7 +44,7 @@ export const handlers = [
   // Recipe handlers
   http.get(`${API_URL}/recipes`, async () => {
     return HttpResponse.json({
-      data: [
+      recipes: [
         {
           id: '1',
           title: 'Test Recipe',
@@ -61,8 +61,8 @@ export const handlers = [
       ],
       total: 1,
       page: 1,
-      pageSize: 20,
-      totalPages: 1,
+      page_size: 20,
+      total_pages: 1,
     })
   }),
 

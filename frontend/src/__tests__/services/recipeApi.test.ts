@@ -17,8 +17,8 @@ describe('recipeApi', () => {
       const result = await getRecipes()
 
       expect(result).toBeDefined()
-      expect(result.data).toBeInstanceOf(Array)
-      expect(result.data.length).toBeGreaterThan(0)
+      expect(result.recipes).toBeInstanceOf(Array)
+      expect(result.recipes.length).toBeGreaterThan(0)
       expect(result.total).toBe(1)
     })
 
@@ -26,8 +26,8 @@ describe('recipeApi', () => {
       const result = await getRecipes()
 
       expect(result.page).toBe(1)
-      expect(result.pageSize).toBe(20)
-      expect(result.totalPages).toBe(1)
+      expect(result.page_size).toBe(20)
+      expect(result.total_pages).toBe(1)
     })
   })
 
