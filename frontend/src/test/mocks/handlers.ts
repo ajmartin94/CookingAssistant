@@ -5,20 +5,40 @@ const BASE_URL = 'http://localhost:8000';
 
 export const handlers = [
   // Auth endpoints
-  http.post(`${BASE_URL}/api/v1/users/register`, async () => {
-    return HttpResponse.json(mockUser());
+  http.post(`${BASE_URL}/api/v1/users/register`, async ({ request }) => {
+    const body = await request.json() as any;
+    return HttpResponse.json(mockUser({
+      username: body.username,
+      email: body.email,
+      fullName: body.full_name || 'Test User',
+    }));
   }),
 
-  http.post(`${BASE_URL}/api/v1/users/login`, async () => {
+  http.post(`${BASE_URL}/api/v1/users/login`, async ({ request }) => {
+    // Login can receive form data or JSON
+    const contentType = request.headers.get('content-type');
+    if (contentType?.includes('application/x-www-form-urlencoded')) {
+      const formData = await request.text();
+      // Basic check - just return success for any login attempt in tests
+      return HttpResponse.json(mockLoginResponse);
+    }
     return HttpResponse.json(mockLoginResponse);
   }),
 
-  http.get(`${BASE_URL}/api/v1/users/me`, async () => {
+  http.get(`${BASE_URL}/api/v1/users/me`, async ({ request }) => {
+    const authHeader = request.headers.get('Authorization');
+    if (!authHeader) {
+      return HttpResponse.json(
+        { detail: 'Not authenticated' },
+        { status: 401 }
+      );
+    }
     return HttpResponse.json(mockUser());
   }),
 
-  http.put(`${BASE_URL}/api/v1/users/me`, async () => {
-    return HttpResponse.json(mockUser({ email: 'updated@example.com' }));
+  http.put(`${BASE_URL}/api/v1/users/me`, async ({ request }) => {
+    const body = await request.json() as any;
+    return HttpResponse.json(mockUser({ ...body }));
   }),
 
   // Recipe endpoints

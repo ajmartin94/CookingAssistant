@@ -4,6 +4,9 @@ import path from 'path';
 
 export default defineConfig({
   plugins: [react()],
+  define: {
+    'import.meta.env.MODE': JSON.stringify('test'),
+  },
   test: {
     globals: true,
     environment: 'jsdom',

@@ -44,7 +44,10 @@ apiClient.interceptors.response.use(
         case 401:
           // Unauthorized - redirect to login
           localStorage.removeItem('auth_token');
-          window.location.href = '/login';
+          // Only redirect if not in test environment
+          if (import.meta.env.MODE !== 'test' && typeof window !== 'undefined') {
+            window.location.href = '/login';
+          }
           break;
         case 403:
           console.error('Forbidden - insufficient permissions');
