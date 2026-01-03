@@ -218,3 +218,6 @@ cooking_assistant.db
 
 # Uploads
 uploads/
+
+# Claude Code
+.claude/
