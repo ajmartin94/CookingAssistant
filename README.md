@@ -124,18 +124,37 @@ The Project Initialization Phase has been implemented. Both backend and frontend
 
 ### Running Tests
 
-**Backend:**
+**Backend (147 tests - 100% passing):**
 ```bash
 cd backend
 source venv/bin/activate
-pytest
+pytest                    # Run all tests
+pytest --cov=app         # Run with coverage report
+pytest -v                # Verbose output
 ```
 
-**Frontend:**
+Test Coverage:
+- Unit Tests: 86 tests (services at 100% coverage)
+- Integration Tests: 61 tests (API endpoints)
+- Overall Coverage: 78%
+
+**Frontend (19 tests - 15 passing, 4 skipped):**
 ```bash
 cd frontend
-npm test
+npm test                 # Run all tests
+npm run test:coverage    # Run with coverage report
+npm run test:ui          # Run with UI
 ```
+
+Test Coverage:
+- API Client Tests: 8 tests (authApi)
+- Context Tests: 11 tests (7 passing, 4 integration tests skipped)
+- Overall: 79% passing (4 complex integration tests require additional investigation)
+
+**Test Infrastructure:**
+- Backend: pytest with async support, in-memory SQLite, comprehensive fixtures
+- Frontend: Vitest + React Testing Library + MSW (Mock Service Worker)
+- CI/CD: Automated testing on push and pull requests
 
 ## 📌 Roadmap
 
@@ -151,6 +170,9 @@ npm test
   - Features: User auth, recipe management, libraries, sharing
   - JWT authentication with bcrypt password hashing
   - Full CRUD operations with pagination and filtering
+  - **Testing: 166 tests implemented (162 passing)**
+    - Backend: 147 tests with 78% coverage (all services at 100%)
+    - Frontend: 19 authentication tests (15 passing)
 
 - **Phase 2**: AI recipe builder & semantic recipe search - NEXT
 - Phase 3: Meal planning + grocery list generator
