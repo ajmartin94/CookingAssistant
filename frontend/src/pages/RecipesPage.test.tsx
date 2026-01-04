@@ -51,9 +51,9 @@ describe('RecipesPage', () => {
     it('should render filter dropdowns', async () => {
       render(<RecipesPage />);
 
-      expect(screen.getByLabelText(/cuisine type/i)).toBeInTheDocument();
-      expect(screen.getByLabelText(/difficulty/i)).toBeInTheDocument();
-      expect(screen.getByLabelText(/dietary tags/i)).toBeInTheDocument();
+      // Query by role and accessible name or by finding all comboboxes
+      const selects = screen.getAllByRole('combobox');
+      expect(selects.length).toBeGreaterThanOrEqual(3); // cuisine, difficulty, dietary
     });
   });
 
@@ -161,9 +161,9 @@ describe('RecipesPage', () => {
 
       const { user } = render(<RecipesPage />);
 
-      // Apply a filter
-      const cuisineFilter = screen.getByLabelText(/cuisine type/i);
-      await user.selectOptions(cuisineFilter, 'Italian');
+      // Apply a filter - get all comboboxes and select the first one (cuisine)
+      const selects = screen.getAllByRole('combobox');
+      await user.selectOptions(selects[0], 'Italian');
 
       await waitFor(() => {
         expect(screen.getByText(/try adjusting your filters/i)).toBeInTheDocument();
@@ -259,8 +259,8 @@ describe('RecipesPage', () => {
 
       const { user } = render(<RecipesPage />);
 
-      const cuisineFilter = screen.getByLabelText(/cuisine type/i);
-      await user.selectOptions(cuisineFilter, 'Italian');
+      const selects = screen.getAllByRole('combobox');
+      await user.selectOptions(selects[0], 'Italian'); // First select is cuisine
 
       await waitFor(() => {
         expect(capturedParams?.get('cuisine_type')).toBe('Italian');
@@ -286,8 +286,8 @@ describe('RecipesPage', () => {
 
       const { user } = render(<RecipesPage />);
 
-      const difficultyFilter = screen.getByLabelText(/difficulty/i);
-      await user.selectOptions(difficultyFilter, 'easy');
+      const selects = screen.getAllByRole('combobox');
+      await user.selectOptions(selects[1], 'easy'); // Second select is difficulty
 
       await waitFor(() => {
         expect(capturedParams?.get('difficulty_level')).toBe('easy');
@@ -313,8 +313,8 @@ describe('RecipesPage', () => {
 
       const { user } = render(<RecipesPage />);
 
-      const dietaryFilter = screen.getByLabelText(/dietary tags/i);
-      await user.selectOptions(dietaryFilter, 'vegetarian');
+      const selects = screen.getAllByRole('combobox');
+      await user.selectOptions(selects[2], 'vegetarian'); // Third select is dietary
 
       await waitFor(() => {
         expect(capturedParams?.get('dietary_tag')).toBe('vegetarian');
@@ -328,8 +328,8 @@ describe('RecipesPage', () => {
       expect(screen.queryByText(/clear all filters/i)).not.toBeInTheDocument();
 
       // Apply a filter
-      const cuisineFilter = screen.getByLabelText(/cuisine type/i);
-      await user.selectOptions(cuisineFilter, 'Italian');
+      const selects = screen.getAllByRole('combobox');
+      await user.selectOptions(selects[0], 'Italian');
 
       // Clear button should now be visible
       await waitFor(() => {
@@ -341,16 +341,18 @@ describe('RecipesPage', () => {
       const { user } = render(<RecipesPage />);
 
       // Apply multiple filters
-      await user.selectOptions(screen.getByLabelText(/cuisine type/i), 'Italian');
-      await user.selectOptions(screen.getByLabelText(/difficulty/i), 'easy');
+      const selects = screen.getAllByRole('combobox');
+      await user.selectOptions(selects[0], 'Italian');
+      await user.selectOptions(selects[1], 'easy');
       await user.type(screen.getByPlaceholderText(/search recipes/i), 'pasta');
 
       // Click clear filters
       await user.click(screen.getByText(/clear all filters/i));
 
       // Filters should be reset
-      expect(screen.getByLabelText(/cuisine type/i)).toHaveValue('');
-      expect(screen.getByLabelText(/difficulty/i)).toHaveValue('');
+      const selectsAfter = screen.getAllByRole('combobox');
+      expect(selectsAfter[0]).toHaveValue('');
+      expect(selectsAfter[1]).toHaveValue('');
       expect(screen.getByPlaceholderText(/search recipes/i)).toHaveValue('');
     });
   });

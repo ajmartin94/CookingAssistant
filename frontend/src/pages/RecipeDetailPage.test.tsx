@@ -65,9 +65,10 @@ describe('RecipeDetailPage', () => {
       render(<RecipeDetailPage />);
 
       await waitFor(() => {
-        expect(screen.getByText(/prep: 15 min/i)).toBeInTheDocument();
-        expect(screen.getByText(/cook: 30 min/i)).toBeInTheDocument();
-        expect(screen.getByText(/total: 45 min/i)).toBeInTheDocument();
+        // Time is displayed in one span: "Prep: 10 min | Cook: 30 min | Total: 40 min" (from mockRecipe)
+        expect(screen.getByText(/prep.*10.*min/i)).toBeInTheDocument();
+        expect(screen.getByText(/cook.*30.*min/i)).toBeInTheDocument();
+        expect(screen.getByText(/total.*40.*min/i)).toBeInTheDocument();
       });
     });
 
@@ -83,7 +84,7 @@ describe('RecipeDetailPage', () => {
       render(<RecipeDetailPage />);
 
       await waitFor(() => {
-        expect(screen.getByText(/italian/i)).toBeInTheDocument();
+        expect(screen.getByText(/american/i)).toBeInTheDocument(); // mockRecipe has cuisineType: 'American'
       });
     });
 
@@ -91,8 +92,8 @@ describe('RecipeDetailPage', () => {
       render(<RecipeDetailPage />);
 
       await waitFor(() => {
-        const difficultyBadge = screen.getByText(/medium/i);
-        expect(difficultyBadge).toHaveClass('bg-yellow-100', 'text-yellow-800');
+        const difficultyBadge = screen.getByText(/easy/i); // mockRecipe has difficultyLevel: 'easy'
+        expect(difficultyBadge).toHaveClass('bg-green-100', 'text-green-800');
       });
     });
 

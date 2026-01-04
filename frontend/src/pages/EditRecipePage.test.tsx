@@ -69,8 +69,9 @@ describe('EditRecipePage', () => {
       render(<EditRecipePage />);
 
       await waitFor(() => {
-        // Check that the form is populated with recipe data
-        expect(screen.getByDisplayValue(/test recipe/i)).toBeInTheDocument();
+        // Check that the form is populated with recipe data by finding the title input
+        const titleInput = screen.getByPlaceholderText(/homemade margherita pizza/i);
+        expect(titleInput).toHaveValue('Test Recipe');
       });
     });
   });
