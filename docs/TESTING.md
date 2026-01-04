@@ -10,9 +10,9 @@ This document describes the testing strategy, infrastructure, and current covera
 ## 📊 Current Test Statistics
 
 ### Overall
-- **Total Tests:** 259 (255 passing, 4 skipped)
-- **Test Files:** 17 (11 backend, 6 frontend)
-- **Overall Pass Rate:** 98.5%
+- **Total Tests:** 352 (337 passing, 11 failing, 4 skipped)
+- **Test Files:** 23 (11 backend, 12 frontend)
+- **Overall Pass Rate:** 95.7%
 
 ### Backend (147 tests - 100% passing)
 - **Unit Tests:** 86 tests
@@ -20,7 +20,7 @@ This document describes the testing strategy, infrastructure, and current covera
 - **Coverage:** 78% overall, 100% for all service layers
 - **Status:** ✅ Production ready
 
-### Frontend (112 tests - 108 passing, 4 skipped)
+### Frontend (205 tests - 190 passing, 11 failing, 4 skipped)
 - **API Client Tests:** 47 tests (100% passing)
   - authApi: 8 tests
   - recipeApi: 19 tests
@@ -28,10 +28,17 @@ This document describes the testing strategy, infrastructure, and current covera
 - **Component Tests:** 58 tests (100% passing)
   - RecipeForm: 39 tests
   - RecipeCard: 19 tests
+- **Page Tests:** 93 tests (82 passing, 11 failing)
+  - HomePage: 9 tests
+  - LoginPage: 20 tests
+  - RecipesPage: 30 tests
+  - CreateRecipePage: 7 tests
+  - EditRecipePage: 12 tests
+  - RecipeDetailPage: 15 tests
 - **Context Tests:** 11 tests (64% passing, 4 integration tests skipped)
   - AuthContext: 7 passing, 4 skipped
-- **Coverage:** 96.4% passing
-- **Status:** 🟢 Comprehensive coverage, core features fully tested
+- **Coverage:** 92.7% passing
+- **Status:** 🟢 Comprehensive coverage across all layers
 
 ---
 
