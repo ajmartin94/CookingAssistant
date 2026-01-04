@@ -44,11 +44,11 @@ export const handlers = [
   // Recipe endpoints
   http.get(`${BASE_URL}/api/v1/recipes`, async () => {
     return HttpResponse.json({
-      recipes: [mockRecipe(), mockRecipe({ id: '2', title: 'Another Recipe' })],
+      data: [mockRecipe(), mockRecipe({ id: '2', title: 'Another Recipe' })],
       total: 2,
       page: 1,
-      page_size: 10,
-      total_pages: 1,
+      pageSize: 10,
+      totalPages: 1,
     });
   }),
 
