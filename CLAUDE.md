@@ -45,56 +45,30 @@ CookingAssistant/
 └── .gitignore
 ```
 
----
-
 ## 🔄 Development Workflow
 
-### Initial Setup
+1. **Create a Branch**
+   - Ensure you follow stated Git conventions
+   - Semantically name the branch according to user request
 
-1. **Backend Setup:**
-   ```bash
-   cd backend
-   python -m venv venv
-   source venv/bin/activate  # Windows: venv\Scripts\activate
-   pip install -r requirements.txt
-   ```
+2. **Make a plan**
+   - Communicate with the user to understand what is being requested
+   - Create an implementation_plan.md under docs/active_development
 
-2. **Frontend Setup:**
-   ```bash
-   cd frontend
-   npm install
-   npm run dev
-   ```
+3. **Write Tests**
+   - Coordinate with the user and create meaningful tests that will allow for clear Test Driven Development
 
-3. **Database Setup:**
-   ```bash
-   cd backend
-   alembic upgrade head  # Run migrations
-   ```
+4. **Write Code**
+   - Develop according to the active implementation plan
 
-### Making Changes
+5. **Test Your Code:**
+   - Follow testing standards in subdirectory instruction files
+   - Move on once tests pass
+   - Save testing results to the implementation_plan.md file
 
-1. **Create a feature branch:**
-   ```bash
-   git checkout -b feature/your-feature-name
-   ```
+6. **Commit and Push:**
+   - Commit changes and push to remote repo
 
-2. **Make changes following subdirectory-specific standards**
-
-3. **Test your changes:**
-   ```bash
-   cd backend && pytest          # Backend tests
-   cd frontend && npm test       # Frontend tests
-   ```
-
-4. **Commit and push:**
-   ```bash
-   git add .
-   git commit -m "feat(scope): brief description"
-   git push origin feature/your-feature-name
-   ```
-
----
 
 ## 🔀 Git Conventions
 
