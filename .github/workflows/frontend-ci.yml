@@ -44,4 +44,16 @@ jobs:
     - name: Run tests
       working-directory: ./frontend
       run: npm test -- --run
-      continue-on-error: true
+
+    - name: Generate coverage report
+      working-directory: ./frontend
+      run: npm run test:coverage -- --run
+      if: success()
+
+    - name: Upload coverage reports
+      uses: actions/upload-artifact@v4
+      if: success()
+      with:
+        name: frontend-coverage-report
+        path: frontend/coverage/
+        retention-days: 7

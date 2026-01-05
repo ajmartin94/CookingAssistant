@@ -47,6 +47,8 @@ CookingAssistant/
 
 ## 🔄 Development Workflow
 
+### We always start with making a clear plan and initiate the SDLC.
+
 1. **Create a Branch**
    - Ensure you follow stated Git conventions
    - Semantically name the branch according to user request
@@ -55,18 +57,24 @@ CookingAssistant/
    - Communicate with the user to understand what is being requested
    - Create an implementation_plan.md under docs/active_development
 
-3. **Write Tests**
+### From here, we work in a Test Driven Design loop to achieve the plan.
+
+1. **Write Tests**
    - Coordinate with the user and create meaningful tests that will allow for clear Test Driven Development
 
-4. **Write Code**
+2. **Write Code**
    - Develop according to the active implementation plan
 
-5. **Test Your Code:**
+3. **Test Your Code**
    - Follow testing standards in subdirectory instruction files
    - Move on once tests pass
    - Save testing results to the implementation_plan.md file
 
-6. **Commit and Push:**
+4. **Update Docs**
+   - Update README.md with anything relevant for the README level
+   - Update the implementation plan(s) in the docs folder
+
+5. **Commit and Push**
    - Commit changes and push to remote repo
 
 
