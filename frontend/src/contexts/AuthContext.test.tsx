@@ -17,6 +17,24 @@ function TestComponent() {
 
   if (isLoading) return <div>Loading...</div>;
 
+  const handleLogin = async () => {
+    try {
+      await login('testuser', 'password');
+    } catch (error) {
+      // Error is expected in some tests, just log it
+      console.log('Login failed:', error);
+    }
+  };
+
+  const handleRegister = async () => {
+    try {
+      await register('newuser', 'new@test.com', 'password');
+    } catch (error) {
+      // Error is expected in some tests, just log it
+      console.log('Register failed:', error);
+    }
+  };
+
   return (
     <div>
       {currentUser ? (
@@ -27,10 +45,8 @@ function TestComponent() {
       ) : (
         <>
           <div>Not logged in</div>
-          <button onClick={() => login('testuser', 'password')}>Login</button>
-          <button onClick={() => register('newuser', 'new@test.com', 'password')}>
-            Register
-          </button>
+          <button onClick={handleLogin}>Login</button>
+          <button onClick={handleRegister}>Register</button>
         </>
       )}
     </div>
