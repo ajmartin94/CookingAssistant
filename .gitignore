@@ -221,3 +221,13 @@ uploads/
 
 # Claude Code
 .claude/
+
+# E2E Testing
+e2e/reports/
+e2e/test-results/
+playwright-report/
+playwright/.cache/
+cooking_assistant_test_e2e.db
+cooking_assistant_test_e2e.db-journal
+test-results/
+.playwright/
