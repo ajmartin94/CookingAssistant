@@ -21,6 +21,10 @@ export class RecipeDetailPage extends BasePage {
     this.backButton = page.locator('a:has-text("Back"), button:has-text("Back")');
   }
 
+  async goto(recipeId: string) {
+    await super.goto(`/recipes/${recipeId}`);
+  }
+
   async gotoRecipe(recipeId: string) {
     await super.goto(`/recipes/${recipeId}`);
   }
@@ -31,6 +35,55 @@ export class RecipeDetailPage extends BasePage {
 
   async getRecipeDescription(): Promise<string | null> {
     return this.recipeDescription.textContent();
+  }
+
+  async getPrepTime(): Promise<string> {
+    const prepTimeElement = this.page.locator('[data-testid="prep-time"]');
+    const text = await prepTimeElement.textContent();
+    return text?.match(/\d+/)?.[0] || '0';
+  }
+
+  async getCookTime(): Promise<string> {
+    const cookTimeElement = this.page.locator('[data-testid="cook-time"]');
+    const text = await cookTimeElement.textContent();
+    return text?.match(/\d+/)?.[0] || '0';
+  }
+
+  async getServings(): Promise<string> {
+    const servingsElement = this.page.locator('[data-testid="servings"]');
+    const text = await servingsElement.textContent();
+    return text?.match(/\d+/)?.[0] || '0';
+  }
+
+  async getTotalTime(): Promise<string> {
+    const totalTimeElement = this.page.locator('[data-testid="total-time"]');
+    const text = await totalTimeElement.textContent();
+    return text?.match(/\d+/)?.[0] || '0';
+  }
+
+  async getInstructions(): Promise<string[]> {
+    const instructionElements = this.page.locator('[data-testid="instruction"]');
+    const count = await instructionElements.count();
+    const instructions: string[] = [];
+
+    for (let i = 0; i < count; i++) {
+      const text = await instructionElements.nth(i).textContent();
+      if (text) {
+        instructions.push(text.trim());
+      }
+    }
+
+    return instructions;
+  }
+
+  async hasCreatedDate(): Promise<boolean> {
+    const dateElement = this.page.locator('[data-testid="created-date"]');
+    return (await dateElement.count()) > 0;
+  }
+
+  async hasAuthor(): Promise<boolean> {
+    const authorElement = this.page.locator('[data-testid="author"]');
+    return (await authorElement.count()) > 0;
   }
 
   async hasIngredient(name: string): Promise<boolean> {
