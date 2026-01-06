@@ -1,7 +1,7 @@
 # Testing Documentation
 
-**Last Updated:** 2026-01-03
-**Status:** Comprehensive backend testing complete, frontend testing in progress
+**Last Updated:** 2026-01-05
+**Status:** Comprehensive testing across all layers - backend, frontend, and E2E
 
 This document describes the testing strategy, infrastructure, and current coverage for the Cooking Assistant project.
 
@@ -10,9 +10,10 @@ This document describes the testing strategy, infrastructure, and current covera
 ## 📊 Current Test Statistics
 
 ### Overall
-- **Total Tests:** 352 (348 passing, 4 skipped)
-- **Test Files:** 23 (11 backend, 12 frontend)
-- **Overall Pass Rate:** 98.9%
+- **Total Tests:** 437+ tests (433+ passing, 4 skipped)
+- **Test Files:** 34 (11 backend, 12 frontend, 11 E2E)
+- **Overall Pass Rate:** 99.1%
+- **Status:** ✅ Production ready with comprehensive E2E coverage
 
 ### Backend (147 tests - 100% passing)
 - **Unit Tests:** 86 tests
@@ -39,6 +40,28 @@ This document describes the testing strategy, infrastructure, and current covera
   - AuthContext: 7 passing, 4 skipped
 - **Coverage:** 98.0% passing
 - **Status:** ✅ Production ready - comprehensive coverage across all layers
+
+### E2E Tests (85+ tests - Playwright)
+- **Authentication Tests:** 13 tests
+  - Register: 5 tests (validation, duplicate handling, auth persistence)
+  - Login: 5 tests (credentials, validation, persistence)
+  - Logout: 3 tests (logout flow, redirect, token removal)
+- **Recipe CRUD Tests:** 45 tests
+  - Create: 7 tests (validation, persistence, field requirements)
+  - List: 10 tests (display, search, filtering, empty states)
+  - Detail: 9 tests (field display, ownership, metadata)
+  - Edit: 11 tests (updates, validation, cancellation)
+  - Delete: 8 tests (confirmation, ownership, database cleanup)
+- **Workflow Tests:** 3 tests
+  - Complete user journey (registration → create → edit → delete → logout)
+  - Multiple recipe handling
+  - Data persistence across page refreshes
+- **Error Handling Tests:** 24 tests
+  - Network errors: 9 tests (API failures, timeouts, status codes)
+  - Validation errors: 15 tests (form validation, server errors)
+- **Browsers:** Chromium, Firefox, WebKit (Safari)
+- **Execution Time:** ~3-5 minutes
+- **Status:** ✅ Comprehensive coverage of critical user paths
 
 ---
 
@@ -105,6 +128,53 @@ This document describes the testing strategy, infrastructure, and current covera
 - `mocks/data.ts` - Mock data generators
 - `mocks/server.ts` - MSW server configuration
 
+### E2E Testing Stack
+
+**Framework:** Playwright (TypeScript)
+
+**Key Dependencies:**
+- `@playwright/test` - Test framework and browser automation
+- `playwright` - Cross-browser support (Chromium, Firefox, WebKit)
+
+**Test Environment:**
+- **Real Backend:** FastAPI server on port 8000
+- **Real Frontend:** Vite dev server on port 5173
+- **Test Database:** SQLite (`cooking_assistant_test_e2e.db`)
+- **Browsers:** Chromium, Firefox, WebKit (Safari)
+
+**Configuration (playwright.config.ts):**
+- Parallel execution with 4 workers
+- Automatic server startup via `webServer` configuration
+- Screenshots and videos on failure
+- Trace collection for debugging
+- Retry on failure (CI only)
+
+**Page Object Model:**
+- `BasePage` - Common functionality (navigation, auth)
+- `LoginPage`, `RegisterPage` - Authentication pages
+- `RecipesPage`, `CreateRecipePage`, `RecipeDetailPage` - Recipe pages
+- All page objects extend BasePage for consistency
+
+**Fixtures (e2e/fixtures/auth.fixture.ts):**
+- `testUser` - Unique user credentials for each test
+- `authenticatedPage` - Pre-authenticated browser page
+- Automatic user registration and login
+
+**Test Utilities:**
+- `APIHelper` (e2e/utils/api.ts) - Direct API calls for test setup
+- `generateRecipeData()` - Create unique recipe data
+- `generateUniqueUsername()`, `generateUniqueEmail()` - Unique test data
+
+**Global Setup/Teardown:**
+- `global-setup.ts` - Wait for backend/frontend readiness, clean test DB
+- `global-teardown.ts` - Remove test database
+
+**CI/CD Integration:**
+- GitHub Actions workflow (`.github/workflows/e2e-tests.yml`)
+- Matrix testing across browsers
+- Artifact uploads (reports, videos, traces)
+- 7-day retention for debugging
+
 ---
 
 ## 🧪 Test Organization
@@ -145,6 +215,45 @@ frontend/src/
         ├── handlers.ts              # API handlers
         └── data.ts                  # Mock data generators
 ```
+
+### E2E Test Structure
+
+```
+e2e/
+├── tests/                           # Test files (85+ tests)
+│   ├── auth/                        # Authentication (13 tests)
+│   │   ├── register.spec.ts         # 5 tests
+│   │   ├── login.spec.ts            # 5 tests
+│   │   └── logout.spec.ts           # 3 tests
+│   ├── recipes/                     # Recipe CRUD (45 tests)
+│   │   ├── create.spec.ts           # 7 tests
+│   │   ├── list.spec.ts             # 10 tests
+│   │   ├── detail.spec.ts           # 9 tests
+│   │   ├── edit.spec.ts             # 11 tests
+│   │   └── delete.spec.ts           # 8 tests
+│   ├── workflows/                   # User journeys (3 tests)
+│   │   └── complete-recipe-journey.spec.ts
+│   └── errors/                      # Error handling (24 tests)
+│       ├── network-errors.spec.ts   # 9 tests
+│       └── validation-errors.spec.ts # 15 tests
+├── pages/                           # Page Object Models
+│   ├── base.page.ts                 # Common page functionality
+│   ├── login.page.ts
+│   ├── register.page.ts
+│   ├── recipes.page.ts
+│   ├── create-recipe.page.ts
+│   └── recipe-detail.page.ts
+├── fixtures/                        # Test fixtures
+│   └── auth.fixture.ts              # Authentication fixture
+├── utils/                           # Test utilities
+│   ├── api.ts                       # API helper class
+│   └── test-data.ts                 # Test data generators
+├── global-setup.ts                  # Pre-test environment setup
+├── global-teardown.ts               # Post-test cleanup
+└── playwright.config.ts             # Playwright configuration
+```
+
+**For detailed E2E testing documentation, see [E2E_TESTING.md](E2E_TESTING.md)**
 
 ---
 
