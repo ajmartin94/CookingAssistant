@@ -43,10 +43,13 @@ export default defineConfig({
   // CRITICAL: Start both servers before tests
   webServer: [
     {
-      command: 'cd backend && ..\\venv\\Scripts\\python.exe -m app.main',
+      command: process.platform === 'win32'
+        ? 'cd backend && venv\\Scripts\\python.exe -m app.main'
+        : 'cd backend && source venv/bin/activate && python -m app.main',
       url: 'http://localhost:8000/api/v1/health',
       timeout: 120 * 1000,
       reuseExistingServer: !process.env.CI,
+      cwd: process.cwd(),
       env: {
         DATABASE_URL: 'sqlite+aiosqlite:///./cooking_assistant_test_e2e.db',
         SECRET_KEY: 'test-secret-key-for-e2e-testing-only',
@@ -54,10 +57,11 @@ export default defineConfig({
       },
     },
     {
-      command: 'cd frontend && npm run dev',
+      command: 'npm run dev',
       url: 'http://localhost:5173',
       timeout: 120 * 1000,
       reuseExistingServer: !process.env.CI,
+      cwd: './frontend',
       env: {
         VITE_API_URL: 'http://localhost:8000',
       },
