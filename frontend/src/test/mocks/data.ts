@@ -56,6 +56,60 @@ export const mockRecipe = (overrides?: Partial<Recipe>): Recipe => ({
   ...overrides,
 });
 
+// Backend format recipe (snake_case) - matches actual API response
+interface BackendRecipe {
+  id: string;
+  title: string;
+  description: string;
+  ingredients: { name: string; amount: string; unit: string; notes?: string }[];
+  instructions: { step_number: number; instruction: string; duration_minutes?: number }[];
+  prep_time_minutes: number;
+  cook_time_minutes: number;
+  total_time_minutes: number;
+  servings: number;
+  cuisine_type: string;
+  dietary_tags: string[];
+  difficulty_level: 'easy' | 'medium' | 'hard';
+  source_url?: string | null;
+  source_name?: string | null;
+  notes?: string | null;
+  image_url?: string | null;
+  owner_id: string;
+  library_id?: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export const mockBackendRecipe = (overrides?: Partial<BackendRecipe>): BackendRecipe => ({
+  id: '1',
+  title: 'Test Recipe',
+  description: 'A delicious test recipe',
+  ingredients: [
+    { name: 'flour', amount: '2', unit: 'cups', notes: '' },
+    { name: 'sugar', amount: '1', unit: 'cup' },
+  ],
+  instructions: [
+    { step_number: 1, instruction: 'Mix ingredients', duration_minutes: 5 },
+    { step_number: 2, instruction: 'Bake at 350°F', duration_minutes: 30 },
+  ],
+  prep_time_minutes: 10,
+  cook_time_minutes: 30,
+  total_time_minutes: 40,
+  servings: 4,
+  cuisine_type: 'American',
+  dietary_tags: ['vegetarian'],
+  difficulty_level: 'easy',
+  source_url: null,
+  source_name: null,
+  notes: null,
+  image_url: null,
+  owner_id: '1',
+  library_id: null,
+  created_at: new Date().toISOString(),
+  updated_at: new Date().toISOString(),
+  ...overrides,
+});
+
 export const mockLibrary = (overrides?: Partial<RecipeLibrary>): RecipeLibrary => ({
   id: '1',
   name: 'Test Library',

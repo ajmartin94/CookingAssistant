@@ -1,5 +1,5 @@
 import { http, HttpResponse } from 'msw';
-import { mockUser, mockRecipe, mockLibrary, mockShareTokenResponse, mockLoginResponse } from './data';
+import { mockUser, mockBackendRecipe, mockLibrary, mockShareTokenResponse, mockLoginResponse } from './data';
 
 const BASE_URL = 'http://localhost:8000';
 
@@ -41,31 +41,31 @@ export const handlers = [
     return HttpResponse.json(mockUser({ ...body }));
   }),
 
-  // Recipe endpoints
+  // Recipe endpoints - return snake_case like real backend
   http.get(`${BASE_URL}/api/v1/recipes`, async () => {
     return HttpResponse.json({
-      data: [mockRecipe(), mockRecipe({ id: '2', title: 'Another Recipe' })],
+      recipes: [mockBackendRecipe(), mockBackendRecipe({ id: '2', title: 'Another Recipe' })],
       total: 2,
       page: 1,
-      pageSize: 10,
-      totalPages: 1,
+      page_size: 10,
+      total_pages: 1,
     });
   }),
 
   http.get(`${BASE_URL}/api/v1/recipes/:id`, async ({ params }) => {
     const { id } = params;
-    return HttpResponse.json(mockRecipe({ id: id as string }));
+    return HttpResponse.json(mockBackendRecipe({ id: id as string }));
   }),
 
   http.post(`${BASE_URL}/api/v1/recipes`, async ({ request }) => {
     const body = await request.json();
-    return HttpResponse.json(mockRecipe(body as any));
+    return HttpResponse.json(mockBackendRecipe(body as any));
   }),
 
   http.put(`${BASE_URL}/api/v1/recipes/:id`, async ({ params, request }) => {
     const { id } = params;
     const body = await request.json();
-    return HttpResponse.json(mockRecipe({ id: id as string, ...body as any }));
+    return HttpResponse.json(mockBackendRecipe({ id: id as string, ...body as any }));
   }),
 
   http.delete(`${BASE_URL}/api/v1/recipes/:id`, async () => {

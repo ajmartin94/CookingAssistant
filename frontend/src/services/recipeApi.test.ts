@@ -38,11 +38,11 @@ describe('recipeApi', () => {
           const url = new URL(request.url);
           capturedParams = url.searchParams;
           return HttpResponse.json({
-            data: [],
+            recipes: [],
             total: 0,
             page: 1,
-            pageSize: 10,
-            totalPages: 0,
+            page_size: 10,
+            total_pages: 0,
           });
         })
       );
@@ -66,11 +66,11 @@ describe('recipeApi', () => {
       server.use(
         http.get(`${BASE_URL}/api/v1/recipes`, () => {
           return HttpResponse.json({
-            data: [],
+            recipes: [],
             total: 0,
             page: 1,
-            pageSize: 10,
-            totalPages: 0,
+            page_size: 10,
+            total_pages: 0,
           });
         })
       );
@@ -238,7 +238,19 @@ describe('recipeApi', () => {
           return HttpResponse.json({
             id: '1',
             title: 'Original Title',
-            ...capturedBody,
+            description: 'Test',
+            ingredients: [],
+            instructions: [],
+            prep_time_minutes: 10,
+            cook_time_minutes: 20,
+            total_time_minutes: 30,
+            servings: capturedBody.servings || 4,
+            cuisine_type: 'American',
+            dietary_tags: [],
+            difficulty_level: 'easy',
+            owner_id: '1',
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
           });
         })
       );
@@ -258,6 +270,19 @@ describe('recipeApi', () => {
           return HttpResponse.json({
             id: params.id,
             title: 'Test Recipe',
+            description: 'Test',
+            ingredients: [],
+            instructions: [],
+            prep_time_minutes: 10,
+            cook_time_minutes: 20,
+            total_time_minutes: 30,
+            servings: 4,
+            cuisine_type: 'American',
+            dietary_tags: [],
+            difficulty_level: 'easy',
+            owner_id: '1',
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
           });
         })
       );
