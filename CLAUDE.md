@@ -1,6 +1,6 @@
 # CLAUDE.md - AI Assistant Development Guide
 
-**Last Updated:** 2026-01-03
+**Last Updated:** 2026-01-14
 **Repository:** Cooking Assistant
 **Project Status:** Early Development (Phase 1 Complete)
 
@@ -8,7 +8,6 @@ This document provides high-level guidance for AI assistants working on the Cook
 
 - **[backend/CLAUDE.md](backend/CLAUDE.md)** - Backend development standards, Python conventions, testing strategies
 - **[frontend/CLAUDE.md](frontend/CLAUDE.md)** - Frontend development standards, TypeScript/React conventions, component testing
-- **[docs/CLAUDE.md](docs/CLAUDE.md)** - Documentation maintenance, active development management, archiving procedures
 
 ---
 
@@ -55,7 +54,7 @@ CookingAssistant/
 
 2. **Make a plan**
    - Communicate with the user to understand what is being requested
-   - Create an implementation_plan.md under docs/active_development
+   - Create or claim a beads issue (`bd create` or `bd update <id> --status=in_progress`)
 
 ### From here, we work in a Test Driven Design loop to achieve the plan.
 
@@ -63,19 +62,19 @@ CookingAssistant/
    - Coordinate with the user and create meaningful tests that will allow for clear Test Driven Development
 
 2. **Write Code**
-   - Develop according to the active implementation plan
+   - Develop according to the beads issue requirements
 
 3. **Test Your Code**
    - Follow testing standards in subdirectory instruction files
    - Move on once tests pass
-   - Save testing results to the implementation_plan.md file
 
 4. **Update Docs**
    - Update README.md with anything relevant for the README level
-   - Update the implementation plan(s) in the docs folder
+   - Close completed beads issues (`bd close <id>`)
 
 5. **Commit and Push**
    - Commit changes and push to remote repo
+   - Run `bd sync --from-main` to sync beads with main branch
 
 
 ## 🔀 Git Conventions
@@ -185,8 +184,24 @@ test(auth): add comprehensive authentication service tests
 ### Documentation to Reference
 
 - **Project README:** [README.md](README.md)
-- **Master Implementation Plan:** [docs/master_implementation_plan.md](docs/master_implementation_plan.md)
-- **Active Development Plans:** [docs/active_development/](docs/active_development/)
+- **Archived Implementation Plan:** [docs/archive/master_implementation_plan_v1.md](docs/archive/master_implementation_plan_v1.md) (historical reference)
+
+### Issue Tracking with Beads
+
+This project uses [beads](https://github.com/anthropics/beads) for roadmap and issue tracking:
+
+```bash
+bd ready              # Show issues ready to work on
+bd list --status=all  # List all issues
+bd show <id>          # View issue details
+bd create --title="..." --type=task --priority=2  # Create new issue
+bd update <id> --status=in_progress  # Claim work
+bd close <id>         # Mark complete
+bd stats              # Project statistics
+```
+
+**Issue Types:** `task`, `bug`, `feature`, `epic`
+**Priorities:** P0 (critical) → P4 (backlog)
 
 ### Tech Stack Documentation
 - **FastAPI:** https://fastapi.tiangolo.com/
@@ -213,7 +228,7 @@ The CLAUDE.md files in each subdirectory should be updated when:
 - New patterns are adopted
 - Significant refactoring occurs
 
-**Last reviewed:** 2026-01-03
+**Last reviewed:** 2026-01-14
 **Next review recommended:** After Phase 2 completion
 
 ---
@@ -222,7 +237,7 @@ The CLAUDE.md files in each subdirectory should be updated when:
 
 This is a living documentation system:
 1. Check the relevant subdirectory's CLAUDE.md first
-2. Review [docs/active_development/implementation_plan.md](docs/active_development/implementation_plan.md) for current work
+2. Run `bd ready` to see current work items
 3. Open an issue on GitHub if something is unclear
 4. Submit a PR with proposed documentation improvements
 
