@@ -1,0 +1,109 @@
+---
+name: beads
+description: |
+  Manage beads issues for tracking development work. Use this skill when: (1) Starting a new task or feature, (2) Creating implementation or testing plans, (3) Tracking session progress and discoveries, (4) Finding available work, (5) Closing completed work. Beads stores issues in git-tracked JSONL with rich fields for design notes, acceptance criteria, and session notes.
+---
+
+# Beads Issue Management
+
+## Core Principle
+
+**All work must be tracked in beads.** Before starting any task:
+1. Check for existing issue: `bd ready` or `bd list --status=open`
+2. Create issue if none exists
+3. Claim work: `bd update <id> --status=in_progress`
+
+## Rich Context Fields
+
+Store implementation plans, testing criteria, and session notes directly in issues:
+
+| Field | Flag | Purpose |
+|-------|------|---------|
+| `--design` | Design notes | Implementation plans, architecture decisions |
+| `--acceptance` | Acceptance criteria | Testing plans, definition of done |
+| `--notes` | Additional notes | Session discoveries, to-dos, context |
+| `--description` | Full description | Problem statement, background |
+
+## Creating Issues
+
+```bash
+# Feature with full context
+bd create --title="Add user authentication" \
+  --type=feature \
+  --priority=2 \
+  --description="Users need secure login/logout functionality" \
+  --design="## Implementation Plan
+1. Add JWT middleware to FastAPI
+2. Create /auth/login and /auth/register endpoints
+3. Add AuthContext to React frontend
+4. Implement protected route wrapper" \
+  --acceptance="## Definition of Done
+- [ ] Unit tests for JWT validation
+- [ ] Integration tests for auth endpoints
+- [ ] E2E test for login flow
+- [ ] Password hashing with bcrypt" \
+  --notes="## Context
+- Decision: JWT over OAuth for simplicity
+- Token expiry: 24h with refresh tokens"
+```
+
+**Issue types:** `task`, `bug`, `feature`, `epic`
+**Priorities:** 0-4 or P0-P4 (0=critical, 2=medium, 4=backlog)
+
+## Session Workflow
+
+### Starting Work
+```bash
+bd ready                              # Find available work
+bd show <id>                          # Review issue details
+bd update <id> --status=in_progress   # Claim it
+```
+
+### During Development
+Update notes as you discover things:
+```bash
+bd update <id> --notes="## Session $(date +%Y-%m-%d)
+- Found edge case: empty responses cause 500
+- Decision: return empty array instead of null
+- TODO: add input validation for edge cases"
+```
+
+### Completing Work
+```bash
+bd close <id> --reason="Implemented JWT auth with refresh tokens.
+Tests: 15 unit, 4 integration, all passing.
+See design notes for architecture decisions."
+```
+
+## Common Commands
+
+| Command | Purpose |
+|---------|---------|
+| `bd ready` | Show issues ready to work (no blockers) |
+| `bd list --status=open` | All open issues |
+| `bd show <id> --json` | Full issue details as JSON |
+| `bd update <id> --status=in_progress` | Claim work |
+| `bd close <id>` | Mark complete |
+| `bd close <id1> <id2>` | Close multiple at once |
+| `bd dep add <child> <blocker>` | Add dependency |
+| `bd stats` | Project statistics |
+| `bd sync --from-main` | Pull beads updates from main |
+
+## Dependencies
+
+Link related issues:
+```bash
+bd create --title="Implement feature X" --type=feature
+bd create --title="Write tests for X" --type=task
+bd dep add <test-id> <feature-id>  # Tests blocked by feature
+```
+
+## Session Close Protocol
+
+Before ending a session:
+```bash
+git status                    # Check changes
+git add <files>               # Stage code
+bd sync --from-main           # Pull beads updates
+git commit -m "..."           # Commit changes
+```

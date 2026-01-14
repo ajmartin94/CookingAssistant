@@ -220,7 +220,7 @@ cooking_assistant.db
 uploads/
 
 # Claude Code
-.claude/
+.claude/settings.local.json
 
 # E2E Testing
 e2e/reports/

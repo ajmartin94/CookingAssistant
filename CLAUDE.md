@@ -46,35 +46,44 @@ CookingAssistant/
 
 ## 🔄 Development Workflow
 
-### We always start with making a clear plan and initiate the SDLC.
+### Beads-First Development
 
-1. **Create a Branch**
-   - Ensure you follow stated Git conventions
-   - Semantically name the branch according to user request
+**CRITICAL: All work MUST be tracked in beads.** Use the `beads` skill for issue management.
 
-2. **Make a plan**
-   - Communicate with the user to understand what is being requested
-   - Create or claim a beads issue (`bd create` or `bd update <id> --status=in_progress`)
+Before starting ANY task:
+1. Check for existing issue: `bd ready` or `bd list --status=open`
+2. Create issue if none exists (with `--design`, `--acceptance`, `--notes` for rich context)
+3. Claim work: `bd update <id> --status=in_progress`
 
-### From here, we work in a Test Driven Design loop to achieve the plan.
+**Never do work outside of a beads issue.** This ensures:
+- Persistent context across sessions
+- Clear audit trail of decisions
+- Discoverable work for any contributor
 
-1. **Write Tests**
-   - Coordinate with the user and create meaningful tests that will allow for clear Test Driven Development
+### Standard Workflow
 
-2. **Write Code**
-   - Develop according to the beads issue requirements
+1. **Create a Branch** - Follow Git conventions below
 
-3. **Test Your Code**
-   - Follow testing standards in subdirectory instruction files
-   - Move on once tests pass
+2. **Claim or Create Issue**
+   ```bash
+   bd ready                                    # Find available work
+   bd create --title="..." --type=feature \   # Or create new issue
+     --design="Implementation plan..." \
+     --acceptance="Testing criteria..."
+   bd update <id> --status=in_progress        # Claim it
+   ```
 
-4. **Update Docs**
-   - Update README.md with anything relevant for the README level
-   - Close completed beads issues (`bd close <id>`)
+3. **Test-Driven Development Loop**
+   - Write tests first
+   - Implement to pass tests
+   - Update `--notes` with session discoveries
 
-5. **Commit and Push**
-   - Commit changes and push to remote repo
-   - Run `bd sync --from-main` to sync beads with main branch
+4. **Complete Work**
+   ```bash
+   bd close <id> --reason="Summary of what was done"
+   bd sync --from-main
+   git add . && git commit -m "..."
+   ```
 
 
 ## 🔀 Git Conventions
@@ -188,17 +197,18 @@ test(auth): add comprehensive authentication service tests
 
 ### Issue Tracking with Beads
 
-This project uses [beads](https://github.com/anthropics/beads) for roadmap and issue tracking:
+This project uses [beads](https://github.com/steveyegge/beads) for issue tracking. **Use the `beads` skill** for detailed workflow guidance.
 
-```bash
-bd ready              # Show issues ready to work on
-bd list --status=all  # List all issues
-bd show <id>          # View issue details
-bd create --title="..." --type=task --priority=2  # Create new issue
-bd update <id> --status=in_progress  # Claim work
-bd close <id>         # Mark complete
-bd stats              # Project statistics
-```
+**Key commands:**
+- `bd ready` - Find available work
+- `bd create --title="..." --type=feature --design="..." --acceptance="..."` - Create with rich context
+- `bd update <id> --status=in_progress` - Claim work
+- `bd close <id> --reason="..."` - Complete with summary
+
+**Rich context fields** (store plans directly in issues):
+- `--design` - Implementation plans
+- `--acceptance` - Testing criteria / Definition of Done
+- `--notes` - Session discoveries, decisions, to-dos
 
 **Issue Types:** `task`, `bug`, `feature`, `epic`
 **Priorities:** P0 (critical) → P4 (backlog)
