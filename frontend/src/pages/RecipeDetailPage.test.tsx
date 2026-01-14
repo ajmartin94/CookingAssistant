@@ -65,10 +65,10 @@ describe('RecipeDetailPage', () => {
       render(<RecipeDetailPage />);
 
       await waitFor(() => {
-        // Time is displayed in one span: "Prep: 10 min | Cook: 30 min | Total: 40 min" (from mockRecipe)
-        expect(screen.getByText(/prep.*10.*min/i)).toBeInTheDocument();
-        expect(screen.getByText(/cook.*30.*min/i)).toBeInTheDocument();
-        expect(screen.getByText(/total.*40.*min/i)).toBeInTheDocument();
+        // Time values are in spans with data-testid attributes (from mockRecipe)
+        expect(screen.getByTestId('prep-time')).toHaveTextContent('10');
+        expect(screen.getByTestId('cook-time')).toHaveTextContent('30');
+        expect(screen.getByTestId('total-time')).toHaveTextContent('40');
       });
     });
 
