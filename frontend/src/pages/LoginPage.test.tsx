@@ -30,7 +30,7 @@ describe('LoginPage', () => {
       render(<LoginPage />);
 
       expect(screen.getByRole('heading', { name: /welcome back/i })).toBeInTheDocument();
-      expect(screen.getByRole('button', { name: /sign in/i })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /login/i })).toBeInTheDocument();
     });
 
     it('should render username field', () => {
@@ -67,7 +67,7 @@ describe('LoginPage', () => {
       await user.click(signUpLink);
 
       expect(screen.getByRole('heading', { name: /create account/i })).toBeInTheDocument();
-      expect(screen.getByRole('button', { name: /^sign up$/i })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /^register$/i })).toBeInTheDocument();
       expect(screen.getByLabelText(/email/i)).toBeInTheDocument();
       expect(screen.getByLabelText(/full name/i)).toBeInTheDocument();
       expect(screen.getByText(/minimum 8 characters/i)).toBeInTheDocument();
@@ -102,7 +102,7 @@ describe('LoginPage', () => {
       // Fill in login form and submit
       await user.type(screen.getByLabelText(/username/i), 'testuser');
       await user.type(screen.getByLabelText(/^password/i), 'password123');
-      await user.click(screen.getByRole('button', { name: /sign in/i }));
+      await user.click(screen.getByRole('button', { name: /login/i }));
 
       // Wait for error to appear
       await waitFor(() => {
@@ -123,7 +123,7 @@ describe('LoginPage', () => {
 
       await user.type(screen.getByLabelText(/username/i), 'testuser');
       await user.type(screen.getByLabelText(/^password/i), 'password123');
-      await user.click(screen.getByRole('button', { name: /sign in/i }));
+      await user.click(screen.getByRole('button', { name: /login/i }));
 
       await waitFor(() => {
         expect(mockNavigate).toHaveBeenCalledWith('/recipes');
@@ -144,7 +144,7 @@ describe('LoginPage', () => {
 
       await user.type(screen.getByLabelText(/username/i), 'wronguser');
       await user.type(screen.getByLabelText(/^password/i), 'wrongpass');
-      await user.click(screen.getByRole('button', { name: /sign in/i }));
+      await user.click(screen.getByRole('button', { name: /login/i }));
 
       await waitFor(() => {
         expect(screen.getByText(/login failed|invalid/i)).toBeInTheDocument();
@@ -157,7 +157,7 @@ describe('LoginPage', () => {
       await user.type(screen.getByLabelText(/username/i), 'testuser');
       await user.type(screen.getByLabelText(/^password/i), 'password123');
 
-      const submitButton = screen.getByRole('button', { name: /sign in/i });
+      const submitButton = screen.getByRole('button', { name: /login/i });
       await user.click(submitButton);
 
       // Check for loading state (button text changes or button is disabled)
@@ -188,7 +188,7 @@ describe('LoginPage', () => {
       await user.type(screen.getByLabelText(/email/i), 'new@example.com');
       await user.type(screen.getByLabelText(/^password/i), 'password123');
       await user.type(screen.getByLabelText(/full name/i), 'New User');
-      await user.click(screen.getByRole('button', { name: /^sign up$/i }));
+      await user.click(screen.getByRole('button', { name: /^register$/i }));
 
       await waitFor(() => {
         expect(mockNavigate).toHaveBeenCalledWith('/recipes');
@@ -212,7 +212,7 @@ describe('LoginPage', () => {
       await user.type(screen.getByLabelText(/username/i), 'existinguser');
       await user.type(screen.getByLabelText(/email/i), 'existing@example.com');
       await user.type(screen.getByLabelText(/^password/i), 'password123');
-      await user.click(screen.getByRole('button', { name: /^sign up$/i }));
+      await user.click(screen.getByRole('button', { name: /^register$/i }));
 
       await waitFor(() => {
         expect(screen.getByText(/username already exists/i)).toBeInTheDocument();
@@ -228,7 +228,7 @@ describe('LoginPage', () => {
       await user.type(screen.getByLabelText(/email/i), 'new@example.com');
       await user.type(screen.getByLabelText(/^password/i), 'password123');
       // Don't fill in full name
-      await user.click(screen.getByRole('button', { name: /^sign up$/i }));
+      await user.click(screen.getByRole('button', { name: /^register$/i }));
 
       await waitFor(() => {
         expect(mockNavigate).toHaveBeenCalledWith('/recipes');
@@ -242,7 +242,7 @@ describe('LoginPage', () => {
 
       // Only fill password
       await user.type(screen.getByLabelText(/^password/i), 'password123');
-      await user.click(screen.getByRole('button', { name: /sign in/i }));
+      await user.click(screen.getByRole('button', { name: /login/i }));
 
       // Form should not submit (navigate should not be called)
       await new Promise(resolve => setTimeout(resolve, 100));
