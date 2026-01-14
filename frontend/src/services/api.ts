@@ -44,8 +44,12 @@ apiClient.interceptors.response.use(
         case 401:
           // Unauthorized - redirect to login
           localStorage.removeItem('auth_token');
-          // Only redirect if not in test environment
-          if (import.meta.env.MODE !== 'test' && typeof window !== 'undefined') {
+          // Only redirect if not in test environment and not already on login page
+          if (
+            import.meta.env.MODE !== 'test' &&
+            typeof window !== 'undefined' &&
+            window.location.pathname !== '/login'
+          ) {
             window.location.href = '/login';
           }
           break;

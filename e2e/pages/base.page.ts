@@ -27,16 +27,16 @@ export class BasePage {
   }
 
   async getAuthToken(): Promise<string | null> {
-    return this.page.evaluate(() => localStorage.getItem('token'));
+    return this.page.evaluate(() => localStorage.getItem('auth_token'));
   }
 
   async setAuthToken(token: string) {
-    await this.page.evaluate((t) => localStorage.setItem('token', t), token);
+    await this.page.evaluate((t) => localStorage.setItem('auth_token', t), token);
   }
 
   async clearAuth() {
     await this.page.evaluate(() => {
-      localStorage.removeItem('token');
+      localStorage.removeItem('auth_token');
       localStorage.removeItem('user');
     });
   }

@@ -28,6 +28,8 @@ export class LoginPage extends BasePage {
   }
 
   async hasError(): Promise<boolean> {
+    // Wait for loading to complete first
+    await this.page.waitForSelector('button[type="submit"]:not(:disabled)', { timeout: 5000 }).catch(() => {});
     return this.errorMessage.isVisible();
   }
 

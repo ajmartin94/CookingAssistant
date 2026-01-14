@@ -66,7 +66,14 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       // Fetch user data
       const userData = await authApi.getCurrentUser();
       setUser(userData);
-    } catch {
+    } catch (error) {
+      // Extract error message from API response if available
+      if (error && typeof error === 'object' && 'response' in error) {
+        const axiosError = error as { response?: { data?: { detail?: string } } };
+        if (axiosError.response?.data?.detail) {
+          throw new Error(axiosError.response.data.detail);
+        }
+      }
       throw new Error('Login failed. Please check your credentials.');
     }
   };

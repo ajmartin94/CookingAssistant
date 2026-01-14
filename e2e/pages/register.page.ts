@@ -40,6 +40,9 @@ export class RegisterPage extends BasePage {
     }
     await this.fillField(this.passwordInput, password);
     await this.registerButton.click();
+
+    // Wait for navigation to recipes page (successful registration auto-logs in)
+    await this.page.waitForURL(/\/recipes/, { timeout: 10000 });
   }
 
   async hasError(): Promise<boolean> {
