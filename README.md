@@ -152,7 +152,7 @@ Test Coverage:
 - Context Tests: 30 tests
 - Overall: 98% passing (201/205)
 
-**E2E Tests (85+ tests - Playwright):**
+**E2E Tests (87 tests - Playwright):**
 ```bash
 npm run test:e2e         # Run all E2E tests (headless)
 npm run test:e2e:ui      # Run with interactive UI (recommended)
@@ -160,20 +160,24 @@ npm run test:e2e:headed  # Run with visible browser
 npm run test:e2e:debug   # Run in debug mode
 ```
 
-Test Coverage:
-- Authentication Tests: 13 tests (register, login, logout)
-- Recipe CRUD Tests: 45 tests (create, list, detail, edit, delete)
-- Workflow Tests: 3 tests (complete user journeys)
-- Error Handling Tests: 24 tests (network errors, validation)
-- Browsers: Chromium, Firefox, WebKit (Safari)
+**Current Test Results:** 17/87 passing (19.5%)
+- ✅ Authentication Tests: 9/13 passing (69%)
+  - Login (5/5) - 100%
+  - Registration (3/5) - 60%
+  - Logout (0/3) - Pending
+- ✅ Validation Tests: 8/18 passing (44%)
+- ❌ Recipe CRUD Tests: 0/54 - In progress
+- ✅ Error Handling: 1/22 passing (5%)
+- ❌ Workflow Tests: 0/3 - In progress
 
 **Test Infrastructure:**
-- Backend: pytest with async support, in-memory SQLite, comprehensive fixtures
-- Frontend: Vitest + React Testing Library + MSW (Mock Service Worker)
-- E2E: Playwright with real backend + frontend servers, cross-browser testing
+- Backend: FastAPI with async SQLite, E2E test mode with auto table recreation
+- Frontend: React with proper component testing selectors
+- E2E: Playwright with real backend + frontend servers, cross-browser testing (Chromium, Firefox, WebKit)
+- Page Object Model: Type-safe page abstractions for maintainability
 - CI/CD: Automated testing on push and pull requests
 
-**Total Test Count:** 437+ tests (352 unit/integration + 85 E2E)
+**Total Test Count:** 437+ tests (352 unit/integration + 87 E2E)
 
 For detailed E2E testing documentation, see [docs/E2E_TESTING.md](docs/E2E_TESTING.md)
 

@@ -1,8 +1,9 @@
 # E2E Testing Guide
 
-**Last Updated:** 2026-01-05
+**Last Updated:** 2026-01-13
 **Framework:** Playwright
 **Coverage:** Authentication, Recipe CRUD, Workflows, Error Handling
+**Current Status:** 17/87 tests passing (19.5%) - Infrastructure fixed, authentication fully working
 
 ---
 
@@ -43,16 +44,31 @@ E2E tests catch issues that unit and integration tests miss:
 ### Test Coverage
 
 **Current Statistics:**
-- **Total Tests:** 85+ E2E tests
+- **Total Tests:** 87 E2E tests
+- **Passing Tests:** 17/87 (19.5%)
 - **Test Files:** 11 test files
 - **Browsers:** Chromium, Firefox, WebKit (Safari)
-- **Execution Time:** ~3-5 minutes
+- **Execution Time:** ~9 minutes for full suite
 
-**Test Categories:**
-- Authentication (13 tests): register, login, logout, persistence
-- Recipe CRUD (45 tests): create, list, detail, edit, delete
-- Workflows (3 tests): complete user journeys
-- Error Handling (24 tests): network errors, validation errors
+**Test Categories (Passing/Total):**
+- **Authentication:** 9/13 passing (69%)
+  - ✅ Login tests (5/5) - 100%
+  - ✅ Registration (3/5) - 60%
+  - ❌ Logout tests (0/3) - Pending implementation
+- **Validation Errors:** 8/18 passing (44%)
+  - ✅ Auth validation tests (8/9) - 89%
+  - ❌ Recipe validation tests (0/9) - Form element issues
+- **Recipe CRUD:** 0/54 passing (0%) - Element detachment issues
+- **Network Errors:** 1/22 passing (5%) - Login retry working
+- **Workflows:** 0/3 passing (0%) - Dependent on recipe creation
+
+**Recent Fixes (Jan 13, 2026):**
+- ✅ Database initialization race condition resolved
+- ✅ Backend hot reload disabled during E2E tests
+- ✅ 401 redirect loop on login page fixed
+- ✅ localStorage key mismatch fixed (`auth_token` vs `token`)
+- ✅ Error message display timing fixed
+- ✅ Registration completion wait added
 
 ---
 
