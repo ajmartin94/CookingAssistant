@@ -3,7 +3,7 @@ import { render, screen, waitFor } from '../test/test-utils';
 import RecipeDetailPage from './RecipeDetailPage';
 import { server } from '../test/mocks/server';
 import { http, HttpResponse } from 'msw';
-import { mockRecipe } from '../test/mocks/data';
+import { mockBackendRecipe } from '../test/mocks/data';
 
 const BASE_URL = 'http://localhost:8000';
 
@@ -127,7 +127,7 @@ describe('RecipeDetailPage', () => {
       server.use(
         http.get(`${BASE_URL}/api/v1/recipes/:id`, () => {
           return HttpResponse.json(
-            mockRecipe({ imageUrl: 'https://example.com/recipe.jpg' })
+            mockBackendRecipe({ image_url: 'https://example.com/recipe.jpg' })
           );
         })
       );
@@ -144,7 +144,7 @@ describe('RecipeDetailPage', () => {
       server.use(
         http.get(`${BASE_URL}/api/v1/recipes/:id`, () => {
           return HttpResponse.json(
-            mockRecipe({ notes: 'These are some notes about the recipe' })
+            mockBackendRecipe({ notes: 'These are some notes about the recipe' })
           );
         })
       );
@@ -161,9 +161,9 @@ describe('RecipeDetailPage', () => {
       server.use(
         http.get(`${BASE_URL}/api/v1/recipes/:id`, () => {
           return HttpResponse.json(
-            mockRecipe({
-              sourceName: 'Recipe Website',
-              sourceUrl: 'https://example.com/recipe',
+            mockBackendRecipe({
+              source_name: 'Recipe Website',
+              source_url: 'https://example.com/recipe',
             })
           );
         })

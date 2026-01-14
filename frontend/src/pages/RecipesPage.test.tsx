@@ -3,7 +3,7 @@ import { render, screen, waitFor } from '../test/test-utils';
 import RecipesPage from './RecipesPage';
 import { server } from '../test/mocks/server';
 import { http, HttpResponse } from 'msw';
-import { mockRecipe } from '../test/mocks/data';
+import { mockBackendRecipe } from '../test/mocks/data';
 
 const BASE_URL = 'http://localhost:8000';
 
@@ -109,11 +109,11 @@ describe('RecipesPage', () => {
       server.use(
         http.get(`${BASE_URL}/api/v1/recipes`, () => {
           return HttpResponse.json({
-            data: [],
+            recipes: [],
             total: 0,
             page: 1,
-            pageSize: 12,
-            totalPages: 0,
+            page_size: 12,
+            total_pages: 0,
           });
         })
       );
@@ -129,11 +129,11 @@ describe('RecipesPage', () => {
       server.use(
         http.get(`${BASE_URL}/api/v1/recipes`, () => {
           return HttpResponse.json({
-            data: [],
+            recipes: [],
             total: 0,
             page: 1,
-            pageSize: 12,
-            totalPages: 0,
+            page_size: 12,
+            total_pages: 0,
           });
         })
       );
@@ -150,11 +150,11 @@ describe('RecipesPage', () => {
       server.use(
         http.get(`${BASE_URL}/api/v1/recipes`, () => {
           return HttpResponse.json({
-            data: [],
+            recipes: [],
             total: 0,
             page: 1,
-            pageSize: 12,
-            totalPages: 0,
+            page_size: 12,
+            total_pages: 0,
           });
         })
       );
@@ -208,11 +208,11 @@ describe('RecipesPage', () => {
           const url = new URL(request.url);
           capturedParams = url.searchParams;
           return HttpResponse.json({
-            data: [],
+            recipes: [],
             total: 0,
             page: 1,
-            pageSize: 12,
-            totalPages: 0,
+            page_size: 12,
+            total_pages: 0,
           });
         })
       );
@@ -248,11 +248,11 @@ describe('RecipesPage', () => {
           const url = new URL(request.url);
           capturedParams = url.searchParams;
           return HttpResponse.json({
-            data: [],
+            recipes: [],
             total: 0,
             page: 1,
-            pageSize: 12,
-            totalPages: 0,
+            page_size: 12,
+            total_pages: 0,
           });
         })
       );
@@ -275,11 +275,11 @@ describe('RecipesPage', () => {
           const url = new URL(request.url);
           capturedParams = url.searchParams;
           return HttpResponse.json({
-            data: [],
+            recipes: [],
             total: 0,
             page: 1,
-            pageSize: 12,
-            totalPages: 0,
+            page_size: 12,
+            total_pages: 0,
           });
         })
       );
@@ -302,11 +302,11 @@ describe('RecipesPage', () => {
           const url = new URL(request.url);
           capturedParams = url.searchParams;
           return HttpResponse.json({
-            data: [],
+            recipes: [],
             total: 0,
             page: 1,
-            pageSize: 12,
-            totalPages: 0,
+            page_size: 12,
+            total_pages: 0,
           });
         })
       );
@@ -362,11 +362,11 @@ describe('RecipesPage', () => {
       server.use(
         http.get(`${BASE_URL}/api/v1/recipes`, () => {
           return HttpResponse.json({
-            data: Array(12).fill(null).map((_, i) => mockRecipe({ id: String(i + 1) })),
+            recipes: Array(12).fill(null).map((_, i) => mockBackendRecipe({ id: String(i + 1) })),
             total: 30,
             page: 1,
-            pageSize: 12,
-            totalPages: 3,
+            page_size: 12,
+            total_pages: 3,
           });
         })
       );
@@ -384,11 +384,11 @@ describe('RecipesPage', () => {
       server.use(
         http.get(`${BASE_URL}/api/v1/recipes`, () => {
           return HttpResponse.json({
-            data: Array(12).fill(null).map((_, i) => mockRecipe({ id: String(i + 1) })),
+            recipes: Array(12).fill(null).map((_, i) => mockBackendRecipe({ id: String(i + 1) })),
             total: 30,
             page: 1,
-            pageSize: 12,
-            totalPages: 3,
+            page_size: 12,
+            total_pages: 3,
           });
         })
       );
@@ -409,11 +409,11 @@ describe('RecipesPage', () => {
           const url = new URL(request.url);
           capturedPage = url.searchParams.get('page');
           return HttpResponse.json({
-            data: Array(12).fill(null).map((_, i) => mockRecipe({ id: String(i + 1) })),
+            recipes: Array(12).fill(null).map((_, i) => mockBackendRecipe({ id: String(i + 1) })),
             total: 30,
             page: parseInt(capturedPage || '1'),
-            pageSize: 12,
-            totalPages: 3,
+            page_size: 12,
+            total_pages: 3,
           });
         })
       );

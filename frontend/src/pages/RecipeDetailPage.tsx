@@ -9,6 +9,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { recipeApi } from '../services/recipeApi';
 import type { Recipe } from '../types';
 import { useAuth } from '../contexts/AuthContext';
+import ShareModal from '../components/sharing/ShareModal';
 
 export default function RecipeDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -19,6 +20,7 @@ export default function RecipeDetailPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [deleting, setDeleting] = useState(false);
+  const [showShareModal, setShowShareModal] = useState(false);
 
   // Fetch recipe
   useEffect(() => {
@@ -161,6 +163,12 @@ export default function RecipeDetailPage() {
 
               {isOwner && (
                 <div className="flex gap-2">
+                  <button
+                    onClick={() => setShowShareModal(true)}
+                    className="px-4 py-2 border border-orange-600 text-orange-600 rounded-lg font-semibold hover:bg-orange-50 transition"
+                  >
+                    Share
+                  </button>
                   <button
                     onClick={() => navigate(`/recipes/${recipe.id}/edit`)}
                     className="px-4 py-2 bg-orange-600 text-white rounded-lg font-semibold hover:bg-orange-700 transition"
@@ -335,6 +343,14 @@ export default function RecipeDetailPage() {
             )}
           </div>
         </div>
+
+        {/* Share Modal */}
+        <ShareModal
+          isOpen={showShareModal}
+          onClose={() => setShowShareModal(false)}
+          recipeId={recipe.id}
+          itemName={recipe.title}
+        />
       </div>
     </div>
   );
