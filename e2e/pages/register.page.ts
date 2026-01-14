@@ -17,16 +17,18 @@ export class RegisterPage extends BasePage {
     this.fullNameInput = page.locator('input[name="full_name"]');
     this.passwordInput = page.locator('input[name="password"]');
     this.registerButton = page.locator('button[type="submit"]').filter({ hasText: 'Register' });
-    this.loginLink = page.locator('text=Login');
+    this.loginLink = page.locator('text=Sign in');
     this.errorMessage = page.locator('[role="alert"]');
   }
 
   async goto() {
     await super.goto('/login');
-    // Click the register toggle if on login page
-    const registerToggle = this.page.locator('text=Register');
+    // Click the register toggle if on login page (button text is "Sign up")
+    const registerToggle = this.page.locator('text=Sign up');
     if (await registerToggle.isVisible()) {
       await registerToggle.click();
+      // Wait for email field to appear (only visible in registration mode)
+      await this.emailInput.waitFor({ state: 'visible' });
     }
   }
 

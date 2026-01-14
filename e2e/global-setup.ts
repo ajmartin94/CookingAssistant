@@ -5,13 +5,6 @@ import path from 'path';
 async function globalSetup(config: FullConfig) {
   console.log('🚀 Starting E2E test environment setup...');
 
-  // Clean up old test database
-  const testDbPath = path.join(__dirname, '..', 'backend', 'cooking_assistant_test_e2e.db');
-  if (fs.existsSync(testDbPath)) {
-    console.log('🗑️  Removing old test database...');
-    fs.unlinkSync(testDbPath);
-  }
-
   // Wait for backend health check
   console.log('⏳ Waiting for backend server...');
   const browser = await chromium.launch();

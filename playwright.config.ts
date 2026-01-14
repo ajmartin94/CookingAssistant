@@ -54,6 +54,7 @@ export default defineConfig({
         DATABASE_URL: 'sqlite+aiosqlite:///./cooking_assistant_test_e2e.db',
         SECRET_KEY: 'test-secret-key-for-e2e-testing-only',
         CORS_ORIGINS: '["http://localhost:5173"]',
+        E2E_TESTING: 'true',
       },
     },
     {

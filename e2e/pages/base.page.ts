@@ -17,7 +17,6 @@ export class BasePage {
   }
 
   async fillField(locator: Locator, value: string) {
-    await locator.clear();
     await locator.fill(value);
   }
 

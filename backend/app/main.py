@@ -65,7 +65,27 @@ app.include_router(sharing.router, prefix="/api/v1")
 @app.on_event("startup")
 async def startup_event():
     """Initialize services on application startup"""
+    import os
     logger.info("Starting Cooking Assistant API...")
+
+    # Import all models to register them with Base.metadata
+    from app.models import User, Recipe, RecipeLibrary, RecipeShare  # noqa: F401
+    from app.database import init_db, engine, Base
+
+    # Log imported models to ensure they're registered
+    logger.info(f"Imported models: {User.__tablename__}, {Recipe.__tablename__}, {RecipeLibrary.__tablename__}, {RecipeShare.__tablename__}")
+
+    # For E2E testing, drop and recreate all tables to ensure clean state
+    if os.getenv("E2E_TESTING", "false").lower() == "true":
+        logger.info("E2E Testing mode: Dropping all tables...")
+        async with engine.begin() as conn:
+            await conn.run_sync(Base.metadata.drop_all)
+        logger.info("E2E Testing mode: Tables dropped")
+
+    # Initialize database tables if they don't exist
+    await init_db()
+    logger.info("Database tables initialized")
+
     logger.info("API documentation available at /api/docs")
     logger.info("Application startup complete")
 
@@ -79,7 +99,11 @@ async def shutdown_event():
 
 if __name__ == "__main__":
     import uvicorn
+    import os
+
+    # Disable reload during E2E testing to prevent database initialization issues
+    reload = os.getenv("E2E_TESTING", "false").lower() != "true"
 
     uvicorn.run(
-        "app.main:app", host="0.0.0.0", port=8000, reload=True, log_level="info"
+        "app.main:app", host="0.0.0.0", port=8000, reload=reload, log_level="info"
     )
