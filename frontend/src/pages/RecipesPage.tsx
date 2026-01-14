@@ -5,13 +5,12 @@
  */
 
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import RecipeCard from '../components/recipes/RecipeCard';
 import { recipeApi } from '../services/recipeApi';
 import type { Recipe } from '../types';
 
 export default function RecipesPage() {
-  const navigate = useNavigate();
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -77,12 +76,12 @@ export default function RecipesPage() {
         {/* Header */}
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-4xl font-bold text-gray-900">My Recipes</h1>
-          <button
-            onClick={() => navigate('/recipes/create')}
+          <Link
+            to="/recipes/create"
             className="px-4 py-2 bg-orange-600 text-white rounded-lg font-semibold hover:bg-orange-700 transition"
           >
             + New Recipe
-          </button>
+          </Link>
         </div>
 
         {/* Search and Filters */}
@@ -239,12 +238,12 @@ export default function RecipesPage() {
                 : 'Get started by creating a new recipe'}
             </p>
             <div className="mt-6">
-              <button
-                onClick={() => navigate('/recipes/create')}
+              <Link
+                to="/recipes/create"
                 className="px-4 py-2 bg-orange-600 text-white rounded-lg font-semibold hover:bg-orange-700 transition"
               >
                 + New Recipe
-              </button>
+              </Link>
             </div>
           </div>
         )}

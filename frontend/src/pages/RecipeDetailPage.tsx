@@ -153,10 +153,10 @@ export default function RecipeDetailPage() {
             {/* Title and Actions */}
             <div className="flex justify-between items-start mb-4">
               <div>
-                <h1 className="text-4xl font-bold text-gray-900 mb-2">
+                <h1 className="text-4xl font-bold text-gray-900 mb-2" data-testid="recipe-title">
                   {recipe.title}
                 </h1>
-                <p className="text-lg text-gray-600">{recipe.description}</p>
+                <p className="text-lg text-gray-600" data-testid="recipe-description">{recipe.description}</p>
               </div>
 
               {isOwner && (
@@ -195,8 +195,8 @@ export default function RecipeDetailPage() {
                   />
                 </svg>
                 <span>
-                  Prep: {recipe.prepTimeMinutes} min | Cook: {recipe.cookTimeMinutes}{' '}
-                  min | Total: {recipe.totalTimeMinutes} min
+                  Prep: <span data-testid="prep-time">{recipe.prepTimeMinutes}</span> min | Cook: <span data-testid="cook-time">{recipe.cookTimeMinutes}</span>{' '}
+                  min | Total: <span data-testid="total-time">{recipe.totalTimeMinutes}</span> min
                 </span>
               </div>
 
@@ -214,7 +214,7 @@ export default function RecipeDetailPage() {
                     d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
                   />
                 </svg>
-                <span>{recipe.servings} servings</span>
+                <span data-testid="servings">{recipe.servings} servings</span>
               </div>
             </div>
 
@@ -251,7 +251,7 @@ export default function RecipeDetailPage() {
               <h2 className="text-2xl font-bold text-gray-900 mb-4">
                 Ingredients
               </h2>
-              <ul className="space-y-2">
+              <ul className="space-y-2" data-testid="ingredients-list">
                 {recipe.ingredients.map((ingredient, index) => (
                   <li key={index} className="flex items-start gap-2">
                     <span className="text-orange-600 font-bold">•</span>
@@ -279,11 +279,12 @@ export default function RecipeDetailPage() {
               <h2 className="text-2xl font-bold text-gray-900 mb-4">
                 Instructions
               </h2>
-              <ol className="space-y-4">
+              <ol className="space-y-4" data-testid="instructions-list">
                 {recipe.instructions.map((instruction) => (
                   <li
                     key={instruction.stepNumber}
                     className="flex gap-4 items-start"
+                    data-testid="instruction"
                   >
                     <div className="flex-shrink-0 w-8 h-8 bg-orange-600 text-white rounded-full flex items-center justify-center font-bold">
                       {instruction.stepNumber}

@@ -25,6 +25,7 @@ const RecipeCard: React.FC<RecipeCardProps> = ({ recipe }) => {
     <Link
       to={`/recipes/${recipe.id}`}
       className="block bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 overflow-hidden"
+      data-testid="recipe-card"
     >
       {/* Recipe Image */}
       <div className="h-48 bg-gray-200 overflow-hidden">

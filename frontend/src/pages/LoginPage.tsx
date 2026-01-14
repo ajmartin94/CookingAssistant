@@ -47,7 +47,7 @@ export default function LoginPage() {
         </h2>
 
         {error && (
-          <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+          <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6" role="alert">
             <p className="text-sm text-red-800">{error}</p>
           </div>
         )}
@@ -60,6 +60,7 @@ export default function LoginPage() {
             <input
               type="text"
               id="username"
+              name="username"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
@@ -77,6 +78,7 @@ export default function LoginPage() {
                 <input
                   type="email"
                   id="email"
+                  name="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
@@ -92,6 +94,7 @@ export default function LoginPage() {
                 <input
                   type="text"
                   id="fullName"
+                  name="full_name"
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
@@ -108,6 +111,7 @@ export default function LoginPage() {
             <input
               type="password"
               id="password"
+              name="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
@@ -125,7 +129,7 @@ export default function LoginPage() {
             disabled={isLoading}
             className="w-full bg-orange-600 text-white py-2 rounded-lg font-semibold hover:bg-orange-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {isLoading ? 'Please wait...' : isLogin ? 'Sign In' : 'Sign Up'}
+            {isLoading ? 'Please wait...' : isLogin ? 'Login' : 'Register'}
           </button>
         </form>
 
