@@ -48,7 +48,7 @@ describe('CreateRecipePage', () => {
 
       // Check for form elements that come from RecipeForm
       expect(screen.getByPlaceholderText(/homemade margherita pizza/i)).toBeInTheDocument();
-      expect(screen.getByRole('button', { name: /save recipe/i })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /^create$/i })).toBeInTheDocument();
     });
   });
 
@@ -72,7 +72,7 @@ describe('CreateRecipePage', () => {
       // Simulate form submission by directly calling the onSubmit prop
       // This avoids the complexity of filling out the entire form
       const submitEvent = new Event('submit', { bubbles: true, cancelable: true });
-      const form = screen.getByRole('button', { name: /save recipe/i }).closest('form');
+      const form = screen.getByRole('button', { name: /^create$/i }).closest('form');
 
       if (form) {
         form.dispatchEvent(submitEvent);
