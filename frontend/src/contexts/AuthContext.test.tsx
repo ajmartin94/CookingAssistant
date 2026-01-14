@@ -13,7 +13,7 @@ const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
 // Test component that uses the auth context
 function TestComponent() {
-  const { currentUser, login, register, logout, isLoading } = useAuth();
+  const { user, login, register, logout, isLoading } = useAuth();
 
   if (isLoading) return <div>Loading...</div>;
 
@@ -37,9 +37,9 @@ function TestComponent() {
 
   return (
     <div>
-      {currentUser ? (
+      {user ? (
         <>
-          <div>Logged in as: {currentUser.username}</div>
+          <div>Logged in as: {user.username}</div>
           <button onClick={logout}>Logout</button>
         </>
       ) : (
@@ -64,8 +64,7 @@ describe('AuthContext', () => {
     expect(screen.getByText('Not logged in')).toBeInTheDocument();
   });
 
-  // TODO: These tests need investigation - async state updates with MSW aren't completing
-  it.skip('should handle login successfully', async () => {
+  it('should handle login successfully', async () => {
     const { user } = render(<TestComponent />);
 
     await user.click(screen.getByText('Login'));
@@ -75,7 +74,7 @@ describe('AuthContext', () => {
     });
   });
 
-  it.skip('should handle register successfully', async () => {
+  it('should handle register successfully', async () => {
     const { user } = render(<TestComponent />);
 
     await user.click(screen.getByText('Register'));
@@ -85,7 +84,7 @@ describe('AuthContext', () => {
     });
   });
 
-  it.skip('should handle logout', async () => {
+  it('should handle logout', async () => {
     localStorage.setItem('auth_token', 'mock-token');
 
     const { user } = render(<TestComponent />);
@@ -101,7 +100,7 @@ describe('AuthContext', () => {
     });
   });
 
-  it.skip('should load user from stored token on mount', async () => {
+  it('should load user from stored token on mount', async () => {
     localStorage.setItem('auth_token', 'mock-jwt-token');
 
     render(<TestComponent />);
