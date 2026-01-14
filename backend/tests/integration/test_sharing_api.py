@@ -51,29 +51,26 @@ async def test_create_share_not_owner(client: AsyncClient, auth_headers_user2, t
     assert response.status_code == 403
 
 
-@pytest.mark.skip(reason="Endpoint not fully implemented")
 @pytest.mark.asyncio
 async def test_list_user_shares(client: AsyncClient, auth_headers):
     """Test listing shares created by user"""
-    response = await client.get("/api/v1/shares", headers=auth_headers)
+    response = await client.get("/api/v1/shares/my-shares", headers=auth_headers)
 
     assert response.status_code == 200
     data = response.json()
     assert isinstance(data, list)
 
 
-@pytest.mark.skip(reason="Endpoint not fully implemented")
 @pytest.mark.asyncio
 async def test_list_received_shares(client: AsyncClient, auth_headers):
     """Test listing shares received by user"""
-    response = await client.get("/api/v1/shares/with-me", headers=auth_headers)
+    response = await client.get("/api/v1/shares/shared-with-me", headers=auth_headers)
 
     assert response.status_code == 200
     data = response.json()
     assert isinstance(data, list)
 
 
-@pytest.mark.skip(reason="Endpoint not fully implemented")
 @pytest.mark.asyncio
 async def test_get_shared_resource(client: AsyncClient, test_recipe, test_user, test_user2, test_db):
     """Test accessing shared resource via token"""
@@ -89,16 +86,15 @@ async def test_get_shared_resource(client: AsyncClient, test_recipe, test_user, 
     share = await create_share(test_db, share_data, test_user)
 
     # Access via token (no auth required)
-    response = await client.get(f"/api/v1/shares/{share.share_token}")
+    response = await client.get(f"/api/v1/shares/token/{share.share_token}/recipe")
 
     assert response.status_code == 200
 
 
-@pytest.mark.skip(reason="Endpoint not fully implemented")
 @pytest.mark.asyncio
 async def test_get_shared_resource_invalid_token(client: AsyncClient):
     """Test accessing with invalid share token"""
-    response = await client.get("/api/v1/shares/invalid-token")
+    response = await client.get("/api/v1/shares/token/invalid-token/recipe")
 
     assert response.status_code == 404
 
