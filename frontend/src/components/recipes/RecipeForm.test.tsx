@@ -48,7 +48,10 @@ describe('RecipeForm', () => {
       expect(numberInputs[1]).toHaveValue(0); // Cook time
       expect(numberInputs[2]).toHaveValue(4); // Servings
 
-      expect(screen.getByRole('combobox')).toHaveValue('medium');
+      // Two comboboxes: cuisine type and difficulty level
+      const comboboxes = screen.getAllByRole('combobox');
+      expect(comboboxes[0]).toHaveValue(''); // Cuisine type (empty default)
+      expect(comboboxes[1]).toHaveValue('medium'); // Difficulty level
     });
 
     it('should render form with initial data', () => {
@@ -62,8 +65,10 @@ describe('RecipeForm', () => {
       expect(numberInputs[1]).toHaveValue(30); // Cook time
       expect(numberInputs[2]).toHaveValue(4); // Servings
 
-      expect(screen.getByPlaceholderText(/italian, mexican, chinese/i)).toHaveValue('Italian');
-      expect(screen.getByRole('combobox')).toHaveValue('medium');
+      // Two comboboxes: cuisine type and difficulty level
+      const comboboxes = screen.getAllByRole('combobox');
+      expect(comboboxes[0]).toHaveValue('Italian'); // Cuisine type
+      expect(comboboxes[1]).toHaveValue('medium'); // Difficulty level
     });
 
     it('should render all form sections', () => {
@@ -135,16 +140,18 @@ describe('RecipeForm', () => {
 
     it('should update cuisine type', async () => {
       const { user } = render(<RecipeForm {...defaultProps} />);
-      const cuisineInput = screen.getByPlaceholderText(/italian, mexican, chinese/i);
+      const comboboxes = screen.getAllByRole('combobox');
+      const cuisineSelect = comboboxes[0]; // First combobox is cuisine type
 
-      await user.type(cuisineInput, 'Mexican');
+      await user.selectOptions(cuisineSelect, 'Mexican');
 
-      expect(cuisineInput).toHaveValue('Mexican');
+      expect(cuisineSelect).toHaveValue('Mexican');
     });
 
     it('should update difficulty level', async () => {
       const { user } = render(<RecipeForm {...defaultProps} />);
-      const difficultySelect = screen.getByRole('combobox');
+      const comboboxes = screen.getAllByRole('combobox');
+      const difficultySelect = comboboxes[1]; // Second combobox is difficulty level
 
       await user.selectOptions(difficultySelect, 'hard');
 
@@ -357,7 +364,7 @@ describe('RecipeForm', () => {
       const instructionInput = screen.getByPlaceholderText(/step 1 instructions/i);
       await user.type(instructionInput, 'Mix');
 
-      await user.click(screen.getByRole('button', { name: /save recipe/i }));
+      await user.click(screen.getByRole('button', { name: /^create$/i }));
 
       await waitFor(() => {
         expect(screen.getByText('Title is required')).toBeInTheDocument();
@@ -376,7 +383,7 @@ describe('RecipeForm', () => {
       const instructionInput = screen.getByPlaceholderText(/step 1 instructions/i);
       await user.type(instructionInput, 'Mix');
 
-      await user.click(screen.getByRole('button', { name: /save recipe/i }));
+      await user.click(screen.getByRole('button', { name: /^create$/i }));
 
       await waitFor(() => {
         expect(screen.getByText('Description is required')).toBeInTheDocument();
@@ -391,7 +398,7 @@ describe('RecipeForm', () => {
       const instructionInput = screen.getByPlaceholderText(/step 1 instructions/i);
       await user.type(instructionInput, 'Mix');
 
-      await user.click(screen.getByRole('button', { name: /save recipe/i }));
+      await user.click(screen.getByRole('button', { name: /^create$/i }));
 
       await waitFor(() => {
         expect(screen.getByText('At least one ingredient is required')).toBeInTheDocument();
@@ -408,7 +415,7 @@ describe('RecipeForm', () => {
       await user.type(ingredientName, 'flour');
       await user.type(ingredientAmount, '2');
 
-      await user.click(screen.getByRole('button', { name: /save recipe/i }));
+      await user.click(screen.getByRole('button', { name: /^create$/i }));
 
       await waitFor(() => {
         expect(screen.getByText('At least one instruction is required')).toBeInTheDocument();
@@ -434,7 +441,7 @@ describe('RecipeForm', () => {
       const instructionInput = screen.getByPlaceholderText(/step 1 instructions/i);
       await user.type(instructionInput, 'Mix all ingredients together');
 
-      await user.click(screen.getByRole('button', { name: /save recipe/i }));
+      await user.click(screen.getByRole('button', { name: /^create$/i }));
 
       await waitFor(() => {
         expect(mockOnSubmit).toHaveBeenCalledWith(
@@ -477,7 +484,7 @@ describe('RecipeForm', () => {
       const instructionInput = screen.getByPlaceholderText(/step 1 instructions/i);
       await user.type(instructionInput, 'Mix');
 
-      await user.click(screen.getByRole('button', { name: /save recipe/i }));
+      await user.click(screen.getByRole('button', { name: /^create$/i }));
 
       await waitFor(() => {
         expect(mockOnSubmit).toHaveBeenCalledWith(
@@ -510,7 +517,7 @@ describe('RecipeForm', () => {
       // Add empty instruction
       await user.click(screen.getByRole('button', { name: /add step/i }));
 
-      await user.click(screen.getByRole('button', { name: /save recipe/i }));
+      await user.click(screen.getByRole('button', { name: /^create$/i }));
 
       await waitFor(() => {
         expect(mockOnSubmit).toHaveBeenCalledWith(
@@ -529,7 +536,7 @@ describe('RecipeForm', () => {
       const { user } = render(<RecipeForm {...defaultProps} />);
 
       // Try to submit without filling required fields
-      await user.click(screen.getByRole('button', { name: /save recipe/i }));
+      await user.click(screen.getByRole('button', { name: /^create$/i }));
 
       await waitFor(() => {
         expect(screen.getByText('Title is required')).toBeInTheDocument();
