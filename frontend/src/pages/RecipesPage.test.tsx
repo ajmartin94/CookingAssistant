@@ -36,10 +36,10 @@ describe('RecipesPage', () => {
       expect(screen.getByRole('heading', { name: /my recipes/i })).toBeInTheDocument();
     });
 
-    it('should render New Recipe button', async () => {
+    it('should render New Recipe link', async () => {
       render(<RecipesPage />);
 
-      expect(screen.getByRole('button', { name: /new recipe/i })).toBeInTheDocument();
+      expect(screen.getByRole('link', { name: /new recipe/i })).toBeInTheDocument();
     });
 
     it('should render search input', async () => {
@@ -125,7 +125,7 @@ describe('RecipesPage', () => {
       });
     });
 
-    it('should show create recipe button in empty state', async () => {
+    it('should show create recipe link in empty state', async () => {
       server.use(
         http.get(`${BASE_URL}/api/v1/recipes`, () => {
           return HttpResponse.json({
@@ -141,8 +141,8 @@ describe('RecipesPage', () => {
       render(<RecipesPage />);
 
       await waitFor(() => {
-        const createButtons = screen.getAllByRole('button', { name: /new recipe/i });
-        expect(createButtons.length).toBeGreaterThan(0);
+        const createLinks = screen.getAllByRole('link', { name: /new recipe/i });
+        expect(createLinks.length).toBeGreaterThan(0);
       });
     });
 
@@ -434,13 +434,11 @@ describe('RecipesPage', () => {
   });
 
   describe('Navigation', () => {
-    it('should navigate to create recipe page when New Recipe button is clicked', async () => {
-      const { user } = render(<RecipesPage />);
+    it('should have correct href on New Recipe link', async () => {
+      render(<RecipesPage />);
 
-      const newRecipeButton = screen.getByRole('button', { name: /new recipe/i });
-      await user.click(newRecipeButton);
-
-      expect(mockNavigate).toHaveBeenCalledWith('/recipes/create');
+      const newRecipeLink = screen.getByRole('link', { name: /new recipe/i });
+      expect(newRecipeLink).toHaveAttribute('href', '/recipes/create');
     });
   });
 });
