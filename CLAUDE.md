@@ -78,12 +78,32 @@ Before starting ANY task:
    - Implement to pass tests
    - Update `--notes` with session discoveries
 
-4. **Complete Work**
+4. **Complete Work - COMMIT AFTER EVERY CLOSURE**
    ```bash
+   # Close the bead
    bd close <id> --reason="Summary of what was done"
+
+   # MANDATORY: Commit IMMEDIATELY after closing
+   git add .
+   git commit -m "type(scope): description
+
+   Closes: <id>
+
+   Co-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>"
+
+   # Sync beads state
    bd sync --from-main
-   git add . && git commit -m "..."
    ```
+
+> **MANDATORY: Commit After Every Bead Closure**
+>
+> Work is NOT complete until both:
+> 1. `bd close <id>` succeeds
+> 2. `git commit` captures the closure
+>
+> Never close multiple beads without committing between them.
+> Never end a session with uncommitted bead closures.
+> Each `bd close` = one `git commit`.
 
 
 ## 🔀 Git Conventions

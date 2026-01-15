@@ -50,6 +50,43 @@ bd create --title="Add user authentication" \
 **Issue types:** `task`, `bug`, `feature`, `epic`
 **Priorities:** 0-4 or P0-P4 (0=critical, 2=medium, 4=backlog)
 
+## Required Fields by Issue Type
+
+### Features (--type=feature)
+Features **MUST** include:
+- `--design`: Implementation plan with numbered steps
+- `--acceptance`: Definition of done with testable criteria
+
+### Bugs (--type=bug)
+Bugs **MUST** include:
+- `--description`: Steps to reproduce the bug
+- `--acceptance`: How to verify the fix works
+
+### Tasks (--type=task)
+Tasks **SHOULD** include:
+- `--description`: Clear scope of work
+
+### Example: Well-Formed Feature
+
+```bash
+bd create --title="Add recipe rating system" \
+  --type=feature \
+  --priority=2 \
+  --description="Users need to rate recipes 1-5 stars for recommendations" \
+  --design="## Implementation Plan
+1. Add rating column to recipes table (migration)
+2. Create POST /api/recipes/{id}/rate endpoint
+3. Add RatingStars component to RecipeDetail page
+4. Update RecipeCard to show average rating
+5. Add rating filter to recipe list" \
+  --acceptance="## Definition of Done
+- [ ] Database migration passes
+- [ ] API endpoint validates 1-5 range
+- [ ] Frontend shows clickable stars
+- [ ] Average updates on new rating
+- [ ] Unit tests for rating calculation"
+```
+
 ## Session Workflow
 
 ### Starting Work
@@ -74,6 +111,30 @@ bd close <id> --reason="Implemented JWT auth with refresh tokens.
 Tests: 15 unit, 4 integration, all passing.
 See design notes for architecture decisions."
 ```
+
+### MANDATORY: Commit After Closure
+
+**Every `bd close` MUST be immediately followed by a git commit:**
+
+```bash
+bd close <id> --reason="Implemented feature X with tests"
+
+# IMMEDIATELY after bd close:
+git add .
+git commit -m "feat(scope): implement feature X
+
+Closes: <id>
+
+Co-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>"
+```
+
+**Why this matters:**
+- Bead closures modify `.beads/issues.jsonl`
+- Without commit, closure exists only in local database
+- Team members won't see status changes until committed
+- Risk of data loss if local state is lost
+
+**Rule: One closure = One commit. Never batch closures.**
 
 ## Common Commands
 
