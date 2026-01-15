@@ -71,21 +71,21 @@ export default function RecipesPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-neutral-50">
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
         <div className="flex justify-between items-center mb-8">
-          <h1 className="text-4xl font-bold text-gray-900">My Recipes</h1>
+          <h1 className="text-4xl font-bold text-neutral-900">My Recipes</h1>
           <Link
             to="/recipes/create"
-            className="px-4 py-2 bg-orange-600 text-white rounded-lg font-semibold hover:bg-orange-700 transition"
+            className="px-4 py-2 bg-primary-500 text-white rounded-lg font-semibold hover:bg-primary-600 transition"
           >
             + New Recipe
           </Link>
         </div>
 
         {/* Search and Filters */}
-        <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+        <div className="bg-white rounded-lg shadow-soft p-6 mb-6">
           <form onSubmit={handleSearch} className="mb-4">
             <div className="flex gap-2">
               <input
@@ -93,11 +93,11 @@ export default function RecipesPage() {
                 placeholder="Search recipes..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                className="flex-1 px-4 py-2 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
               />
               <button
                 type="submit"
-                className="px-6 py-2 bg-orange-600 text-white rounded-lg font-semibold hover:bg-orange-700 transition"
+                className="px-6 py-2 bg-primary-500 text-white rounded-lg font-semibold hover:bg-primary-600 transition"
               >
                 Search
               </button>
@@ -106,7 +106,7 @@ export default function RecipesPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-neutral-700 mb-1">
                 Cuisine Type
               </label>
               <select
@@ -115,7 +115,7 @@ export default function RecipesPage() {
                   setCuisineFilter(e.target.value);
                   setCurrentPage(1);
                 }}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                className="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
               >
                 <option value="">All Cuisines</option>
                 <option value="Italian">Italian</option>
@@ -131,7 +131,7 @@ export default function RecipesPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-neutral-700 mb-1">
                 Difficulty
               </label>
               <select
@@ -140,7 +140,7 @@ export default function RecipesPage() {
                   setDifficultyFilter(e.target.value);
                   setCurrentPage(1);
                 }}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                className="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
               >
                 <option value="">All Levels</option>
                 <option value="easy">Easy</option>
@@ -150,7 +150,7 @@ export default function RecipesPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-neutral-700 mb-1">
                 Dietary Tags
               </label>
               <select
@@ -159,7 +159,7 @@ export default function RecipesPage() {
                   setDietaryFilter(e.target.value);
                   setCurrentPage(1);
                 }}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                className="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
               >
                 <option value="">All Diets</option>
                 <option value="vegetarian">Vegetarian</option>
@@ -176,7 +176,7 @@ export default function RecipesPage() {
           {(searchQuery || cuisineFilter || difficultyFilter || dietaryFilter) && (
             <button
               onClick={clearFilters}
-              className="mt-4 text-sm text-orange-600 hover:text-orange-700 font-medium"
+              className="mt-4 text-sm text-primary-500 hover:text-primary-600 font-medium"
             >
               Clear all filters
             </button>
@@ -186,14 +186,14 @@ export default function RecipesPage() {
         {/* Loading State */}
         {loading && (
           <div className="flex justify-center items-center py-12">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-600"></div>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500"></div>
           </div>
         )}
 
         {/* Error State */}
         {error && (
-          <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
-            <p className="text-red-800">
+          <div className="bg-error-50 border border-error-200 rounded-lg p-4 mb-6">
+            <p className="text-error-700">
               <strong>Error:</strong> {error}
             </p>
           </div>
@@ -201,7 +201,7 @@ export default function RecipesPage() {
 
         {/* Results Info */}
         {!loading && !error && (
-          <div className="mb-4 text-gray-600">
+          <div className="mb-4 text-neutral-600">
             Showing {recipes.length} of {total} recipes
           </div>
         )}
@@ -219,7 +219,7 @@ export default function RecipesPage() {
         {!loading && !error && recipes.length === 0 && (
           <div className="text-center py-12">
             <svg
-              className="mx-auto h-12 w-12 text-gray-400"
+              className="mx-auto h-12 w-12 text-neutral-400"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -231,8 +231,8 @@ export default function RecipesPage() {
                 d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
               />
             </svg>
-            <h3 className="mt-2 text-sm font-medium text-gray-900">No recipes found</h3>
-            <p className="mt-1 text-sm text-gray-500">
+            <h3 className="mt-2 text-sm font-medium text-neutral-900">No recipes found</h3>
+            <p className="mt-1 text-sm text-neutral-500">
               {searchQuery || cuisineFilter || difficultyFilter || dietaryFilter
                 ? 'Try adjusting your filters'
                 : 'Get started by creating a new recipe'}
@@ -240,7 +240,7 @@ export default function RecipesPage() {
             <div className="mt-6">
               <Link
                 to="/recipes/create"
-                className="px-4 py-2 bg-orange-600 text-white rounded-lg font-semibold hover:bg-orange-700 transition"
+                className="px-4 py-2 bg-primary-500 text-white rounded-lg font-semibold hover:bg-primary-600 transition"
               >
                 + New Recipe
               </Link>
@@ -254,19 +254,19 @@ export default function RecipesPage() {
             <button
               onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
               disabled={currentPage === 1}
-              className="px-4 py-2 border border-gray-300 rounded-lg font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-4 py-2 border border-neutral-300 rounded-lg font-medium text-neutral-700 hover:bg-neutral-50 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Previous
             </button>
 
-            <span className="px-4 py-2 text-gray-700">
+            <span className="px-4 py-2 text-neutral-700">
               Page {currentPage} of {totalPages}
             </span>
 
             <button
               onClick={() => setCurrentPage((prev) => Math.min(totalPages, prev + 1))}
               disabled={currentPage === totalPages}
-              className="px-4 py-2 border border-gray-300 rounded-lg font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-4 py-2 border border-neutral-300 rounded-lg font-medium text-neutral-700 hover:bg-neutral-50 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Next
             </button>

@@ -19,11 +19,11 @@ const LibraryCard: React.FC<LibraryCardProps> = ({ library, onDelete }) => {
   return (
     <Link
       to={`/libraries/${library.id}`}
-      className="block bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 overflow-hidden"
+      className="block bg-white rounded-lg shadow-soft hover:shadow-soft-md transition-shadow duration-200 overflow-hidden"
       data-testid="library-card"
     >
       {/* Library Header */}
-      <div className="h-32 bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center">
+      <div className="h-32 bg-gradient-to-br from-primary-400 to-primary-500 flex items-center justify-center">
         <svg
           className="w-16 h-16 text-white opacity-80"
           fill="none"
@@ -43,30 +43,30 @@ const LibraryCard: React.FC<LibraryCardProps> = ({ library, onDelete }) => {
       <div className="p-4">
         {/* Title */}
         <div className="flex items-start justify-between mb-2">
-          <h3 className="text-xl font-semibold text-gray-800 line-clamp-1">
+          <h3 className="text-xl font-semibold text-neutral-800 line-clamp-1">
             {library.name}
           </h3>
           {library.isPublic && (
-            <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded ml-2 flex-shrink-0">
+            <span className="text-xs bg-success-100 text-success-700 px-2 py-1 rounded ml-2 flex-shrink-0">
               Public
             </span>
           )}
         </div>
 
         {/* Description */}
-        <p className="text-gray-600 text-sm mb-4 line-clamp-2 min-h-[2.5rem]">
+        <p className="text-neutral-600 text-sm mb-4 line-clamp-2 min-h-[2.5rem]">
           {library.description || 'No description'}
         </p>
 
         {/* Actions */}
         <div className="flex items-center justify-between">
-          <span className="text-xs text-gray-500">
+          <span className="text-xs text-neutral-500">
             Created {new Date(library.createdAt).toLocaleDateString()}
           </span>
           {onDelete && (
             <button
               onClick={handleDelete}
-              className="text-red-600 hover:text-red-800 text-sm font-medium"
+              className="text-error-500 hover:text-error-700 text-sm font-medium"
               aria-label={`Delete ${library.name}`}
             >
               Delete

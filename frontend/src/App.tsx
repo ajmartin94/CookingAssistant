@@ -39,35 +39,35 @@ function AppContent() {
   return (
     <div className="min-h-screen">
       {/* Navigation Bar */}
-      <nav className="bg-white shadow-md">
+      <nav className="bg-white shadow-soft">
         <div className="container mx-auto px-4">
           <div className="flex justify-between items-center h-16">
-            <Link to="/" className="text-2xl font-bold text-orange-600">
+            <Link to="/" className="text-2xl font-bold text-primary-500">
               🍳 Cooking Assistant
             </Link>
             <div className="flex gap-6 items-center">
               {user && (
                 <>
-                  <Link to="/recipes" className="text-gray-700 hover:text-orange-600 font-medium">
+                  <Link to="/recipes" className="text-neutral-700 hover:text-primary-500 font-medium">
                     Recipes
                   </Link>
-                  <Link to="/libraries" className="text-gray-700 hover:text-orange-600 font-medium">
+                  <Link to="/libraries" className="text-neutral-700 hover:text-primary-500 font-medium">
                     Libraries
                   </Link>
                 </>
               )}
               {user ? (
                 <div className="flex items-center gap-4">
-                  <span className="text-gray-600">Hello, {user.username}!</span>
+                  <span className="text-neutral-600">Hello, {user.username}!</span>
                   <button
                     onClick={handleLogout}
-                    className="text-gray-700 hover:text-orange-600 font-medium"
+                    className="text-neutral-700 hover:text-primary-500 font-medium"
                   >
                     Logout
                   </button>
                 </div>
               ) : (
-                <Link to="/login" className="text-gray-700 hover:text-orange-600 font-medium">
+                <Link to="/login" className="text-neutral-700 hover:text-primary-500 font-medium">
                   Login
                 </Link>
               )}
@@ -97,10 +97,10 @@ function AppContent() {
 // Placeholder component for routes not yet implemented
 function ComingSoonPage({ title }: { title: string }) {
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
+    <div className="min-h-screen bg-neutral-50 flex items-center justify-center px-4">
       <div className="text-center">
-        <h1 className="text-4xl font-bold text-gray-900 mb-4">{title}</h1>
-        <p className="text-xl text-gray-600">Coming soon in future phases!</p>
+        <h1 className="text-4xl font-bold text-neutral-900 mb-4">{title}</h1>
+        <p className="text-xl text-neutral-600">Coming soon in future phases!</p>
       </div>
     </div>
   );

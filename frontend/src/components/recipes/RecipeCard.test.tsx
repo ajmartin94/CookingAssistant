@@ -103,7 +103,7 @@ describe('RecipeCard', () => {
 
       const difficultyBadge = screen.getByText('easy');
       expect(difficultyBadge).toBeInTheDocument();
-      expect(difficultyBadge).toHaveClass('bg-green-100', 'text-green-800');
+      expect(difficultyBadge).toHaveClass('bg-success-100', 'text-success-700');
     });
 
     it('should display difficulty level with medium styling', () => {
@@ -111,7 +111,7 @@ describe('RecipeCard', () => {
       render(<RecipeCard recipe={mediumRecipe} />);
 
       const difficultyBadge = screen.getByText('medium');
-      expect(difficultyBadge).toHaveClass('bg-yellow-100', 'text-yellow-800');
+      expect(difficultyBadge).toHaveClass('bg-warning-100', 'text-warning-700');
     });
 
     it('should display difficulty level with hard styling', () => {
@@ -119,7 +119,7 @@ describe('RecipeCard', () => {
       render(<RecipeCard recipe={hardRecipe} />);
 
       const difficultyBadge = screen.getByText('hard');
-      expect(difficultyBadge).toHaveClass('bg-red-100', 'text-red-800');
+      expect(difficultyBadge).toHaveClass('bg-error-100', 'text-error-700');
     });
   });
 
@@ -176,14 +176,14 @@ describe('RecipeCard', () => {
       const { container } = render(<RecipeCard recipe={mockRecipe} />);
 
       const link = container.querySelector('a');
-      expect(link).toHaveClass('hover:shadow-lg');
+      expect(link).toHaveClass('hover:shadow-soft-md');
     });
 
     it('should have rounded corners and shadow', () => {
       const { container } = render(<RecipeCard recipe={mockRecipe} />);
 
       const link = container.querySelector('a');
-      expect(link).toHaveClass('rounded-lg', 'shadow-md');
+      expect(link).toHaveClass('rounded-lg', 'shadow-soft');
     });
   });
 });

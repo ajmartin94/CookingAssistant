@@ -11,24 +11,24 @@ const RecipeCard: React.FC<RecipeCardProps> = ({ recipe }) => {
   const getDifficultyColor = (difficulty: string) => {
     switch (difficulty) {
       case 'easy':
-        return 'bg-green-100 text-green-800';
+        return 'bg-success-100 text-success-700';
       case 'medium':
-        return 'bg-yellow-100 text-yellow-800';
+        return 'bg-warning-100 text-warning-700';
       case 'hard':
-        return 'bg-red-100 text-red-800';
+        return 'bg-error-100 text-error-700';
       default:
-        return 'bg-gray-100 text-gray-800';
+        return 'bg-neutral-100 text-neutral-800';
     }
   };
 
   return (
     <Link
       to={`/recipes/${recipe.id}`}
-      className="block bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 overflow-hidden"
+      className="block bg-white rounded-lg shadow-soft hover:shadow-soft-md transition-shadow duration-200 overflow-hidden"
       data-testid="recipe-card"
     >
       {/* Recipe Image */}
-      <div className="h-48 bg-gray-200 overflow-hidden">
+      <div className="h-48 bg-neutral-200 overflow-hidden">
         {recipe.imageUrl ? (
           <img
             src={recipe.imageUrl}
@@ -36,7 +36,7 @@ const RecipeCard: React.FC<RecipeCardProps> = ({ recipe }) => {
             className="w-full h-full object-cover"
           />
         ) : (
-          <div className="w-full h-full flex items-center justify-center text-gray-400">
+          <div className="w-full h-full flex items-center justify-center text-neutral-400">
             <svg
               className="w-16 h-16"
               fill="none"
@@ -57,17 +57,17 @@ const RecipeCard: React.FC<RecipeCardProps> = ({ recipe }) => {
       {/* Recipe Info */}
       <div className="p-4">
         {/* Title */}
-        <h3 className="text-xl font-semibold text-gray-800 mb-2 line-clamp-2">
+        <h3 className="text-xl font-semibold text-neutral-800 mb-2 line-clamp-2">
           {recipe.title}
         </h3>
 
         {/* Description */}
-        <p className="text-gray-600 text-sm mb-3 line-clamp-2">
+        <p className="text-neutral-600 text-sm mb-3 line-clamp-2">
           {recipe.description}
         </p>
 
         {/* Time and Servings */}
-        <div className="flex items-center gap-4 text-sm text-gray-500 mb-3">
+        <div className="flex items-center gap-4 text-sm text-neutral-500 mb-3">
           <div className="flex items-center gap-1">
             <svg
               className="w-4 h-4"
@@ -130,7 +130,7 @@ const RecipeCard: React.FC<RecipeCardProps> = ({ recipe }) => {
               </span>
             ))}
             {recipe.dietaryTags.length > 3 && (
-              <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">
+              <span className="text-xs bg-neutral-100 text-neutral-600 px-2 py-1 rounded">
                 +{recipe.dietaryTags.length - 3} more
               </span>
             )}
