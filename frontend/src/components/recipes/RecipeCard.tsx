@@ -118,7 +118,7 @@ const RecipeCard: React.FC<RecipeCardProps> = ({
               </div>
               <div className="flex items-center gap-2">
                 {recipe.cuisineType && (
-                  <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">
+                  <span className="text-xs bg-secondary-100 text-secondary-700 px-2 py-1 rounded">
                     {recipe.cuisineType}
                   </span>
                 )}
@@ -279,7 +279,7 @@ const RecipeCard: React.FC<RecipeCardProps> = ({
         {/* Cuisine and Difficulty */}
         <div className="flex items-center gap-2 mb-3">
           {recipe.cuisineType && (
-            <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">
+            <span className="text-xs bg-secondary-100 text-secondary-700 px-2 py-1 rounded">
               {recipe.cuisineType}
             </span>
           )}
@@ -298,7 +298,7 @@ const RecipeCard: React.FC<RecipeCardProps> = ({
             {recipe.dietaryTags.slice(0, 3).map((tag) => (
               <span
                 key={tag}
-                className="text-xs bg-purple-100 text-purple-800 px-2 py-1 rounded"
+                className="text-xs bg-primary-100 text-primary-700 px-2 py-1 rounded"
               >
                 {tag}
               </span>

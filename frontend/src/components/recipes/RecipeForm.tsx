@@ -454,7 +454,7 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
               onClick={() => toggleDietaryTag(tag)}
               className={`px-4 py-2 rounded-lg font-medium transition ${
                 dietaryTags.includes(tag)
-                  ? 'bg-purple-600 text-white'
+                  ? 'bg-primary-500 text-white'
                   : 'bg-neutral-100 text-neutral-700 hover:bg-neutral-200'
               }`}
             >

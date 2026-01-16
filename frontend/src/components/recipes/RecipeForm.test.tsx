@@ -294,18 +294,18 @@ describe('RecipeForm', () => {
       const veganButton = screen.getByRole('button', { name: /^vegan$/i });
       await user.click(veganButton);
 
-      expect(veganButton).toHaveClass('bg-purple-600');
+      expect(veganButton).toHaveClass('bg-primary-500');
     });
 
     it('should toggle dietary tag off', async () => {
       const { user } = render(<RecipeForm {...defaultProps} initialData={mockInitialData} />);
 
       const vegetarianButton = screen.getByRole('button', { name: /^vegetarian$/i });
-      expect(vegetarianButton).toHaveClass('bg-purple-600');
+      expect(vegetarianButton).toHaveClass('bg-primary-500');
 
       await user.click(vegetarianButton);
 
-      expect(vegetarianButton).not.toHaveClass('bg-purple-600');
+      expect(vegetarianButton).not.toHaveClass('bg-primary-500');
       expect(vegetarianButton).toHaveClass('bg-neutral-100');
     });
 
@@ -315,8 +315,8 @@ describe('RecipeForm', () => {
       await user.click(screen.getByRole('button', { name: /^vegan$/i }));
       await user.click(screen.getByRole('button', { name: /^gluten-free$/i }));
 
-      expect(screen.getByRole('button', { name: /^vegan$/i })).toHaveClass('bg-purple-600');
-      expect(screen.getByRole('button', { name: /^gluten-free$/i })).toHaveClass('bg-purple-600');
+      expect(screen.getByRole('button', { name: /^vegan$/i })).toHaveClass('bg-primary-500');
+      expect(screen.getByRole('button', { name: /^gluten-free$/i })).toHaveClass('bg-primary-500');
     });
   });
 
