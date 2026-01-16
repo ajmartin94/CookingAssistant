@@ -159,6 +159,58 @@ bd create --title="Write tests for X" --type=task
 bd dep add <test-id> <feature-id>  # Tests blocked by feature
 ```
 
+## TDD Workflow (RED-GREEN-REVIEW)
+
+When working on **features** or **bugs**, follow this TDD workflow. Documentation and config changes may skip to completion.
+
+### RED Phase (Test First)
+
+1. **Read the issue's `--acceptance` criteria** - This IS your test plan
+2. **Write failing tests** that implement those criteria
+3. **Verify tests fail for the right reason** - Missing implementation, not syntax errors
+
+```bash
+# Backend
+cd backend && pytest tests/path/to/new_tests.py -v
+
+# Frontend
+cd frontend && npm test -- --run path/to/new.test.ts
+```
+
+### GREEN Phase (Implementation)
+
+1. **Write minimal code** to make tests pass
+2. **Run tests continuously** - Don't batch test runs
+3. **All tests must pass** before proceeding (new + existing)
+
+### REVIEW Phase (Before Closing)
+
+Spawn a review agent to verify:
+- Implementation matches `--design` field
+- All `--acceptance` criteria satisfied
+- No scope creep (unplanned features)
+- Tests are meaningful, not just for coverage
+
+```
+Task tool with subagent_type="general-purpose":
+"Review changes for bead <id>. Verify:
+1. Implementation matches --design
+2. All --acceptance criteria satisfied
+3. Code follows project conventions"
+```
+
+### Documenting Test Results
+
+When closing, document what was tested:
+
+```bash
+bd close <id> --reason="Implemented recipe rating system.
+Tests: 8 unit (rating calc, validation), 2 integration (API endpoints).
+All passing. Edge cases: 0 ratings, max ratings handled."
+```
+
+---
+
 ## Session Close Protocol
 
 Before ending a session:
