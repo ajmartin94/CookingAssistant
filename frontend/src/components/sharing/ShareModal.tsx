@@ -190,8 +190,8 @@ const ShareModal: React.FC<ShareModalProps> = ({
               </div>
             </div>
 
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
-              <p className="text-blue-800 text-sm">
+            <div className="bg-secondary-50 border border-secondary-200 rounded-lg p-3 mb-4">
+              <p className="text-secondary-700 text-sm">
                 Anyone with this link can {permission === 'view' ? 'view' : 'view and edit'} this {recipeId ? 'recipe' : 'library'}.
               </p>
             </div>

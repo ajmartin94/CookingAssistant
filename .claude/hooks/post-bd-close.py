@@ -22,8 +22,8 @@ def main():
         if re.search(r'\bbd\s+close\b', command):
             # Return a reminder message
             result = {
-                "decision": "allow",
-                "message": """
+                "decision": "approve",
+                "systemMessage": """
 ========================================
 BEAD CLOSED - COMMIT REQUIRED
 ========================================
@@ -45,11 +45,11 @@ One closure = One commit. This is MANDATORY.
             print(json.dumps(result))
         else:
             # Not a bd close, allow silently
-            print(json.dumps({"decision": "allow"}))
+            print(json.dumps({"decision": "approve"}))
 
     except Exception as e:
         # On error, allow the tool but log
-        print(json.dumps({"decision": "allow"}), file=sys.stdout)
+        print(json.dumps({"decision": "approve"}), file=sys.stdout)
         print(f"Hook error: {e}", file=sys.stderr)
 
 

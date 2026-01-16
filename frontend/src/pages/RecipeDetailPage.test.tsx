@@ -93,7 +93,7 @@ describe('RecipeDetailPage', () => {
 
       await waitFor(() => {
         const difficultyBadge = screen.getByText(/easy/i); // mockRecipe has difficultyLevel: 'easy'
-        expect(difficultyBadge).toHaveClass('bg-green-100', 'text-green-800');
+        expect(difficultyBadge).toHaveClass('bg-success-100', 'text-success-700');
       });
     });
 

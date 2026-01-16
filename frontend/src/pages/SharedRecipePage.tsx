@@ -96,8 +96,8 @@ export default function SharedRecipePage() {
     <div className="min-h-screen bg-neutral-50">
       <div className="container mx-auto px-4 py-8">
         {/* Shared Banner */}
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
-          <p className="text-blue-800 text-center">
+        <div className="bg-secondary-50 border border-secondary-200 rounded-lg p-4 mb-6">
+          <p className="text-secondary-700 text-center">
             This recipe was shared with you via a public link
           </p>
         </div>
@@ -139,7 +139,7 @@ export default function SharedRecipePage() {
             {/* Tags */}
             <div className="flex flex-wrap gap-2">
               {recipe.cuisineType && (
-                <span className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">
+                <span className="px-3 py-1 bg-secondary-100 text-secondary-700 rounded-full text-sm font-medium">
                   {recipe.cuisineType}
                 </span>
               )}
@@ -147,7 +147,7 @@ export default function SharedRecipePage() {
                 {recipe.difficultyLevel}
               </span>
               {recipe.dietaryTags.map((tag) => (
-                <span key={tag} className="px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-sm font-medium">
+                <span key={tag} className="px-3 py-1 bg-primary-100 text-primary-700 rounded-full text-sm font-medium">
                   {tag}
                 </span>
               ))}
@@ -200,9 +200,9 @@ export default function SharedRecipePage() {
             </div>
 
             {recipe.notes && (
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 mt-6">
-                <h3 className="text-lg font-semibold text-blue-900 mb-2">Notes</h3>
-                <p className="text-blue-800">{recipe.notes}</p>
+              <div className="bg-secondary-50 border border-secondary-200 rounded-lg p-6 mt-6">
+                <h3 className="text-lg font-semibold text-secondary-900 mb-2">Notes</h3>
+                <p className="text-secondary-700">{recipe.notes}</p>
               </div>
             )}
           </div>

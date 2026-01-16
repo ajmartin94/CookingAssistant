@@ -58,17 +58,16 @@ describe('RecipesPage', () => {
   });
 
   describe('Loading State', () => {
-    it('should show loading spinner while fetching recipes', async () => {
+    it('should show loading skeletons while fetching recipes', async () => {
       const { container } = render(<RecipesPage />);
 
-      // Loading spinner should be visible initially (check for the spinner div)
-      const spinner = container.querySelector('.animate-spin');
-      expect(spinner).toBeInTheDocument();
+      // Loading skeletons should be visible initially
+      const skeletons = container.querySelectorAll('.animate-pulse');
+      expect(skeletons.length).toBeGreaterThan(0);
 
       // Wait for loading to complete
       await waitFor(() => {
-        const spinnerAfter = container.querySelector('.animate-spin');
-        expect(spinnerAfter).not.toBeInTheDocument();
+        expect(screen.queryByText(/showing/i)).toBeInTheDocument();
       });
     });
   });
@@ -325,7 +324,7 @@ describe('RecipesPage', () => {
       const { user } = render(<RecipesPage />);
 
       // Initially, clear button should not be visible
-      expect(screen.queryByText(/clear all filters/i)).not.toBeInTheDocument();
+      expect(screen.queryByText(/clear all/i)).not.toBeInTheDocument();
 
       // Apply a filter
       const selects = screen.getAllByRole('combobox');
@@ -333,11 +332,11 @@ describe('RecipesPage', () => {
 
       // Clear button should now be visible
       await waitFor(() => {
-        expect(screen.getByText(/clear all filters/i)).toBeInTheDocument();
+        expect(screen.getByText(/clear all/i)).toBeInTheDocument();
       });
     });
 
-    it('should clear all filters when clear button is clicked', async () => {
+    it('should clear all when clear button is clicked', async () => {
       const { user } = render(<RecipesPage />);
 
       // Apply multiple filters
@@ -347,7 +346,7 @@ describe('RecipesPage', () => {
       await user.type(screen.getByPlaceholderText(/search recipes/i), 'pasta');
 
       // Click clear filters
-      await user.click(screen.getByText(/clear all filters/i));
+      await user.click(screen.getByText(/clear all/i));
 
       // Filters should be reset
       const selectsAfter = screen.getAllByRole('combobox');
@@ -374,7 +373,8 @@ describe('RecipesPage', () => {
       render(<RecipesPage />);
 
       await waitFor(() => {
-        expect(screen.getByText(/page 1 of 3/i)).toBeInTheDocument();
+        // Check numbered pagination buttons exist
+        expect(screen.getByRole('button', { name: '1' })).toBeInTheDocument();
         expect(screen.getByRole('button', { name: /previous/i })).toBeInTheDocument();
         expect(screen.getByRole('button', { name: /next/i })).toBeInTheDocument();
       });
@@ -421,7 +421,8 @@ describe('RecipesPage', () => {
       const { user } = render(<RecipesPage />);
 
       await waitFor(() => {
-        expect(screen.getByText(/page 1 of 3/i)).toBeInTheDocument();
+        // Wait for pagination to be visible
+        expect(screen.getByRole('button', { name: '1' })).toBeInTheDocument();
       });
 
       const nextButton = screen.getByRole('button', { name: /next/i });
