@@ -1,19 +1,39 @@
 /**
  * Recipes Page
  *
- * Main recipes listing page
+ * Main recipes listing page with view modes, sorting, filters, and favorites
  */
 
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import RecipeCard from '../components/recipes/RecipeCard';
-import { recipeApi } from '../services/recipeApi';
+import { recipeApi, favoriteRecipe, unfavoriteRecipe, getFavorites } from '../services/recipeApi';
+import { Button, Badge, Select, Skeleton } from '../components/ui';
 import type { Recipe } from '../types';
 
+type ViewMode = 'grid' | 'list' | 'compact';
+type SortOption = 'newest' | 'oldest' | 'a-z' | 'z-a' | 'cook-time' | 'difficulty';
+
+// Persist view mode preference
+const getStoredViewMode = (): ViewMode => {
+  const stored = localStorage.getItem('recipes_view_mode');
+  return (stored as ViewMode) || 'grid';
+};
+
+const setStoredViewMode = (mode: ViewMode) => {
+  localStorage.setItem('recipes_view_mode', mode);
+};
+
 export default function RecipesPage() {
+  const navigate = useNavigate();
   const [recipes, setRecipes] = useState<Recipe[]>([]);
+  const [favoriteIds, setFavoriteIds] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  // View and sort states
+  const [viewMode, setViewMode] = useState<ViewMode>(getStoredViewMode);
+  const [sortBy, setSortBy] = useState<SortOption>('newest');
 
   // Filter states
   const [searchQuery, setSearchQuery] = useState('');
@@ -25,6 +45,19 @@ export default function RecipesPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [total, setTotal] = useState(0);
+
+  // Fetch favorites on mount
+  useEffect(() => {
+    const fetchFavorites = async () => {
+      try {
+        const favs = await getFavorites();
+        setFavoriteIds(new Set(favs.data.map(r => r.id)));
+      } catch {
+        // Silently fail - favorites are optional
+      }
+    };
+    fetchFavorites();
+  }, []);
 
   // Fetch recipes
   useEffect(() => {
@@ -42,7 +75,31 @@ export default function RecipesPage() {
           dietary_tag: dietaryFilter || undefined,
         });
 
-        setRecipes(response.data);
+        // Sort recipes client-side
+        let sortedRecipes = [...response.data];
+        switch (sortBy) {
+          case 'oldest':
+            sortedRecipes.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
+            break;
+          case 'newest':
+            sortedRecipes.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+            break;
+          case 'a-z':
+            sortedRecipes.sort((a, b) => a.title.localeCompare(b.title));
+            break;
+          case 'z-a':
+            sortedRecipes.sort((a, b) => b.title.localeCompare(a.title));
+            break;
+          case 'cook-time':
+            sortedRecipes.sort((a, b) => a.totalTimeMinutes - b.totalTimeMinutes);
+            break;
+          case 'difficulty':
+            const difficultyOrder = { easy: 1, medium: 2, hard: 3 };
+            sortedRecipes.sort((a, b) => difficultyOrder[a.difficultyLevel] - difficultyOrder[b.difficultyLevel]);
+            break;
+        }
+
+        setRecipes(sortedRecipes);
         setTotalPages(response.totalPages);
         setTotal(response.total);
       } catch (err) {
@@ -53,12 +110,18 @@ export default function RecipesPage() {
     };
 
     fetchRecipes();
-  }, [currentPage, searchQuery, cuisineFilter, difficultyFilter, dietaryFilter]);
+  }, [currentPage, searchQuery, cuisineFilter, difficultyFilter, dietaryFilter, sortBy]);
+
+  // Handle view mode change
+  const handleViewModeChange = (mode: ViewMode) => {
+    setViewMode(mode);
+    setStoredViewMode(mode);
+  };
 
   // Handle search
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    setCurrentPage(1); // Reset to first page when searching
+    setCurrentPage(1);
   };
 
   // Clear filters
@@ -70,11 +133,127 @@ export default function RecipesPage() {
     setCurrentPage(1);
   };
 
+  // Remove single filter
+  const removeFilter = (filter: 'search' | 'cuisine' | 'difficulty' | 'dietary') => {
+    switch (filter) {
+      case 'search':
+        setSearchQuery('');
+        break;
+      case 'cuisine':
+        setCuisineFilter('');
+        break;
+      case 'difficulty':
+        setDifficultyFilter('');
+        break;
+      case 'dietary':
+        setDietaryFilter('');
+        break;
+    }
+    setCurrentPage(1);
+  };
+
+  // Toggle favorite
+  const handleToggleFavorite = async (recipeId: string, e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    const isFavorited = favoriteIds.has(recipeId);
+
+    // Optimistic update
+    setFavoriteIds(prev => {
+      const next = new Set(prev);
+      if (isFavorited) {
+        next.delete(recipeId);
+      } else {
+        next.add(recipeId);
+      }
+      return next;
+    });
+
+    try {
+      if (isFavorited) {
+        await unfavoriteRecipe(recipeId);
+      } else {
+        await favoriteRecipe(recipeId);
+      }
+    } catch {
+      // Revert on error
+      setFavoriteIds(prev => {
+        const next = new Set(prev);
+        if (isFavorited) {
+          next.add(recipeId);
+        } else {
+          next.delete(recipeId);
+        }
+        return next;
+      });
+    }
+  };
+
+  // Handle recipe actions
+  const handleEdit = (recipeId: string, e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    navigate(`/recipes/${recipeId}/edit`);
+  };
+
+  const handleDelete = async (recipeId: string, e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (window.confirm('Are you sure you want to delete this recipe?')) {
+      try {
+        await recipeApi.deleteRecipe(recipeId);
+        setRecipes(prev => prev.filter(r => r.id !== recipeId));
+        setTotal(prev => prev - 1);
+      } catch {
+        // Show error
+      }
+    }
+  };
+
+  // Active filters
+  const activeFilters = [
+    searchQuery && { key: 'search', label: `"${searchQuery}"` },
+    cuisineFilter && { key: 'cuisine', label: cuisineFilter },
+    difficultyFilter && { key: 'difficulty', label: difficultyFilter },
+    dietaryFilter && { key: 'dietary', label: dietaryFilter },
+  ].filter(Boolean) as { key: string; label: string }[];
+
+  // Generate page numbers for pagination
+  const getPageNumbers = () => {
+    const pages: (number | string)[] = [];
+    const showPages = 5;
+
+    if (totalPages <= showPages + 2) {
+      for (let i = 1; i <= totalPages; i++) pages.push(i);
+    } else {
+      pages.push(1);
+      if (currentPage > 3) pages.push('...');
+
+      const start = Math.max(2, currentPage - 1);
+      const end = Math.min(totalPages - 1, currentPage + 1);
+
+      for (let i = start; i <= end; i++) pages.push(i);
+
+      if (currentPage < totalPages - 2) pages.push('...');
+      pages.push(totalPages);
+    }
+
+    return pages;
+  };
+
+  // Grid class based on view mode
+  const gridClass = viewMode === 'grid'
+    ? 'grid md:grid-cols-2 lg:grid-cols-3 gap-6'
+    : viewMode === 'list'
+      ? 'flex flex-col gap-4'
+      : 'grid md:grid-cols-2 lg:grid-cols-4 gap-4';
+
   return (
     <div className="min-h-screen bg-neutral-50">
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
-        <div className="flex justify-between items-center mb-8">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
           <h1 className="text-4xl font-bold text-neutral-900">My Recipes</h1>
           <Link
             to="/recipes/create"
@@ -173,20 +352,104 @@ export default function RecipesPage() {
             </div>
           </div>
 
-          {(searchQuery || cuisineFilter || difficultyFilter || dietaryFilter) && (
-            <button
-              onClick={clearFilters}
-              className="mt-4 text-sm text-primary-500 hover:text-primary-600 font-medium"
-            >
-              Clear all filters
-            </button>
+          {/* Active Filter Badges */}
+          {activeFilters.length > 0 && (
+            <div className="mt-4 flex flex-wrap gap-2 items-center">
+              <span className="text-sm text-neutral-600">Active filters:</span>
+              {activeFilters.map(({ key, label }) => (
+                <Badge
+                  key={key}
+                  variant="info"
+                  className="flex items-center gap-1"
+                >
+                  {label}
+                  <button
+                    onClick={() => removeFilter(key as 'search' | 'cuisine' | 'difficulty' | 'dietary')}
+                    className="ml-1 hover:text-primary-900"
+                    aria-label={`Remove ${label} filter`}
+                  >
+                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                </Badge>
+              ))}
+              <button
+                onClick={clearFilters}
+                className="text-sm text-primary-500 hover:text-primary-600 font-medium"
+              >
+                Clear all
+              </button>
+            </div>
           )}
+        </div>
+
+        {/* View Controls */}
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+          <div className="text-neutral-600">
+            {!loading && !error && `Showing ${recipes.length} of ${total} recipes`}
+          </div>
+
+          <div className="flex items-center gap-4">
+            {/* Sort Dropdown */}
+            <div className="flex items-center gap-2">
+              <label className="text-sm text-neutral-600">Sort:</label>
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value as SortOption)}
+                className="px-3 py-1.5 border border-neutral-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
+              >
+                <option value="newest">Newest</option>
+                <option value="oldest">Oldest</option>
+                <option value="a-z">A-Z</option>
+                <option value="z-a">Z-A</option>
+                <option value="cook-time">Cook Time</option>
+                <option value="difficulty">Difficulty</option>
+              </select>
+            </div>
+
+            {/* View Mode Toggle */}
+            <div className="flex items-center border border-neutral-300 rounded-lg overflow-hidden">
+              <button
+                onClick={() => handleViewModeChange('grid')}
+                className={`p-2 ${viewMode === 'grid' ? 'bg-primary-500 text-white' : 'bg-white text-neutral-600 hover:bg-neutral-50'}`}
+                aria-label="Grid view"
+                title="Grid view"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+                </svg>
+              </button>
+              <button
+                onClick={() => handleViewModeChange('list')}
+                className={`p-2 ${viewMode === 'list' ? 'bg-primary-500 text-white' : 'bg-white text-neutral-600 hover:bg-neutral-50'}`}
+                aria-label="List view"
+                title="List view"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+              </button>
+              <button
+                onClick={() => handleViewModeChange('compact')}
+                className={`p-2 ${viewMode === 'compact' ? 'bg-primary-500 text-white' : 'bg-white text-neutral-600 hover:bg-neutral-50'}`}
+                aria-label="Compact view"
+                title="Compact view"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 5a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM14 5a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1V5zM4 15a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1H5a1 1 0 01-1-1v-4zM14 15a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4z" />
+                </svg>
+              </button>
+            </div>
+          </div>
         </div>
 
         {/* Loading State */}
         {loading && (
-          <div className="flex justify-center items-center py-12">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500"></div>
+          <div className={gridClass}>
+            {Array(6).fill(null).map((_, i) => (
+              <Skeleton key={i} className="h-72 rounded-lg" />
+            ))}
           </div>
         )}
 
@@ -199,18 +462,19 @@ export default function RecipesPage() {
           </div>
         )}
 
-        {/* Results Info */}
-        {!loading && !error && (
-          <div className="mb-4 text-neutral-600">
-            Showing {recipes.length} of {total} recipes
-          </div>
-        )}
-
-        {/* Recipes Grid */}
+        {/* Recipes Grid/List */}
         {!loading && !error && recipes.length > 0 && (
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+          <div className={`${gridClass} mb-8`}>
             {recipes.map((recipe) => (
-              <RecipeCard key={recipe.id} recipe={recipe} />
+              <RecipeCard
+                key={recipe.id}
+                recipe={recipe}
+                viewMode={viewMode}
+                isFavorited={favoriteIds.has(recipe.id)}
+                onToggleFavorite={(e) => handleToggleFavorite(recipe.id, e)}
+                onEdit={(e) => handleEdit(recipe.id, e)}
+                onDelete={(e) => handleDelete(recipe.id, e)}
+              />
             ))}
           </div>
         )}
@@ -233,7 +497,7 @@ export default function RecipesPage() {
             </svg>
             <h3 className="mt-2 text-sm font-medium text-neutral-900">No recipes found</h3>
             <p className="mt-1 text-sm text-neutral-500">
-              {searchQuery || cuisineFilter || difficultyFilter || dietaryFilter
+              {activeFilters.length > 0
                 ? 'Try adjusting your filters'
                 : 'Get started by creating a new recipe'}
             </p>
@@ -250,27 +514,50 @@ export default function RecipesPage() {
 
         {/* Pagination */}
         {!loading && !error && totalPages > 1 && (
-          <div className="flex justify-center items-center gap-2">
+          <nav className="flex justify-center items-center gap-1" aria-label="Pagination">
             <button
               onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
               disabled={currentPage === 1}
-              className="px-4 py-2 border border-neutral-300 rounded-lg font-medium text-neutral-700 hover:bg-neutral-50 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-3 py-2 border border-neutral-300 rounded-lg font-medium text-neutral-700 hover:bg-neutral-50 disabled:opacity-50 disabled:cursor-not-allowed"
+              aria-label="Previous page"
             >
-              Previous
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              </svg>
             </button>
 
-            <span className="px-4 py-2 text-neutral-700">
-              Page {currentPage} of {totalPages}
-            </span>
+            {getPageNumbers().map((page, index) => (
+              typeof page === 'number' ? (
+                <button
+                  key={index}
+                  onClick={() => setCurrentPage(page)}
+                  className={`px-4 py-2 rounded-lg font-medium transition ${
+                    currentPage === page
+                      ? 'bg-primary-500 text-white'
+                      : 'border border-neutral-300 text-neutral-700 hover:bg-neutral-50'
+                  }`}
+                  aria-current={currentPage === page ? 'page' : undefined}
+                >
+                  {page}
+                </button>
+              ) : (
+                <span key={index} className="px-2 text-neutral-400">
+                  {page}
+                </span>
+              )
+            ))}
 
             <button
               onClick={() => setCurrentPage((prev) => Math.min(totalPages, prev + 1))}
               disabled={currentPage === totalPages}
-              className="px-4 py-2 border border-neutral-300 rounded-lg font-medium text-neutral-700 hover:bg-neutral-50 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-3 py-2 border border-neutral-300 rounded-lg font-medium text-neutral-700 hover:bg-neutral-50 disabled:opacity-50 disabled:cursor-not-allowed"
+              aria-label="Next page"
             >
-              Next
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
             </button>
-          </div>
+          </nav>
         )}
       </div>
     </div>
