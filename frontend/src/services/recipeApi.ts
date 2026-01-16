@@ -75,17 +75,21 @@ const transformRecipe = (backend: BackendRecipe): Recipe => ({
   id: backend.id,
   title: backend.title,
   description: backend.description,
-  ingredients: backend.ingredients.map((ing): Ingredient => ({
-    name: ing.name,
-    amount: ing.amount,
-    unit: ing.unit,
-    notes: ing.notes,
-  })),
-  instructions: backend.instructions.map((inst): Instruction => ({
-    stepNumber: inst.step_number,
-    instruction: inst.instruction,
-    durationMinutes: inst.duration_minutes,
-  })),
+  ingredients: backend.ingredients.map(
+    (ing): Ingredient => ({
+      name: ing.name,
+      amount: ing.amount,
+      unit: ing.unit,
+      notes: ing.notes,
+    })
+  ),
+  instructions: backend.instructions.map(
+    (inst): Instruction => ({
+      stepNumber: inst.step_number,
+      instruction: inst.instruction,
+      durationMinutes: inst.duration_minutes,
+    })
+  ),
   prepTimeMinutes: backend.prep_time_minutes,
   cookTimeMinutes: backend.cook_time_minutes,
   totalTimeMinutes: backend.total_time_minutes,

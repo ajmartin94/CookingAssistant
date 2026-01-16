@@ -84,10 +84,7 @@ describe('recipeApi', () => {
     it('should handle API errors', async () => {
       server.use(
         http.get(`${BASE_URL}/api/v1/recipes`, () => {
-          return HttpResponse.json(
-            { detail: 'Server error' },
-            { status: 500 }
-          );
+          return HttpResponse.json({ detail: 'Server error' }, { status: 500 });
         })
       );
 
@@ -129,10 +126,7 @@ describe('recipeApi', () => {
     it('should handle recipe not found error', async () => {
       server.use(
         http.get(`${BASE_URL}/api/v1/recipes/:id`, () => {
-          return HttpResponse.json(
-            { detail: 'Recipe not found' },
-            { status: 404 }
-          );
+          return HttpResponse.json({ detail: 'Recipe not found' }, { status: 404 });
         })
       );
 
@@ -145,12 +139,8 @@ describe('recipeApi', () => {
       const newRecipe = {
         title: 'New Recipe',
         description: 'A delicious new recipe',
-        ingredients: [
-          { name: 'flour', amount: '2', unit: 'cups', notes: '' },
-        ],
-        instructions: [
-          { stepNumber: 1, instruction: 'Mix ingredients', durationMinutes: 5 },
-        ],
+        ingredients: [{ name: 'flour', amount: '2', unit: 'cups', notes: '' }],
+        instructions: [{ stepNumber: 1, instruction: 'Mix ingredients', durationMinutes: 5 }],
         prepTimeMinutes: 10,
         cookTimeMinutes: 30,
         servings: 4,
@@ -198,10 +188,7 @@ describe('recipeApi', () => {
     it('should handle validation errors', async () => {
       server.use(
         http.post(`${BASE_URL}/api/v1/recipes`, () => {
-          return HttpResponse.json(
-            { detail: 'Title is required' },
-            { status: 400 }
-          );
+          return HttpResponse.json({ detail: 'Title is required' }, { status: 400 });
         })
       );
 
@@ -295,16 +282,11 @@ describe('recipeApi', () => {
     it('should handle not found error', async () => {
       server.use(
         http.put(`${BASE_URL}/api/v1/recipes/:id`, () => {
-          return HttpResponse.json(
-            { detail: 'Recipe not found' },
-            { status: 404 }
-          );
+          return HttpResponse.json({ detail: 'Recipe not found' }, { status: 404 });
         })
       );
 
-      await expect(
-        recipeApi.updateRecipe('nonexistent', { title: 'New Title' })
-      ).rejects.toThrow();
+      await expect(recipeApi.updateRecipe('nonexistent', { title: 'New Title' })).rejects.toThrow();
     });
 
     it('should handle unauthorized error', async () => {
@@ -317,9 +299,7 @@ describe('recipeApi', () => {
         })
       );
 
-      await expect(
-        recipeApi.updateRecipe('1', { title: 'New Title' })
-      ).rejects.toThrow();
+      await expect(recipeApi.updateRecipe('1', { title: 'New Title' })).rejects.toThrow();
     });
   });
 
@@ -346,10 +326,7 @@ describe('recipeApi', () => {
     it('should handle not found error', async () => {
       server.use(
         http.delete(`${BASE_URL}/api/v1/recipes/:id`, () => {
-          return HttpResponse.json(
-            { detail: 'Recipe not found' },
-            { status: 404 }
-          );
+          return HttpResponse.json({ detail: 'Recipe not found' }, { status: 404 });
         })
       );
 

@@ -121,12 +121,7 @@ export default function RecipeDetailPage() {
             onClick={() => navigate('/recipes')}
             className="text-primary-500 hover:text-primary-600 font-medium mb-4 flex items-center gap-1"
           >
-            <svg
-              className="w-5 h-5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -158,7 +153,9 @@ export default function RecipeDetailPage() {
                 <h1 className="text-4xl font-bold text-neutral-900 mb-2" data-testid="recipe-title">
                   {recipe.title}
                 </h1>
-                <p className="text-lg text-neutral-600" data-testid="recipe-description">{recipe.description}</p>
+                <p className="text-lg text-neutral-600" data-testid="recipe-description">
+                  {recipe.description}
+                </p>
               </div>
 
               {isOwner && (
@@ -189,12 +186,7 @@ export default function RecipeDetailPage() {
             {/* Meta Information */}
             <div className="flex flex-wrap items-center gap-4 mb-4">
               <div className="flex items-center gap-2 text-neutral-600">
-                <svg
-                  className="w-5 h-5"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"
@@ -203,18 +195,14 @@ export default function RecipeDetailPage() {
                   />
                 </svg>
                 <span>
-                  Prep: <span data-testid="prep-time">{recipe.prepTimeMinutes}</span> min | Cook: <span data-testid="cook-time">{recipe.cookTimeMinutes}</span>{' '}
-                  min | Total: <span data-testid="total-time">{recipe.totalTimeMinutes}</span> min
+                  Prep: <span data-testid="prep-time">{recipe.prepTimeMinutes}</span> min | Cook:{' '}
+                  <span data-testid="cook-time">{recipe.cookTimeMinutes}</span> min | Total:{' '}
+                  <span data-testid="total-time">{recipe.totalTimeMinutes}</span> min
                 </span>
               </div>
 
               <div className="flex items-center gap-2 text-neutral-600">
-                <svg
-                  className="w-5 h-5"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"
@@ -256,9 +244,7 @@ export default function RecipeDetailPage() {
           {/* Ingredients */}
           <div className="md:col-span-1">
             <div className="bg-white rounded-lg shadow-soft p-6 sticky top-4">
-              <h2 className="text-2xl font-bold text-neutral-900 mb-4">
-                Ingredients
-              </h2>
+              <h2 className="text-2xl font-bold text-neutral-900 mb-4">Ingredients</h2>
               <ul className="space-y-2" data-testid="ingredients-list">
                 {recipe.ingredients.map((ingredient, index) => (
                   <li key={index} className="flex items-start gap-2">
@@ -269,10 +255,7 @@ export default function RecipeDetailPage() {
                       </strong>{' '}
                       {ingredient.name}
                       {ingredient.notes && (
-                        <span className="text-neutral-500 text-sm">
-                          {' '}
-                          ({ingredient.notes})
-                        </span>
+                        <span className="text-neutral-500 text-sm"> ({ingredient.notes})</span>
                       )}
                     </span>
                   </li>
@@ -284,9 +267,7 @@ export default function RecipeDetailPage() {
           {/* Instructions */}
           <div className="md:col-span-2">
             <div className="bg-white rounded-lg shadow-soft p-6">
-              <h2 className="text-2xl font-bold text-neutral-900 mb-4">
-                Instructions
-              </h2>
+              <h2 className="text-2xl font-bold text-neutral-900 mb-4">Instructions</h2>
               <ol className="space-y-4" data-testid="instructions-list">
                 {recipe.instructions.map((instruction) => (
                   <li
@@ -313,9 +294,7 @@ export default function RecipeDetailPage() {
             {/* Notes */}
             {recipe.notes && (
               <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 mt-6">
-                <h3 className="text-lg font-semibold text-blue-900 mb-2">
-                  Notes
-                </h3>
+                <h3 className="text-lg font-semibold text-blue-900 mb-2">Notes</h3>
                 <p className="text-blue-800">{recipe.notes}</p>
               </div>
             )}
@@ -323,12 +302,8 @@ export default function RecipeDetailPage() {
             {/* Source */}
             {(recipe.sourceName || recipe.sourceUrl) && (
               <div className="bg-neutral-50 border border-neutral-200 rounded-lg p-6 mt-6">
-                <h3 className="text-lg font-semibold text-neutral-900 mb-2">
-                  Source
-                </h3>
-                {recipe.sourceName && (
-                  <p className="text-neutral-700">{recipe.sourceName}</p>
-                )}
+                <h3 className="text-lg font-semibold text-neutral-900 mb-2">Source</h3>
+                {recipe.sourceName && <p className="text-neutral-700">{recipe.sourceName}</p>}
                 {recipe.sourceUrl && (
                   <a
                     href={recipe.sourceUrl}

@@ -1,4 +1,11 @@
-import type { User, Recipe, RecipeLibrary, RecipeShare, Ingredient, Instruction } from '../../types';
+import type {
+  User,
+  Recipe,
+  RecipeLibrary,
+  RecipeShare,
+  Ingredient,
+  Instruction,
+} from '../../types';
 
 export const mockUser = (overrides?: Partial<User>): User => ({
   id: '1',
@@ -30,10 +37,7 @@ export const mockRecipe = (overrides?: Partial<Recipe>): Recipe => ({
   id: '1',
   title: 'Test Recipe',
   description: 'A delicious test recipe',
-  ingredients: [
-    mockIngredient(),
-    mockIngredient({ name: 'sugar', amount: '1', unit: 'cup' }),
-  ],
+  ingredients: [mockIngredient(), mockIngredient({ name: 'sugar', amount: '1', unit: 'cup' })],
   instructions: [
     mockInstruction(),
     mockInstruction({ stepNumber: 2, instruction: 'Bake at 350°F', durationMinutes: 30 }),
@@ -135,7 +139,9 @@ export const mockShare = (overrides?: Partial<RecipeShare>): RecipeShare => ({
   ...overrides,
 });
 
-export const mockShareTokenResponse = (overrides?: Partial<{ shareToken: string; shareUrl: string; expiresAt?: string }>) => ({
+export const mockShareTokenResponse = (
+  overrides?: Partial<{ shareToken: string; shareUrl: string; expiresAt?: string }>
+) => ({
   share_token: 'abc123token',
   share_url: '/shared/abc123token',
   expires_at: null,

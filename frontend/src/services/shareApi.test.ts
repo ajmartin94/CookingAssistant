@@ -57,10 +57,7 @@ describe('shareApi', () => {
     it('should handle API errors', async () => {
       server.use(
         http.post(`${BASE_URL}/api/v1/shares`, () => {
-          return HttpResponse.json(
-            { detail: 'Recipe not found' },
-            { status: 404 }
-          );
+          return HttpResponse.json({ detail: 'Recipe not found' }, { status: 404 });
         })
       );
 
@@ -184,10 +181,7 @@ describe('shareApi', () => {
     it('should handle invalid token error', async () => {
       server.use(
         http.get(`${BASE_URL}/api/v1/shares/token/:token/recipe`, () => {
-          return HttpResponse.json(
-            { detail: 'Share not found' },
-            { status: 404 }
-          );
+          return HttpResponse.json({ detail: 'Share not found' }, { status: 404 });
         })
       );
 
@@ -197,10 +191,7 @@ describe('shareApi', () => {
     it('should handle expired share error', async () => {
       server.use(
         http.get(`${BASE_URL}/api/v1/shares/token/:token/recipe`, () => {
-          return HttpResponse.json(
-            { detail: 'Share has expired' },
-            { status: 410 }
-          );
+          return HttpResponse.json({ detail: 'Share has expired' }, { status: 410 });
         })
       );
 
@@ -242,10 +233,7 @@ describe('shareApi', () => {
     it('should handle invalid token error', async () => {
       server.use(
         http.get(`${BASE_URL}/api/v1/shares/token/:token/library`, () => {
-          return HttpResponse.json(
-            { detail: 'Share not found' },
-            { status: 404 }
-          );
+          return HttpResponse.json({ detail: 'Share not found' }, { status: 404 });
         })
       );
 
@@ -276,10 +264,7 @@ describe('shareApi', () => {
     it('should handle not found error', async () => {
       server.use(
         http.delete(`${BASE_URL}/api/v1/shares/:id`, () => {
-          return HttpResponse.json(
-            { detail: 'Share not found' },
-            { status: 404 }
-          );
+          return HttpResponse.json({ detail: 'Share not found' }, { status: 404 });
         })
       );
 

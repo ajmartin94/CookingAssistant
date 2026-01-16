@@ -11,7 +11,10 @@ const LibraryCard: React.FC<LibraryCardProps> = ({ library, onDelete }) => {
   const handleDelete = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    if (onDelete && window.confirm(`Delete library "${library.name}"? Recipes will not be deleted.`)) {
+    if (
+      onDelete &&
+      window.confirm(`Delete library "${library.name}"? Recipes will not be deleted.`)
+    ) {
       onDelete(library.id);
     }
   };
@@ -43,9 +46,7 @@ const LibraryCard: React.FC<LibraryCardProps> = ({ library, onDelete }) => {
       <div className="p-4">
         {/* Title */}
         <div className="flex items-start justify-between mb-2">
-          <h3 className="text-xl font-semibold text-neutral-800 line-clamp-1">
-            {library.name}
-          </h3>
+          <h3 className="text-xl font-semibold text-neutral-800 line-clamp-1">{library.name}</h3>
           {library.isPublic && (
             <span className="text-xs bg-success-100 text-success-700 px-2 py-1 rounded ml-2 flex-shrink-0">
               Public

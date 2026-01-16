@@ -30,19 +30,10 @@ const RecipeCard: React.FC<RecipeCardProps> = ({ recipe }) => {
       {/* Recipe Image */}
       <div className="h-48 bg-neutral-200 overflow-hidden">
         {recipe.imageUrl ? (
-          <img
-            src={recipe.imageUrl}
-            alt={recipe.title}
-            className="w-full h-full object-cover"
-          />
+          <img src={recipe.imageUrl} alt={recipe.title} className="w-full h-full object-cover" />
         ) : (
           <div className="w-full h-full flex items-center justify-center text-neutral-400">
-            <svg
-              className="w-16 h-16"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
+            <svg className="w-16 h-16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -57,24 +48,15 @@ const RecipeCard: React.FC<RecipeCardProps> = ({ recipe }) => {
       {/* Recipe Info */}
       <div className="p-4">
         {/* Title */}
-        <h3 className="text-xl font-semibold text-neutral-800 mb-2 line-clamp-2">
-          {recipe.title}
-        </h3>
+        <h3 className="text-xl font-semibold text-neutral-800 mb-2 line-clamp-2">{recipe.title}</h3>
 
         {/* Description */}
-        <p className="text-neutral-600 text-sm mb-3 line-clamp-2">
-          {recipe.description}
-        </p>
+        <p className="text-neutral-600 text-sm mb-3 line-clamp-2">{recipe.description}</p>
 
         {/* Time and Servings */}
         <div className="flex items-center gap-4 text-sm text-neutral-500 mb-3">
           <div className="flex items-center gap-1">
-            <svg
-              className="w-4 h-4"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -85,12 +67,7 @@ const RecipeCard: React.FC<RecipeCardProps> = ({ recipe }) => {
             <span>{recipe.totalTimeMinutes} min</span>
           </div>
           <div className="flex items-center gap-1">
-            <svg
-              className="w-4 h-4"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -110,9 +87,7 @@ const RecipeCard: React.FC<RecipeCardProps> = ({ recipe }) => {
             </span>
           )}
           <span
-            className={`text-xs px-2 py-1 rounded ${getDifficultyColor(
-              recipe.difficultyLevel
-            )}`}
+            className={`text-xs px-2 py-1 rounded ${getDifficultyColor(recipe.difficultyLevel)}`}
           >
             {recipe.difficultyLevel}
           </span>
@@ -122,10 +97,7 @@ const RecipeCard: React.FC<RecipeCardProps> = ({ recipe }) => {
         {recipe.dietaryTags && recipe.dietaryTags.length > 0 && (
           <div className="flex flex-wrap gap-1">
             {recipe.dietaryTags.slice(0, 3).map((tag) => (
-              <span
-                key={tag}
-                className="text-xs bg-purple-100 text-purple-800 px-2 py-1 rounded"
-              >
+              <span key={tag} className="text-xs bg-purple-100 text-purple-800 px-2 py-1 rounded">
                 {tag}
               </span>
             ))}

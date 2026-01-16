@@ -5,7 +5,14 @@
 @layer base {
   /* Apply Inter as the default body font */
   html {
-    font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-family:
+      Inter,
+      system-ui,
+      -apple-system,
+      BlinkMacSystemFont,
+      'Segoe UI',
+      Roboto,
+      sans-serif;
     line-height: 1.5;
     font-weight: 400;
     -webkit-font-smoothing: antialiased;
@@ -13,8 +20,13 @@
   }
 
   /* Apply DM Sans to all headings for a friendlier display feel */
-  h1, h2, h3, h4, h5, h6 {
-    font-family: 'DM Sans', 'Inter', system-ui, sans-serif;
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: 'DM Sans', Inter, system-ui, sans-serif;
     font-weight: 700;
     line-height: 1.2;
   }

@@ -88,7 +88,10 @@ export default function LoginPage() {
               </div>
 
               <div>
-                <label htmlFor="fullName" className="block text-sm font-medium text-neutral-700 mb-1">
+                <label
+                  htmlFor="fullName"
+                  className="block text-sm font-medium text-neutral-700 mb-1"
+                >
                   Full Name (Optional)
                 </label>
                 <input
@@ -119,9 +122,7 @@ export default function LoginPage() {
               required
               minLength={8}
             />
-            {!isLogin && (
-              <p className="text-xs text-neutral-500 mt-1">Minimum 8 characters</p>
-            )}
+            {!isLogin && <p className="text-xs text-neutral-500 mt-1">Minimum 8 characters</p>}
           </div>
 
           <button

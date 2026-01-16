@@ -80,10 +80,7 @@ describe('EditRecipePage', () => {
     it('should display error message when recipe fetch fails', async () => {
       server.use(
         http.get(`${BASE_URL}/api/v1/recipes/:id`, () => {
-          return HttpResponse.json(
-            { detail: 'Recipe not found' },
-            { status: 404 }
-          );
+          return HttpResponse.json({ detail: 'Recipe not found' }, { status: 404 });
         })
       );
 
@@ -111,10 +108,7 @@ describe('EditRecipePage', () => {
     it('should show Back to Recipes button in error state', async () => {
       server.use(
         http.get(`${BASE_URL}/api/v1/recipes/:id`, () => {
-          return HttpResponse.json(
-            { detail: 'Recipe not found' },
-            { status: 404 }
-          );
+          return HttpResponse.json({ detail: 'Recipe not found' }, { status: 404 });
         })
       );
 

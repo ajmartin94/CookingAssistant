@@ -11,9 +11,7 @@ export default function HomePage() {
     <div className="min-h-screen bg-gradient-to-br from-primary-50 to-secondary-50">
       <div className="container mx-auto px-4 py-16">
         <div className="text-center mb-16">
-          <h1 className="text-6xl font-bold text-neutral-900 mb-4">
-            🍳 Cooking Assistant
-          </h1>
+          <h1 className="text-6xl font-bold text-neutral-900 mb-4">🍳 Cooking Assistant</h1>
           <p className="text-xl text-neutral-600 mb-8">
             Your AI-powered cooking companion for planning, shopping, and cooking with ease
           </p>

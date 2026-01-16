@@ -28,10 +28,7 @@ describe('authApi', () => {
     it('should handle login failure', async () => {
       server.use(
         http.post(`${BASE_URL}/api/v1/users/login`, () => {
-          return HttpResponse.json(
-            { detail: 'Incorrect credentials' },
-            { status: 401 }
-          );
+          return HttpResponse.json({ detail: 'Incorrect credentials' }, { status: 401 });
         })
       );
 
@@ -44,7 +41,7 @@ describe('authApi', () => {
       const result = await authApi.register({
         username: 'newuser',
         email: 'new@test.com',
-        password: 'password123'
+        password: 'password123',
       });
 
       expect(result.username).toBe('newuser');
@@ -54,10 +51,7 @@ describe('authApi', () => {
     it('should handle registration failure', async () => {
       server.use(
         http.post(`${BASE_URL}/api/v1/users/register`, () => {
-          return HttpResponse.json(
-            { detail: 'Username already exists' },
-            { status: 400 }
-          );
+          return HttpResponse.json({ detail: 'Username already exists' }, { status: 400 });
         })
       );
 

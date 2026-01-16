@@ -48,10 +48,16 @@ function AppContent() {
             <div className="flex gap-6 items-center">
               {user && (
                 <>
-                  <Link to="/recipes" className="text-neutral-700 hover:text-primary-500 font-medium">
+                  <Link
+                    to="/recipes"
+                    className="text-neutral-700 hover:text-primary-500 font-medium"
+                  >
                     Recipes
                   </Link>
-                  <Link to="/libraries" className="text-neutral-700 hover:text-primary-500 font-medium">
+                  <Link
+                    to="/libraries"
+                    className="text-neutral-700 hover:text-primary-500 font-medium"
+                  >
                     Libraries
                   </Link>
                 </>

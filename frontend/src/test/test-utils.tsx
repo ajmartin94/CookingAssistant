@@ -16,10 +16,7 @@ const AllTheProviders: React.FC<AllTheProvidersProps> = ({ children }) => {
   );
 };
 
-const customRender = (
-  ui: ReactElement,
-  options?: Omit<RenderOptions, 'wrapper'>
-) => {
+const customRender = (ui: ReactElement, options?: Omit<RenderOptions, 'wrapper'>) => {
   return {
     user: userEvent.setup(),
     ...render(ui, { wrapper: AllTheProviders, ...options }),

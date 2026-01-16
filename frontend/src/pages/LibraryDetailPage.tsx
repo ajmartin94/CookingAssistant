@@ -121,10 +121,7 @@ export default function LibraryDetailPage() {
       <div className="min-h-screen bg-neutral-50 flex items-center justify-center px-4">
         <div className="text-center">
           <h2 className="text-2xl font-bold text-neutral-900 mb-2">Library not found</h2>
-          <Link
-            to="/libraries"
-            className="text-primary-500 hover:text-primary-600 font-medium"
-          >
+          <Link to="/libraries" className="text-primary-500 hover:text-primary-600 font-medium">
             Back to Libraries
           </Link>
         </div>
@@ -137,10 +134,7 @@ export default function LibraryDetailPage() {
       <div className="container mx-auto px-4 py-8">
         {/* Breadcrumb */}
         <nav className="mb-4">
-          <Link
-            to="/libraries"
-            className="text-primary-500 hover:text-primary-600 font-medium"
-          >
+          <Link to="/libraries" className="text-primary-500 hover:text-primary-600 font-medium">
             Libraries
           </Link>
           <span className="mx-2 text-neutral-400">/</span>
@@ -221,9 +215,7 @@ export default function LibraryDetailPage() {
               <div className="flex justify-between items-start mb-4">
                 <div>
                   <div className="flex items-center gap-3">
-                    <h1 className="text-3xl font-bold text-neutral-900">
-                      {library.name}
-                    </h1>
+                    <h1 className="text-3xl font-bold text-neutral-900">{library.name}</h1>
                     {library.isPublic && (
                       <span className="text-xs bg-success-100 text-success-700 px-2 py-1 rounded">
                         Public

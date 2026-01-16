@@ -1,17 +1,25 @@
 import { http, HttpResponse } from 'msw';
-import { mockUser, mockBackendRecipe, mockLibrary, mockShareTokenResponse, mockLoginResponse } from './data';
+import {
+  mockUser,
+  mockBackendRecipe,
+  mockLibrary,
+  mockShareTokenResponse,
+  mockLoginResponse,
+} from './data';
 
 const BASE_URL = 'http://localhost:8000';
 
 export const handlers = [
   // Auth endpoints
   http.post(`${BASE_URL}/api/v1/users/register`, async ({ request }) => {
-    const body = await request.json() as any;
-    return HttpResponse.json(mockUser({
-      username: body.username,
-      email: body.email,
-      fullName: body.full_name || 'Test User',
-    }));
+    const body = (await request.json()) as any;
+    return HttpResponse.json(
+      mockUser({
+        username: body.username,
+        email: body.email,
+        fullName: body.full_name || 'Test User',
+      })
+    );
   }),
 
   http.post(`${BASE_URL}/api/v1/users/login`, async ({ request }) => {
@@ -28,16 +36,13 @@ export const handlers = [
   http.get(`${BASE_URL}/api/v1/users/me`, async ({ request }) => {
     const authHeader = request.headers.get('Authorization');
     if (!authHeader) {
-      return HttpResponse.json(
-        { detail: 'Not authenticated' },
-        { status: 401 }
-      );
+      return HttpResponse.json({ detail: 'Not authenticated' }, { status: 401 });
     }
     return HttpResponse.json(mockUser());
   }),
 
   http.put(`${BASE_URL}/api/v1/users/me`, async ({ request }) => {
-    const body = await request.json() as any;
+    const body = (await request.json()) as any;
     return HttpResponse.json(mockUser({ ...body }));
   }),
 
@@ -65,7 +70,7 @@ export const handlers = [
   http.put(`${BASE_URL}/api/v1/recipes/:id`, async ({ params, request }) => {
     const { id } = params;
     const body = await request.json();
-    return HttpResponse.json(mockBackendRecipe({ id: id as string, ...body as any }));
+    return HttpResponse.json(mockBackendRecipe({ id: id as string, ...(body as any) }));
   }),
 
   http.delete(`${BASE_URL}/api/v1/recipes/:id`, async () => {
@@ -74,10 +79,7 @@ export const handlers = [
 
   // Library endpoints
   http.get(`${BASE_URL}/api/v1/libraries`, async () => {
-    return HttpResponse.json([
-      mockLibrary(),
-      mockLibrary({ id: '2', name: 'Another Library' }),
-    ]);
+    return HttpResponse.json([mockLibrary(), mockLibrary({ id: '2', name: 'Another Library' })]);
   }),
 
   http.get(`${BASE_URL}/api/v1/libraries/:id`, async ({ params }) => {
@@ -93,7 +95,7 @@ export const handlers = [
   http.put(`${BASE_URL}/api/v1/libraries/:id`, async ({ params, request }) => {
     const { id } = params;
     const body = await request.json();
-    return HttpResponse.json(mockLibrary({ id: id as string, ...body as any }));
+    return HttpResponse.json(mockLibrary({ id: id as string, ...(body as any) }));
   }),
 
   http.delete(`${BASE_URL}/api/v1/libraries/:id`, async () => {

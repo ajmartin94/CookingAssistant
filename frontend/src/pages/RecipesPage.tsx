@@ -38,7 +38,9 @@ export default function RecipesPage() {
           page_size: 12,
           search: searchQuery || undefined,
           cuisine_type: cuisineFilter || undefined,
-          difficulty_level: difficultyFilter ? (difficultyFilter as 'easy' | 'medium' | 'hard') : undefined,
+          difficulty_level: difficultyFilter
+            ? (difficultyFilter as 'easy' | 'medium' | 'hard')
+            : undefined,
           dietary_tag: dietaryFilter || undefined,
         });
 
@@ -131,9 +133,7 @@ export default function RecipesPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-neutral-700 mb-1">
-                Difficulty
-              </label>
+              <label className="block text-sm font-medium text-neutral-700 mb-1">Difficulty</label>
               <select
                 value={difficultyFilter}
                 onChange={(e) => {

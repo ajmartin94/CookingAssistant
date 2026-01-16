@@ -77,10 +77,7 @@ describe('libraryApi', () => {
     it('should handle API errors', async () => {
       server.use(
         http.get(`${BASE_URL}/api/v1/libraries`, () => {
-          return HttpResponse.json(
-            { detail: 'Server error' },
-            { status: 500 }
-          );
+          return HttpResponse.json({ detail: 'Server error' }, { status: 500 });
         })
       );
 
@@ -119,10 +116,7 @@ describe('libraryApi', () => {
     it('should handle library not found error', async () => {
       server.use(
         http.get(`${BASE_URL}/api/v1/libraries/:id`, () => {
-          return HttpResponse.json(
-            { detail: 'Library not found' },
-            { status: 404 }
-          );
+          return HttpResponse.json({ detail: 'Library not found' }, { status: 404 });
         })
       );
 
@@ -173,16 +167,11 @@ describe('libraryApi', () => {
     it('should handle validation errors', async () => {
       server.use(
         http.post(`${BASE_URL}/api/v1/libraries`, () => {
-          return HttpResponse.json(
-            { detail: 'Name is required' },
-            { status: 400 }
-          );
+          return HttpResponse.json({ detail: 'Name is required' }, { status: 400 });
         })
       );
 
-      await expect(
-        libraryApi.createLibrary({ name: '' })
-      ).rejects.toThrow();
+      await expect(libraryApi.createLibrary({ name: '' })).rejects.toThrow();
     });
   });
 
@@ -240,16 +229,11 @@ describe('libraryApi', () => {
     it('should handle not found error', async () => {
       server.use(
         http.put(`${BASE_URL}/api/v1/libraries/:id`, () => {
-          return HttpResponse.json(
-            { detail: 'Library not found' },
-            { status: 404 }
-          );
+          return HttpResponse.json({ detail: 'Library not found' }, { status: 404 });
         })
       );
 
-      await expect(
-        libraryApi.updateLibrary('nonexistent', { name: 'New Name' })
-      ).rejects.toThrow();
+      await expect(libraryApi.updateLibrary('nonexistent', { name: 'New Name' })).rejects.toThrow();
     });
 
     it('should handle unauthorized error', async () => {
@@ -262,9 +246,7 @@ describe('libraryApi', () => {
         })
       );
 
-      await expect(
-        libraryApi.updateLibrary('1', { name: 'New Name' })
-      ).rejects.toThrow();
+      await expect(libraryApi.updateLibrary('1', { name: 'New Name' })).rejects.toThrow();
     });
   });
 
@@ -291,10 +273,7 @@ describe('libraryApi', () => {
     it('should handle not found error', async () => {
       server.use(
         http.delete(`${BASE_URL}/api/v1/libraries/:id`, () => {
-          return HttpResponse.json(
-            { detail: 'Library not found' },
-            { status: 404 }
-          );
+          return HttpResponse.json({ detail: 'Library not found' }, { status: 404 });
         })
       );
 

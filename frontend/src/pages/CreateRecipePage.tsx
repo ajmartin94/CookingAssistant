@@ -43,12 +43,7 @@ export default function CreateRecipePage() {
             onClick={handleCancel}
             className="text-primary-500 hover:text-primary-600 font-medium mb-4 flex items-center gap-1"
           >
-            <svg
-              className="w-5 h-5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -59,9 +54,7 @@ export default function CreateRecipePage() {
             Back to Recipes
           </button>
           <h1 className="text-4xl font-bold text-neutral-900">Create New Recipe</h1>
-          <p className="text-neutral-600 mt-2">
-            Add a new recipe to your collection
-          </p>
+          <p className="text-neutral-600 mt-2">Add a new recipe to your collection</p>
         </div>
 
         {/* Error Message */}
@@ -74,11 +67,7 @@ export default function CreateRecipePage() {
         )}
 
         {/* Recipe Form */}
-        <RecipeForm
-          onSubmit={handleSubmit}
-          onCancel={handleCancel}
-          isSubmitting={isSubmitting}
-        />
+        <RecipeForm onSubmit={handleSubmit} onCancel={handleCancel} isSubmitting={isSubmitting} />
       </div>
     </div>
   );

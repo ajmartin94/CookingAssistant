@@ -175,10 +175,7 @@ describe('RecipesPage', () => {
     it('should display error message on API failure', async () => {
       server.use(
         http.get(`${BASE_URL}/api/v1/recipes`, () => {
-          return HttpResponse.json(
-            { detail: 'Server error' },
-            { status: 500 }
-          );
+          return HttpResponse.json({ detail: 'Server error' }, { status: 500 });
         })
       );
 
@@ -362,7 +359,9 @@ describe('RecipesPage', () => {
       server.use(
         http.get(`${BASE_URL}/api/v1/recipes`, () => {
           return HttpResponse.json({
-            recipes: Array(12).fill(null).map((_, i) => mockBackendRecipe({ id: String(i + 1) })),
+            recipes: Array(12)
+              .fill(null)
+              .map((_, i) => mockBackendRecipe({ id: String(i + 1) })),
             total: 30,
             page: 1,
             page_size: 12,
@@ -384,7 +383,9 @@ describe('RecipesPage', () => {
       server.use(
         http.get(`${BASE_URL}/api/v1/recipes`, () => {
           return HttpResponse.json({
-            recipes: Array(12).fill(null).map((_, i) => mockBackendRecipe({ id: String(i + 1) })),
+            recipes: Array(12)
+              .fill(null)
+              .map((_, i) => mockBackendRecipe({ id: String(i + 1) })),
             total: 30,
             page: 1,
             page_size: 12,
@@ -409,7 +410,9 @@ describe('RecipesPage', () => {
           const url = new URL(request.url);
           capturedPage = url.searchParams.get('page');
           return HttpResponse.json({
-            recipes: Array(12).fill(null).map((_, i) => mockBackendRecipe({ id: String(i + 1) })),
+            recipes: Array(12)
+              .fill(null)
+              .map((_, i) => mockBackendRecipe({ id: String(i + 1) })),
             total: 30,
             page: parseInt(capturedPage || '1'),
             page_size: 12,

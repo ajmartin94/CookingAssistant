@@ -1,0 +1,22 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+build/
+
+# Coverage
+coverage/
+
+# Cache
+.cache/
+*.tsbuildinfo
+
+# Package manager
+package-lock.json
+pnpm-lock.yaml
+yarn.lock
+
+# Auto-generated
+*.min.js
+*.min.css
