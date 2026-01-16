@@ -5,15 +5,6 @@
   "hooks": {
     "PreToolUse": [
       {
-        "matcher": "exit_plan_mode",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "python .claude/hooks/save-plan.py"
-          }
-        ]
-      },
-      {
         "matcher": "Bash",
         "hooks": [
           {
