@@ -10,7 +10,7 @@ from fastapi.middleware.cors import CORSMiddleware
 import logging
 
 from app.config import settings
-from app.api import users, recipes, libraries, sharing
+from app.api import users, recipes, libraries, sharing, favorites
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -56,7 +56,10 @@ async def health_check():
 
 
 # Include API routers
+# NOTE: favorites must come before recipes because /recipes/favorites must be matched
+# before /recipes/{recipe_id} in the recipes router
 app.include_router(users.router, prefix="/api/v1")
+app.include_router(favorites.router, prefix="/api/v1")
 app.include_router(recipes.router, prefix="/api/v1")
 app.include_router(libraries.router, prefix="/api/v1")
 app.include_router(sharing.router, prefix="/api/v1")
@@ -69,11 +72,11 @@ async def startup_event():
     logger.info("Starting Cooking Assistant API...")
 
     # Import all models to register them with Base.metadata
-    from app.models import User, Recipe, RecipeLibrary, RecipeShare  # noqa: F401
+    from app.models import User, Recipe, RecipeLibrary, RecipeShare, RecipeFavorite  # noqa: F401
     from app.database import init_db, engine, Base
 
     # Log imported models to ensure they're registered
-    logger.info(f"Imported models: {User.__tablename__}, {Recipe.__tablename__}, {RecipeLibrary.__tablename__}, {RecipeShare.__tablename__}")
+    logger.info(f"Imported models: {User.__tablename__}, {Recipe.__tablename__}, {RecipeLibrary.__tablename__}, {RecipeShare.__tablename__}, {RecipeFavorite.__tablename__}")
 
     # For E2E testing, drop and recreate all tables to ensure clean state
     if os.getenv("E2E_TESTING", "false").lower() == "true":

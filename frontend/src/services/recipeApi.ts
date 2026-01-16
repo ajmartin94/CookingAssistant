@@ -152,6 +152,40 @@ export const deleteRecipe = async (recipeId: string): Promise<void> => {
   await apiClient.delete(`/api/v1/recipes/${recipeId}`);
 };
 
+/**
+ * Add a recipe to favorites
+ */
+export const favoriteRecipe = async (recipeId: string): Promise<void> => {
+  await apiClient.post(`/api/v1/recipes/${recipeId}/favorite`);
+};
+
+/**
+ * Remove a recipe from favorites
+ */
+export const unfavoriteRecipe = async (recipeId: string): Promise<void> => {
+  await apiClient.delete(`/api/v1/recipes/${recipeId}/favorite`);
+};
+
+/**
+ * Get user's favorite recipes
+ */
+export const getFavorites = async (params?: {
+  page?: number;
+  page_size?: number;
+}): Promise<RecipeListResponse> => {
+  const response = await apiClient.get<BackendRecipeListResponse>('/api/v1/recipes/favorites', {
+    params,
+  });
+  const backend = response.data;
+  return {
+    data: backend.recipes.map(transformRecipe),
+    total: backend.total,
+    page: backend.page,
+    pageSize: backend.page_size,
+    totalPages: backend.total_pages,
+  };
+};
+
 // Export as object for easier imports
 export const recipeApi = {
   getRecipes,
@@ -159,4 +193,7 @@ export const recipeApi = {
   createRecipe,
   updateRecipe,
   deleteRecipe,
+  favoriteRecipe,
+  unfavoriteRecipe,
+  getFavorites,
 };
