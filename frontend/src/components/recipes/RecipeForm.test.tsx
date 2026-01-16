@@ -306,7 +306,7 @@ describe('RecipeForm', () => {
       await user.click(vegetarianButton);
 
       expect(vegetarianButton).not.toHaveClass('bg-purple-600');
-      expect(vegetarianButton).toHaveClass('bg-gray-100');
+      expect(vegetarianButton).toHaveClass('bg-neutral-100');
     });
 
     it('should handle multiple dietary tags', async () => {
