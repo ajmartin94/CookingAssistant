@@ -80,14 +80,14 @@ const ShareModal: React.FC<ShareModalProps> = ({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-md mx-4">
+      <div className="bg-white rounded-lg shadow-soft-lg p-6 w-full max-w-md mx-4">
         <div className="flex justify-between items-start mb-4">
-          <h2 className="text-2xl font-bold text-gray-900">
+          <h2 className="text-2xl font-bold text-neutral-900">
             Share {recipeId ? 'Recipe' : 'Library'}
           </h2>
           <button
             onClick={handleClose}
-            className="text-gray-400 hover:text-gray-600"
+            className="text-neutral-400 hover:text-neutral-600"
             aria-label="Close"
           >
             <svg
@@ -106,20 +106,20 @@ const ShareModal: React.FC<ShareModalProps> = ({
           </button>
         </div>
 
-        <p className="text-gray-600 mb-4">
+        <p className="text-neutral-600 mb-4">
           Create a shareable link for "{itemName}"
         </p>
 
         {error && (
-          <div className="bg-red-50 border border-red-200 rounded-lg p-3 mb-4">
-            <p className="text-red-800 text-sm">{error}</p>
+          <div className="bg-error-50 border border-error-200 rounded-lg p-3 mb-4">
+            <p className="text-error-700 text-sm">{error}</p>
           </div>
         )}
 
         {!shareUrl ? (
           <>
             <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-neutral-700 mb-2">
                 Permission Level
               </label>
               <div className="flex gap-4">
@@ -130,9 +130,9 @@ const ShareModal: React.FC<ShareModalProps> = ({
                     value="view"
                     checked={permission === 'view'}
                     onChange={() => setPermission('view')}
-                    className="w-4 h-4 text-orange-600 focus:ring-orange-500"
+                    className="w-4 h-4 text-primary-500 focus:ring-primary-500"
                   />
-                  <span className="text-sm text-gray-700">View only</span>
+                  <span className="text-sm text-neutral-700">View only</span>
                 </label>
                 <label className="flex items-center gap-2 cursor-pointer">
                   <input
@@ -141,9 +141,9 @@ const ShareModal: React.FC<ShareModalProps> = ({
                     value="edit"
                     checked={permission === 'edit'}
                     onChange={() => setPermission('edit')}
-                    className="w-4 h-4 text-orange-600 focus:ring-orange-500"
+                    className="w-4 h-4 text-primary-500 focus:ring-primary-500"
                   />
-                  <span className="text-sm text-gray-700">Can edit</span>
+                  <span className="text-sm text-neutral-700">Can edit</span>
                 </label>
               </div>
             </div>
@@ -151,14 +151,14 @@ const ShareModal: React.FC<ShareModalProps> = ({
             <div className="flex justify-end gap-3">
               <button
                 onClick={handleClose}
-                className="px-4 py-2 text-gray-700 hover:text-gray-900 font-medium"
+                className="px-4 py-2 text-neutral-700 hover:text-neutral-900 font-medium"
               >
                 Cancel
               </button>
               <button
                 onClick={handleCreateShare}
                 disabled={loading}
-                className="px-4 py-2 bg-orange-600 text-white rounded-lg font-semibold hover:bg-orange-700 transition disabled:opacity-50"
+                className="px-4 py-2 bg-primary-500 text-white rounded-lg font-semibold hover:bg-primary-600 transition disabled:opacity-50"
               >
                 {loading ? 'Creating...' : 'Create Link'}
               </button>
@@ -167,7 +167,7 @@ const ShareModal: React.FC<ShareModalProps> = ({
         ) : (
           <>
             <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-neutral-700 mb-2">
                 Share Link
               </label>
               <div className="flex gap-2">
@@ -175,14 +175,14 @@ const ShareModal: React.FC<ShareModalProps> = ({
                   type="text"
                   value={shareUrl}
                   readOnly
-                  className="flex-1 px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-700 text-sm"
+                  className="flex-1 px-3 py-2 border border-neutral-300 rounded-lg bg-neutral-50 text-neutral-700 text-sm"
                 />
                 <button
                   onClick={handleCopyLink}
                   className={`px-4 py-2 rounded-lg font-medium transition ${
                     copied
-                      ? 'bg-green-600 text-white'
-                      : 'bg-orange-600 text-white hover:bg-orange-700'
+                      ? 'bg-success-500 text-white'
+                      : 'bg-primary-500 text-white hover:bg-primary-600'
                   }`}
                 >
                   {copied ? 'Copied!' : 'Copy'}
@@ -199,7 +199,7 @@ const ShareModal: React.FC<ShareModalProps> = ({
             <div className="flex justify-end">
               <button
                 onClick={handleClose}
-                className="px-4 py-2 bg-gray-600 text-white rounded-lg font-semibold hover:bg-gray-700 transition"
+                className="px-4 py-2 bg-neutral-600 text-white rounded-lg font-semibold hover:bg-neutral-700 transition"
               >
                 Done
               </button>

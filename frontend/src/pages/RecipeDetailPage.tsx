@@ -70,21 +70,21 @@ export default function RecipeDetailPage() {
   const getDifficultyColor = (difficulty: string) => {
     switch (difficulty) {
       case 'easy':
-        return 'bg-green-100 text-green-800';
+        return 'bg-success-100 text-success-700';
       case 'medium':
-        return 'bg-yellow-100 text-yellow-800';
+        return 'bg-warning-100 text-warning-700';
       case 'hard':
-        return 'bg-red-100 text-red-800';
+        return 'bg-error-100 text-error-700';
       default:
-        return 'bg-gray-100 text-gray-800';
+        return 'bg-neutral-100 text-neutral-800';
     }
   };
 
   // Loading state
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex justify-center items-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-600"></div>
+      <div className="min-h-screen bg-neutral-50 flex justify-center items-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500"></div>
       </div>
     );
   }
@@ -92,15 +92,15 @@ export default function RecipeDetailPage() {
   // Error state
   if (error || !recipe) {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-neutral-50">
         <div className="container mx-auto px-4 py-8">
-          <div className="bg-red-50 border border-red-200 rounded-lg p-6">
-            <p className="text-red-800">
+          <div className="bg-error-50 border border-error-200 rounded-lg p-6">
+            <p className="text-error-700">
               <strong>Error:</strong> {error || 'Recipe not found'}
             </p>
             <button
               onClick={() => navigate('/recipes')}
-              className="mt-4 px-4 py-2 bg-orange-600 text-white rounded-lg font-semibold hover:bg-orange-700 transition"
+              className="mt-4 px-4 py-2 bg-primary-500 text-white rounded-lg font-semibold hover:bg-primary-600 transition"
             >
               Back to Recipes
             </button>
@@ -113,13 +113,13 @@ export default function RecipeDetailPage() {
   const isOwner = user?.id === recipe.ownerId;
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-neutral-50">
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
         <div className="mb-6">
           <button
             onClick={() => navigate('/recipes')}
-            className="text-orange-600 hover:text-orange-700 font-medium mb-4 flex items-center gap-1"
+            className="text-primary-500 hover:text-primary-600 font-medium mb-4 flex items-center gap-1"
           >
             <svg
               className="w-5 h-5"
@@ -139,7 +139,7 @@ export default function RecipeDetailPage() {
         </div>
 
         {/* Recipe Header */}
-        <div className="bg-white rounded-lg shadow-md overflow-hidden mb-6">
+        <div className="bg-white rounded-lg shadow-soft overflow-hidden mb-6">
           {/* Recipe Image */}
           {recipe.imageUrl && (
             <div className="h-96 overflow-hidden">
@@ -155,30 +155,30 @@ export default function RecipeDetailPage() {
             {/* Title and Actions */}
             <div className="flex justify-between items-start mb-4">
               <div>
-                <h1 className="text-4xl font-bold text-gray-900 mb-2" data-testid="recipe-title">
+                <h1 className="text-4xl font-bold text-neutral-900 mb-2" data-testid="recipe-title">
                   {recipe.title}
                 </h1>
-                <p className="text-lg text-gray-600" data-testid="recipe-description">{recipe.description}</p>
+                <p className="text-lg text-neutral-600" data-testid="recipe-description">{recipe.description}</p>
               </div>
 
               {isOwner && (
                 <div className="flex gap-2">
                   <button
                     onClick={() => setShowShareModal(true)}
-                    className="px-4 py-2 border border-orange-600 text-orange-600 rounded-lg font-semibold hover:bg-orange-50 transition"
+                    className="px-4 py-2 border border-primary-500 text-primary-500 rounded-lg font-semibold hover:bg-primary-50 transition"
                   >
                     Share
                   </button>
                   <button
                     onClick={() => navigate(`/recipes/${recipe.id}/edit`)}
-                    className="px-4 py-2 bg-orange-600 text-white rounded-lg font-semibold hover:bg-orange-700 transition"
+                    className="px-4 py-2 bg-primary-500 text-white rounded-lg font-semibold hover:bg-primary-600 transition"
                   >
                     Edit
                   </button>
                   <button
                     onClick={handleDelete}
                     disabled={deleting}
-                    className="px-4 py-2 bg-red-600 text-white rounded-lg font-semibold hover:bg-red-700 transition disabled:opacity-50"
+                    className="px-4 py-2 bg-error-500 text-white rounded-lg font-semibold hover:bg-error-600 transition disabled:opacity-50"
                   >
                     {deleting ? 'Deleting...' : 'Delete'}
                   </button>
@@ -188,7 +188,7 @@ export default function RecipeDetailPage() {
 
             {/* Meta Information */}
             <div className="flex flex-wrap items-center gap-4 mb-4">
-              <div className="flex items-center gap-2 text-gray-600">
+              <div className="flex items-center gap-2 text-neutral-600">
                 <svg
                   className="w-5 h-5"
                   fill="none"
@@ -208,7 +208,7 @@ export default function RecipeDetailPage() {
                 </span>
               </div>
 
-              <div className="flex items-center gap-2 text-gray-600">
+              <div className="flex items-center gap-2 text-neutral-600">
                 <svg
                   className="w-5 h-5"
                   fill="none"
@@ -255,21 +255,21 @@ export default function RecipeDetailPage() {
         <div className="grid md:grid-cols-3 gap-6">
           {/* Ingredients */}
           <div className="md:col-span-1">
-            <div className="bg-white rounded-lg shadow-md p-6 sticky top-4">
-              <h2 className="text-2xl font-bold text-gray-900 mb-4">
+            <div className="bg-white rounded-lg shadow-soft p-6 sticky top-4">
+              <h2 className="text-2xl font-bold text-neutral-900 mb-4">
                 Ingredients
               </h2>
               <ul className="space-y-2" data-testid="ingredients-list">
                 {recipe.ingredients.map((ingredient, index) => (
                   <li key={index} className="flex items-start gap-2">
-                    <span className="text-orange-600 font-bold">•</span>
-                    <span className="text-gray-700">
+                    <span className="text-primary-500 font-bold">•</span>
+                    <span className="text-neutral-700">
                       <strong>
                         {ingredient.amount} {ingredient.unit}
                       </strong>{' '}
                       {ingredient.name}
                       {ingredient.notes && (
-                        <span className="text-gray-500 text-sm">
+                        <span className="text-neutral-500 text-sm">
                           {' '}
                           ({ingredient.notes})
                         </span>
@@ -283,8 +283,8 @@ export default function RecipeDetailPage() {
 
           {/* Instructions */}
           <div className="md:col-span-2">
-            <div className="bg-white rounded-lg shadow-md p-6">
-              <h2 className="text-2xl font-bold text-gray-900 mb-4">
+            <div className="bg-white rounded-lg shadow-soft p-6">
+              <h2 className="text-2xl font-bold text-neutral-900 mb-4">
                 Instructions
               </h2>
               <ol className="space-y-4" data-testid="instructions-list">
@@ -294,13 +294,13 @@ export default function RecipeDetailPage() {
                     className="flex gap-4 items-start"
                     data-testid="instruction"
                   >
-                    <div className="flex-shrink-0 w-8 h-8 bg-orange-600 text-white rounded-full flex items-center justify-center font-bold">
+                    <div className="flex-shrink-0 w-8 h-8 bg-primary-500 text-white rounded-full flex items-center justify-center font-bold">
                       {instruction.stepNumber}
                     </div>
                     <div className="flex-1">
-                      <p className="text-gray-700">{instruction.instruction}</p>
+                      <p className="text-neutral-700">{instruction.instruction}</p>
                       {instruction.durationMinutes && (
-                        <p className="text-sm text-gray-500 mt-1">
+                        <p className="text-sm text-neutral-500 mt-1">
                           ⏱️ {instruction.durationMinutes} minutes
                         </p>
                       )}
@@ -322,19 +322,19 @@ export default function RecipeDetailPage() {
 
             {/* Source */}
             {(recipe.sourceName || recipe.sourceUrl) && (
-              <div className="bg-gray-50 border border-gray-200 rounded-lg p-6 mt-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">
+              <div className="bg-neutral-50 border border-neutral-200 rounded-lg p-6 mt-6">
+                <h3 className="text-lg font-semibold text-neutral-900 mb-2">
                   Source
                 </h3>
                 {recipe.sourceName && (
-                  <p className="text-gray-700">{recipe.sourceName}</p>
+                  <p className="text-neutral-700">{recipe.sourceName}</p>
                 )}
                 {recipe.sourceUrl && (
                   <a
                     href={recipe.sourceUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-orange-600 hover:text-orange-700 underline"
+                    className="text-primary-500 hover:text-primary-600 underline"
                   >
                     View Original Recipe
                   </a>

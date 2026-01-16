@@ -1,244 +1,75 @@
-# CLAUDE.md - AI Assistant Development Guide
+# CLAUDE.md - Cooking Assistant
 
-**Last Updated:** 2026-01-14
-**Repository:** Cooking Assistant
-**Project Status:** Early Development (Phase 1 Complete)
-
-This document provides high-level guidance for AI assistants working on the Cooking Assistant codebase. For detailed information specific to each subsystem, see the CLAUDE.md files in subdirectories:
-
-- **[backend/CLAUDE.md](backend/CLAUDE.md)** - Backend development standards, Python conventions, testing strategies
-- **[frontend/CLAUDE.md](frontend/CLAUDE.md)** - Frontend development standards, TypeScript/React conventions, component testing
+**Project:** AI-powered cooking companion
+**Status:** Early Development (Phase 1 Complete)
 
 ---
 
-## 🎯 Project Overview
+## What Makes This Project Unique
 
-**Cooking Assistant** is an AI-powered cooking companion designed to help users plan, shop, and cook with ease. The project emphasizes:
-
-- **Local-first development** → easy to run, privacy-focused
-- **AI-everywhere approach** → manual, AI-assist, and full automation modes
-- **Progressive enhancement** → start simple, scale when needed
-- **LLM-friendly data structures** → JSON/SQLite for easy AI integration
+- **Local-first**: Easy to run, privacy-focused, SQLite + JSON
+- **AI-everywhere**: Manual, AI-assist, and full automation modes
+- **LLM-friendly structures**: Data designed for AI consumption
 
 ### Key Features (Planned)
 - Recipe management with AI suggestions
 - Meal planning and smart grocery lists
 - Interactive step-by-step cooking mode
 - Voice-assisted guidance
-- Calendar and smart home integrations
 
 ---
 
-## 📁 Repository Structure
+## Development Principles
+
+### 1. Beads-First
+All work MUST be tracked in beads. Use the `/beads` skill for workflow guidance.
+
+```bash
+bd ready                              # Find available work
+bd show <id>                          # Review details
+bd update <id> --status=in_progress   # Claim it
+```
+
+### 2. TDD-Enforced
+Features and bugs require tests before code. The `/beads` skill includes the RED-GREEN-REVIEW workflow.
+
+### 3. Three Modes
+Every AI feature should support:
+- **Manual**: User has full control
+- **AI Assist**: AI suggests, user approves
+- **AI Automation**: End-to-end with minimal input
+
+---
+
+## Repository Structure
 
 ```
 CookingAssistant/
-├── backend/                    # FastAPI backend (see backend/CLAUDE.md)
-├── frontend/                   # React frontend (see frontend/CLAUDE.md)
-├── docs/                       # Documentation (see docs/CLAUDE.md)
-├── scripts/                    # Utility scripts
-├── .github/                    # GitHub Actions workflows
-├── CLAUDE.md                   # This file - high-level guidance
-├── README.md                   # Project overview and setup
-├── LICENSE
-└── .gitignore
-```
-
-## 🔄 Development Workflow
-
-### We always start with making a clear plan and initiate the SDLC.
-
-1. **Create a Branch**
-   - Ensure you follow stated Git conventions
-   - Semantically name the branch according to user request
-
-2. **Make a plan**
-   - Communicate with the user to understand what is being requested
-   - Create or claim a beads issue (`bd create` or `bd update <id> --status=in_progress`)
-
-### From here, we work in a Test Driven Design loop to achieve the plan.
-
-1. **Write Tests**
-   - Coordinate with the user and create meaningful tests that will allow for clear Test Driven Development
-
-2. **Write Code**
-   - Develop according to the beads issue requirements
-
-3. **Test Your Code**
-   - Follow testing standards in subdirectory instruction files
-   - Move on once tests pass
-
-4. **Update Docs**
-   - Update README.md with anything relevant for the README level
-   - Close completed beads issues (`bd close <id>`)
-
-5. **Commit and Push**
-   - Commit changes and push to remote repo
-   - Run `bd sync --from-main` to sync beads with main branch
-
-
-## 🔀 Git Conventions
-
-### Branch Naming
-- `main` - production-ready code
-- `develop` - integration branch for features
-- `feature/description` - new features
-- `fix/description` - bug fixes
-- `docs/description` - documentation updates
-- `refactor/description` - code refactoring
-- `test/description` - test additions/updates
-
-### Commit Messages
-
-Follow the Conventional Commits specification:
-
-```
-<type>(<scope>): <subject>
-
-<body>
-
-<footer>
-```
-
-**Types:**
-- `feat`: New feature
-- `fix`: Bug fix
-- `docs`: Documentation changes
-- `style`: Code style changes (formatting, no logic change)
-- `refactor`: Code refactoring
-- `test`: Adding or updating tests
-- `chore`: Maintenance tasks
-
-**Examples:**
-```bash
-feat(recipes): add recipe import from URL functionality
-fix(planning): correct grocery list deduplication logic
-docs: update API documentation for cooking endpoints
-refactor(ai): simplify prompt construction for recipe generation
-test(auth): add comprehensive authentication service tests
+├── backend/          # FastAPI (see backend/CLAUDE.md)
+├── frontend/         # React/TypeScript (see frontend/CLAUDE.md)
+├── docs/             # Documentation
+├── .beads/           # Issue tracking
+└── .claude/          # Skills and hooks
 ```
 
 ---
 
-## 🤖 AI Integration Principles
+## Tech-Specific Guidance
 
-### General Guidelines
-
-1. **LLM-Friendly Data Structures:**
-   - Store recipes, instructions, and metadata in structured JSON
-   - Use clear, descriptive field names
-   - Include context in prompts (user preferences, dietary restrictions)
-
-2. **Three Modes of Operation:**
-   - **Manual Mode:** User has full control, no AI suggestions
-   - **AI Assist:** AI provides suggestions, user approves
-   - **AI Automation:** End-to-end workflows with minimal user input
-
-3. **Prompt Engineering:**
-   - Use system prompts to define AI behavior
-   - Include examples (few-shot learning)
-   - Validate AI outputs before saving
-   - Handle errors gracefully
+- **Backend**: See [backend/CLAUDE.md](backend/CLAUDE.md) for Python/FastAPI conventions
+- **Frontend**: See [frontend/CLAUDE.md](frontend/CLAUDE.md) for React/TypeScript conventions
 
 ---
 
-## 🚨 Important Principles for AI Assistants
+## Session Close Protocol
 
-### Do's ✅
-
-- **Read existing code before modifying** - Understand patterns and conventions
-- **Use type hints** - Python and TypeScript both benefit from types
-- **Write tests** - Especially for business logic and AI features
-- **Keep it simple** - Start with the simplest solution that works
-- **Document complex logic** - Especially AI prompts and business rules
-- **Follow the three-mode principle** - Manual, AI-assist, AI-automation
-- **Validate AI outputs** - Never trust LLM responses blindly
-- **Check subdirectory CLAUDE.md files** - They contain specific guidance for each area
-
-### Don'ts ❌
-
-- **Don't over-engineer** - Build what's needed now, not what might be needed
-- **Don't skip error handling** - Especially for AI features and external APIs
-- **Don't hardcode values** - Use configuration files
-- **Don't ignore security** - Validate inputs, sanitize outputs, use proper auth
-- **Don't commit secrets** - Use environment variables
-- **Don't break existing tests** - Fix or update them appropriately
-- **Don't mix concerns** - Keep business logic separate from API routes
-- **Don't skip reading subdirectory guides** - Context-specific advice is there for a reason
-
-### Security Considerations
-
-- **Input Validation:** Always validate and sanitize user inputs
-- **SQL Injection:** Use ORM parameterized queries
-- **XSS Prevention:** Sanitize data before rendering in frontend
-- **Authentication:** Implement proper user authentication (JWT recommended)
-- **Authorization:** Check user permissions before allowing actions
-- **Rate Limiting:** Protect API endpoints from abuse
-- **Secrets Management:** Never commit API keys or passwords
-- **CORS:** Configure properly for frontend-backend communication
-
----
-
-## 📚 Additional Resources
-
-### Documentation to Reference
-
-- **Project README:** [README.md](README.md)
-- **Archived Implementation Plan:** [docs/archive/master_implementation_plan_v1.md](docs/archive/master_implementation_plan_v1.md) (historical reference)
-
-### Issue Tracking with Beads
-
-This project uses [beads](https://github.com/anthropics/beads) for roadmap and issue tracking:
+Before ending any session:
 
 ```bash
-bd ready              # Show issues ready to work on
-bd list --status=all  # List all issues
-bd show <id>          # View issue details
-bd create --title="..." --type=task --priority=2  # Create new issue
-bd update <id> --status=in_progress  # Claim work
-bd close <id>         # Mark complete
-bd stats              # Project statistics
+git status              # Check what changed
+git add <files>         # Stage changes
+bd sync --from-main     # Pull beads updates
+git commit -m "..."     # Commit with conventional message
 ```
 
-**Issue Types:** `task`, `bug`, `feature`, `epic`
-**Priorities:** P0 (critical) → P4 (backlog)
-
-### Tech Stack Documentation
-- **FastAPI:** https://fastapi.tiangolo.com/
-- **React:** https://react.dev/
-- **SQLAlchemy:** https://docs.sqlalchemy.org/
-- **Pydantic:** https://docs.pydantic.dev/
-- **Vite:** https://vitejs.dev/
-
-### Design Patterns to Follow
-
-- **Repository Pattern** - Separate data access from business logic
-- **Service Layer Pattern** - Business logic in services, not controllers
-- **Dependency Injection** - FastAPI's built-in DI for database sessions
-- **Component Composition** - React component design
-- **Hooks Pattern** - React custom hooks for reusable logic
-
----
-
-## 🔄 Document Maintenance
-
-The CLAUDE.md files in each subdirectory should be updated when:
-- New conventions are established in that area
-- Tech stack changes for that component
-- New patterns are adopted
-- Significant refactoring occurs
-
-**Last reviewed:** 2026-01-14
-**Next review recommended:** After Phase 2 completion
-
----
-
-## 💡 Questions or Need Help?
-
-This is a living documentation system:
-1. Check the relevant subdirectory's CLAUDE.md first
-2. Run `bd ready` to see current work items
-3. Open an issue on GitHub if something is unclear
-4. Submit a PR with proposed documentation improvements
-
-Remember: The goal is to make it easy for both humans and AI assistants to contribute effectively to this project!
+**Rule**: Every `bd close` must be followed immediately by a `git commit`.
