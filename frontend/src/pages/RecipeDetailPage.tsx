@@ -6,6 +6,7 @@
 
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { ChevronLeft, Clock, Users } from '../components/common/icons';
 import { recipeApi } from '../services/recipeApi';
 import type { Recipe } from '../types';
 import { useAuth } from '../contexts/AuthContext';
@@ -83,7 +84,7 @@ export default function RecipeDetailPage() {
   // Loading state
   if (loading) {
     return (
-      <div className="min-h-screen bg-neutral-50 flex justify-center items-center">
+      <div className="flex justify-center items-center min-h-[50vh]">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500"></div>
       </div>
     );
@@ -92,20 +93,16 @@ export default function RecipeDetailPage() {
   // Error state
   if (error || !recipe) {
     return (
-      <div className="min-h-screen bg-neutral-50">
-        <div className="container mx-auto px-4 py-8">
-          <div className="bg-error-50 border border-error-200 rounded-lg p-6">
-            <p className="text-error-700">
-              <strong>Error:</strong> {error || 'Recipe not found'}
-            </p>
-            <button
-              onClick={() => navigate('/recipes')}
-              className="mt-4 px-4 py-2 bg-primary-500 text-white rounded-lg font-semibold hover:bg-primary-600 transition"
-            >
-              Back to Recipes
-            </button>
-          </div>
-        </div>
+      <div className="bg-error-50 border border-error-200 rounded-lg p-6">
+        <p className="text-error-700">
+          <strong>Error:</strong> {error || 'Recipe not found'}
+        </p>
+        <button
+          onClick={() => navigate('/recipes')}
+          className="mt-4 px-4 py-2 bg-primary-500 text-white rounded-lg font-semibold hover:bg-primary-600 transition"
+        >
+          Back to Recipes
+        </button>
       </div>
     );
   }
@@ -113,22 +110,14 @@ export default function RecipeDetailPage() {
   const isOwner = user?.id === recipe.ownerId;
 
   return (
-    <div className="min-h-screen bg-neutral-50">
-      <div className="container mx-auto px-4 py-8">
-        {/* Header */}
+    <div>
+      {/* Header */}
         <div className="mb-6">
           <button
             onClick={() => navigate('/recipes')}
             className="text-primary-500 hover:text-primary-600 font-medium mb-4 flex items-center gap-1"
           >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M15 19l-7-7 7-7"
-              />
-            </svg>
+            <ChevronLeft className="w-5 h-5" />
             Back to Recipes
           </button>
         </div>
@@ -186,14 +175,7 @@ export default function RecipeDetailPage() {
             {/* Meta Information */}
             <div className="flex flex-wrap items-center gap-4 mb-4">
               <div className="flex items-center gap-2 text-neutral-600">
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                  />
-                </svg>
+                <Clock className="w-5 h-5" />
                 <span>
                   Prep: <span data-testid="prep-time">{recipe.prepTimeMinutes}</span> min | Cook:{' '}
                   <span data-testid="cook-time">{recipe.cookTimeMinutes}</span> min | Total:{' '}
@@ -202,14 +184,7 @@ export default function RecipeDetailPage() {
               </div>
 
               <div className="flex items-center gap-2 text-neutral-600">
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
-                  />
-                </svg>
+                <Users className="w-5 h-5" />
                 <span data-testid="servings">{recipe.servings} servings</span>
               </div>
             </div>
@@ -319,14 +294,13 @@ export default function RecipeDetailPage() {
           </div>
         </div>
 
-        {/* Share Modal */}
-        <ShareModal
-          isOpen={showShareModal}
-          onClose={() => setShowShareModal(false)}
-          recipeId={recipe.id}
-          itemName={recipe.title}
-        />
-      </div>
+      {/* Share Modal */}
+      <ShareModal
+        isOpen={showShareModal}
+        onClose={() => setShowShareModal(false)}
+        recipeId={recipe.id}
+        itemName={recipe.title}
+      />
     </div>
   );
 }

@@ -6,6 +6,7 @@
 
 import { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
+import { FileText } from '../components/common/icons';
 import RecipeCard from '../components/recipes/RecipeCard';
 import ShareModal from '../components/sharing/ShareModal';
 import * as libraryApi from '../services/libraryApi';
@@ -93,7 +94,7 @@ export default function LibraryDetailPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-neutral-50 flex items-center justify-center">
+      <div className="flex justify-center items-center min-h-[50vh]">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500"></div>
       </div>
     );
@@ -101,38 +102,33 @@ export default function LibraryDetailPage() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-neutral-50 flex items-center justify-center px-4">
-        <div className="bg-error-50 border border-error-200 rounded-lg p-6 max-w-md w-full">
-          <h2 className="text-xl font-bold text-error-700 mb-2">Error</h2>
-          <p className="text-error-600">{error}</p>
-          <Link
-            to="/libraries"
-            className="mt-4 inline-block text-primary-500 hover:text-primary-600 font-medium"
-          >
-            Back to Libraries
-          </Link>
-        </div>
+      <div className="bg-error-50 border border-error-200 rounded-lg p-6 max-w-md">
+        <h2 className="text-xl font-bold text-error-700 mb-2">Error</h2>
+        <p className="text-error-600">{error}</p>
+        <Link
+          to="/libraries"
+          className="mt-4 inline-block text-primary-500 hover:text-primary-600 font-medium"
+        >
+          Back to Libraries
+        </Link>
       </div>
     );
   }
 
   if (!library) {
     return (
-      <div className="min-h-screen bg-neutral-50 flex items-center justify-center px-4">
-        <div className="text-center">
-          <h2 className="text-2xl font-bold text-neutral-900 mb-2">Library not found</h2>
-          <Link to="/libraries" className="text-primary-500 hover:text-primary-600 font-medium">
-            Back to Libraries
-          </Link>
-        </div>
+      <div className="text-center py-12">
+        <h2 className="text-2xl font-bold text-neutral-900 mb-2">Library not found</h2>
+        <Link to="/libraries" className="text-primary-500 hover:text-primary-600 font-medium">
+          Back to Libraries
+        </Link>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-neutral-50">
-      <div className="container mx-auto px-4 py-8">
-        {/* Breadcrumb */}
+    <div>
+      {/* Breadcrumb */}
         <nav className="mb-4">
           <Link to="/libraries" className="text-primary-500 hover:text-primary-600 font-medium">
             Libraries
@@ -262,26 +258,14 @@ export default function LibraryDetailPage() {
 
         {/* Recipes Grid */}
         {library.recipes && library.recipes.length > 0 ? (
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6">
             {library.recipes.map((recipe) => (
               <RecipeCard key={recipe.id} recipe={recipe} />
             ))}
           </div>
         ) : (
           <div className="text-center py-12 bg-white rounded-lg shadow-soft">
-            <svg
-              className="mx-auto h-12 w-12 text-neutral-400"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-              />
-            </svg>
+            <FileText className="mx-auto h-12 w-12 text-neutral-400" />
             <h3 className="mt-2 text-sm font-medium text-neutral-900">
               No recipes in this library
             </h3>
@@ -291,14 +275,13 @@ export default function LibraryDetailPage() {
           </div>
         )}
 
-        {/* Share Modal */}
-        <ShareModal
-          isOpen={showShareModal}
-          onClose={() => setShowShareModal(false)}
-          libraryId={library.id}
-          itemName={library.name}
-        />
-      </div>
+      {/* Share Modal */}
+      <ShareModal
+        isOpen={showShareModal}
+        onClose={() => setShowShareModal(false)}
+        libraryId={library.id}
+        itemName={library.name}
+      />
     </div>
   );
 }

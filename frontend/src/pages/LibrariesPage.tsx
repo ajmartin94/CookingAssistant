@@ -5,6 +5,7 @@
  */
 
 import { useState, useEffect } from 'react';
+import { Archive } from '../components/common/icons';
 import LibraryCard from '../components/libraries/LibraryCard';
 import * as libraryApi from '../services/libraryApi';
 import type { RecipeLibrary } from '../types';
@@ -74,18 +75,17 @@ export default function LibrariesPage() {
   };
 
   return (
-    <div className="min-h-screen bg-neutral-50">
-      <div className="container mx-auto px-4 py-8">
-        {/* Header */}
-        <div className="flex justify-between items-center mb-8">
-          <h1 className="text-4xl font-bold text-neutral-900">My Libraries</h1>
-          <button
-            onClick={() => setShowCreateForm(true)}
-            className="px-4 py-2 bg-primary-500 text-white rounded-lg font-semibold hover:bg-primary-600 transition"
-          >
-            + New Library
-          </button>
-        </div>
+    <div>
+      {/* Header */}
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-3xl font-display font-bold text-neutral-900">My Libraries</h1>
+        <button
+          onClick={() => setShowCreateForm(true)}
+          className="px-4 py-2 bg-primary-500 text-white rounded-lg font-semibold hover:bg-primary-600 transition"
+        >
+          + New Library
+        </button>
+      </div>
 
         {/* Create Form Modal */}
         {showCreateForm && (
@@ -182,7 +182,7 @@ export default function LibrariesPage() {
 
         {/* Libraries Grid */}
         {!loading && !error && libraries.length > 0 && (
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6">
             {libraries.map((library) => (
               <LibraryCard key={library.id} library={library} onDelete={handleDeleteLibrary} />
             ))}
@@ -192,19 +192,7 @@ export default function LibrariesPage() {
         {/* Empty State */}
         {!loading && !error && libraries.length === 0 && (
           <div className="text-center py-12">
-            <svg
-              className="mx-auto h-12 w-12 text-neutral-400"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
-              />
-            </svg>
+            <Archive className="mx-auto h-12 w-12 text-neutral-400" />
             <h3 className="mt-2 text-sm font-medium text-neutral-900">No libraries yet</h3>
             <p className="mt-1 text-sm text-neutral-500">
               Create a library to organize your recipes
@@ -219,7 +207,6 @@ export default function LibrariesPage() {
             </div>
           </div>
         )}
-      </div>
     </div>
   );
 }

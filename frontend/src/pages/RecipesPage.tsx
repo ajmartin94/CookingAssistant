@@ -6,6 +6,7 @@
 
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { FileText } from '../components/common/icons';
 import RecipeCard from '../components/recipes/RecipeCard';
 import { recipeApi } from '../services/recipeApi';
 import type { Recipe } from '../types';
@@ -73,18 +74,11 @@ export default function RecipesPage() {
   };
 
   return (
-    <div className="min-h-screen bg-neutral-50">
-      <div className="container mx-auto px-4 py-8">
-        {/* Header */}
-        <div className="flex justify-between items-center mb-8">
-          <h1 className="text-4xl font-bold text-neutral-900">My Recipes</h1>
-          <Link
-            to="/recipes/create"
-            className="px-4 py-2 bg-primary-500 text-white rounded-lg font-semibold hover:bg-primary-600 transition"
-          >
-            + New Recipe
-          </Link>
-        </div>
+    <div>
+      {/* Header */}
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-3xl font-display font-bold text-neutral-900">My Recipes</h1>
+      </div>
 
         {/* Search and Filters */}
         <div className="bg-white rounded-lg shadow-soft p-6 mb-6">
@@ -208,7 +202,7 @@ export default function RecipesPage() {
 
         {/* Recipes Grid */}
         {!loading && !error && recipes.length > 0 && (
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6 mb-8">
             {recipes.map((recipe) => (
               <RecipeCard key={recipe.id} recipe={recipe} />
             ))}
@@ -218,19 +212,7 @@ export default function RecipesPage() {
         {/* Empty State */}
         {!loading && !error && recipes.length === 0 && (
           <div className="text-center py-12">
-            <svg
-              className="mx-auto h-12 w-12 text-neutral-400"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-              />
-            </svg>
+            <FileText className="mx-auto h-12 w-12 text-neutral-400" />
             <h3 className="mt-2 text-sm font-medium text-neutral-900">No recipes found</h3>
             <p className="mt-1 text-sm text-neutral-500">
               {searchQuery || cuisineFilter || difficultyFilter || dietaryFilter
@@ -248,31 +230,30 @@ export default function RecipesPage() {
           </div>
         )}
 
-        {/* Pagination */}
-        {!loading && !error && totalPages > 1 && (
-          <div className="flex justify-center items-center gap-2">
-            <button
-              onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
-              disabled={currentPage === 1}
-              className="px-4 py-2 border border-neutral-300 rounded-lg font-medium text-neutral-700 hover:bg-neutral-50 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              Previous
-            </button>
+      {/* Pagination */}
+      {!loading && !error && totalPages > 1 && (
+        <div className="flex justify-center items-center gap-2">
+          <button
+            onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
+            disabled={currentPage === 1}
+            className="px-4 py-2 border border-neutral-300 rounded-lg font-medium text-neutral-700 hover:bg-neutral-50 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            Previous
+          </button>
 
-            <span className="px-4 py-2 text-neutral-700">
-              Page {currentPage} of {totalPages}
-            </span>
+          <span className="px-4 py-2 text-neutral-700">
+            Page {currentPage} of {totalPages}
+          </span>
 
-            <button
-              onClick={() => setCurrentPage((prev) => Math.min(totalPages, prev + 1))}
-              disabled={currentPage === totalPages}
-              className="px-4 py-2 border border-neutral-300 rounded-lg font-medium text-neutral-700 hover:bg-neutral-50 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              Next
-            </button>
-          </div>
-        )}
-      </div>
+          <button
+            onClick={() => setCurrentPage((prev) => Math.min(totalPages, prev + 1))}
+            disabled={currentPage === totalPages}
+            className="px-4 py-2 border border-neutral-300 rounded-lg font-medium text-neutral-700 hover:bg-neutral-50 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            Next
+          </button>
+        </div>
+      )}
     </div>
   );
 }
