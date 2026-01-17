@@ -15,12 +15,26 @@ test.describe('User Registration', () => {
     const email = generateUniqueEmail();
     const password = 'TestPassword123!';
 
+    // Set up response listener BEFORE submitting
+    const registerResponsePromise = page.waitForResponse(
+      (resp) => resp.url().includes('/users') && resp.request().method() === 'POST'
+    );
+
     await registerPage.register(username, email, password);
 
-    // Should redirect to recipes page
+    // 1. Verify the API call succeeded (not just that we redirected)
+    const registerResponse = await registerResponsePromise;
+    expect(registerResponse.status()).toBe(201);
+
+    // 2. Verify the response contains user data
+    const responseBody = await registerResponse.json();
+    expect(responseBody.username).toBe(username);
+    expect(responseBody.email).toBe(email);
+
+    // 3. Should redirect to recipes page
     await expect(page).toHaveURL(/\/recipes/);
 
-    // Should have auth token in localStorage
+    // 4. Should have auth token in localStorage
     const token = await registerPage.getAuthToken();
     expect(token).toBeTruthy();
   });
@@ -88,7 +102,17 @@ test.describe('User Registration', () => {
     const email = generateUniqueEmail();
     const password = 'TestPassword123!';
 
+    // Set up response listener
+    const registerResponsePromise = page.waitForResponse(
+      (resp) => resp.url().includes('/users') && resp.request().method() === 'POST'
+    );
+
     await registerPage.register(username, email, password);
+
+    // Wait for successful registration
+    const registerResponse = await registerResponsePromise;
+    expect(registerResponse.status()).toBe(201);
+
     await expect(page).toHaveURL(/\/recipes/);
 
     // Refresh the page
@@ -100,5 +124,15 @@ test.describe('User Registration', () => {
     // Token should still exist
     const token = await registerPage.getAuthToken();
     expect(token).toBeTruthy();
+
+    // Verify the page actually rendered (not just URL check)
+    const pageRendered = await Promise.race([
+      page.locator('h1:has-text("My Recipes")').isVisible().then(() => true),
+      page.locator('text=No recipes').isVisible().then(() => true),
+      page.locator('text=Create Recipe').isVisible().then(() => true),
+      page.locator('button:has-text("Create")').isVisible().then(() => true),
+      new Promise((resolve) => setTimeout(() => resolve(false), 5000)),
+    ]);
+    expect(pageRendered).toBe(true);
   });
 });

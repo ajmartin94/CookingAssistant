@@ -35,9 +35,35 @@ export default defineConfig({
   },
 
   projects: [
-    { name: 'chromium', use: { ...devices['Desktop Chrome'] } },
-    { name: 'firefox', use: { ...devices['Desktop Firefox'] } },
-    { name: 'webkit', use: { ...devices['Desktop Safari'] } },
+    // Smoke tests run FIRST - if they fail, nothing else runs
+    {
+      name: 'smoke',
+      testDir: './e2e/tests/smoke',
+      testMatch: '**/*.spec.ts',
+      use: { ...devices['Desktop Chrome'] },
+    },
+    // Browser tests depend on smoke - won't run if smoke fails
+    {
+      name: 'chromium',
+      dependencies: ['smoke'],
+      testDir: './e2e/tests',
+      testIgnore: '**/smoke/**',
+      use: { ...devices['Desktop Chrome'] },
+    },
+    {
+      name: 'firefox',
+      dependencies: ['smoke'],
+      testDir: './e2e/tests',
+      testIgnore: '**/smoke/**',
+      use: { ...devices['Desktop Firefox'] },
+    },
+    {
+      name: 'webkit',
+      dependencies: ['smoke'],
+      testDir: './e2e/tests',
+      testIgnore: '**/smoke/**',
+      use: { ...devices['Desktop Safari'] },
+    },
   ],
 
   // CRITICAL: Start both servers before tests

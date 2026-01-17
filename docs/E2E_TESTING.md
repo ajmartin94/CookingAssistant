@@ -8,6 +8,7 @@
 ## 📋 Table of Contents
 
 - [Overview](#overview)
+- [Smoke Tests (Critical)](#smoke-tests-critical)
 - [Quick Start](#quick-start)
 - [Test Structure](#test-structure)
 - [Running Tests](#running-tests)
@@ -38,10 +39,13 @@ E2E tests catch issues that unit and integration tests miss:
 - ✅ Database persistence issues
 - ✅ Multi-step user workflows
 - ✅ Cross-browser compatibility
+- ✅ CSS not loading (app renders unstyled)
+- ✅ Authentication flow broken
 
 ### Test Coverage
 
 E2E tests cover:
+- **Smoke Tests:** Critical path verification (CSS loads, login works, API responds)
 - **Authentication:** Registration, login, and logout flows
 - **Recipe CRUD:** Create, list, detail, edit, and delete operations
 - **Validation Errors:** Auth and recipe form validation
@@ -49,6 +53,57 @@ E2E tests cover:
 - **Workflows:** Complete user journeys (e.g., registration → create recipe → edit → delete)
 
 **Browsers:** Chromium, Firefox, WebKit (Safari)
+
+---
+
+## Smoke Tests (Critical)
+
+Smoke tests are the **gatekeeper** of the test suite. They run FIRST, and if any fail, no other tests run.
+
+### Location
+
+`e2e/tests/smoke/app-health.spec.ts`
+
+### What They Verify
+
+| Test | What It Catches |
+|------|-----------------|
+| Frontend loads | React fails to mount, JS bundle broken |
+| CSS loads correctly | Stylesheets missing, Tailwind not compiling |
+| Backend API healthy | Server down, database connection failed |
+| Login flow works | Auth API broken, form submission fails |
+| Authenticated requests work | Token invalid, auth middleware broken |
+| Unauthenticated redirect | Protected routes exposed |
+
+### Why This Matters
+
+Before smoke tests, we had situations where:
+- ❌ App rendered completely unstyled → all tests passed
+- ❌ Login was broken → all tests passed (because they only checked URL changes)
+
+Smoke tests verify **the app fundamentally works** before wasting CI time on 50+ other tests.
+
+### Running Smoke Tests
+
+```bash
+# Run smoke tests only
+npx playwright test --project=smoke
+
+# Full suite (smoke runs first automatically)
+npm run test:e2e
+```
+
+### Configuration
+
+In `playwright.config.ts`, browser projects depend on smoke:
+
+```typescript
+projects: [
+  { name: 'smoke', testDir: './e2e/tests/smoke' },
+  { name: 'chromium', dependencies: ['smoke'], ... },
+  { name: 'firefox', dependencies: ['smoke'], ... },
+]
+```
 
 ---
 
@@ -499,7 +554,75 @@ On failure, CI uploads:
 
 ## Best Practices
 
-### 1. Use Page Objects
+### 1. Verify API Responses, Not Just URLs
+
+This is the most critical pattern. Tests that only check URL changes can pass when the feature is completely broken.
+
+✅ **Good:**
+```typescript
+// Intercept the API response BEFORE the action
+const loginResponse = page.waitForResponse(
+  resp => resp.url().includes('/users/login') && resp.status() === 200
+);
+
+await loginPage.login(username, password);
+
+// Verify the API actually succeeded
+await loginResponse;
+const body = await (await loginResponse).json();
+expect(body.access_token).toBeTruthy();
+```
+
+❌ **Bad:**
+```typescript
+// Only checks if URL changed - login could be completely broken
+await loginPage.login(username, password);
+await expect(page).toHaveURL(/\/recipes/);
+```
+
+### 2. Verify CSS with Computed Styles
+
+Don't just check if elements are visible. Verify styles are actually applied.
+
+✅ **Good:**
+```typescript
+const styles = await button.evaluate(el => {
+  const computed = window.getComputedStyle(el);
+  return {
+    backgroundColor: computed.backgroundColor,
+    borderRadius: computed.borderRadius,
+  };
+});
+
+// Verify not browser defaults
+expect(styles.backgroundColor).not.toBe('rgba(0, 0, 0, 0)');
+expect(styles.borderRadius).not.toBe('0px');
+```
+
+❌ **Bad:**
+```typescript
+// Passes even when CSS completely fails to load
+await expect(button).toBeVisible();
+```
+
+### 3. Use Specific Locators
+
+Avoid ambiguous selectors that match multiple elements.
+
+✅ **Good:**
+```typescript
+page.locator('h1:has-text("My Recipes")')
+page.locator('button[type="submit"]')
+page.locator('[data-testid="recipe-card"]').first()
+```
+
+❌ **Bad:**
+```typescript
+page.locator('text=My Recipes')  // Matches nav link AND heading
+page.locator('button')           // Matches all buttons
+```
+
+### 4. Use Page Objects
 
 ✅ **Good:**
 ```typescript
@@ -512,7 +635,7 @@ await recipesPage.search('pasta');
 await page.locator('input[placeholder*="Search"]').fill('pasta');
 ```
 
-### 2. Use API for Setup
+### 5. Use API for Setup
 
 ✅ **Good:**
 ```typescript

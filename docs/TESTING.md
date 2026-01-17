@@ -4,6 +4,52 @@ This document describes the testing strategy, infrastructure, and conventions fo
 
 ---
 
+## Testing Philosophy
+
+**Tests exist to protect user experiences, not to hit coverage metrics.**
+
+### The Testing Pyramid + Smoke Layer
+
+```
+        ┌─────────────┐
+        │   SMOKE     │  ← Blocks everything if it fails
+        │  (6 tests)  │     "Is the app fundamentally working?"
+        └─────────────┘
+       ┌───────────────┐
+       │     E2E       │  ← User journeys across full stack
+       │  (17 suites)  │     "Can users complete workflows?"
+       └───────────────┘
+      ┌─────────────────┐
+      │  INTEGRATION    │  ← API contracts and data flow
+      │  (backend API)  │     "Do systems communicate correctly?"
+      └─────────────────┘
+     ┌───────────────────┐
+     │      UNIT         │  ← Isolated business logic
+     │  (services/utils) │     "Is the calculation correct?"
+     └───────────────────┘
+```
+
+### Critical Principles
+
+1. **Smoke tests are the gatekeeper**: If the app doesn't load, CSS doesn't render, or login is broken, no other tests run. This saves CI time and immediately surfaces catastrophic failures.
+
+2. **Verify API responses, not just URLs**: A test that only checks `expect(page).toHaveURL(/\/recipes/)` after login can pass even when authentication is completely broken. Always intercept and verify API responses.
+
+3. **Check computed styles for visual verification**: A test that only checks `expect(button).toBeVisible()` passes even when CSS fails to load. Verify computed styles for critical visual elements.
+
+4. **Test behavior, not implementation**: Tests should verify what users see and experience, not internal state or implementation details.
+
+### Before Writing Any Test
+
+Answer these questions:
+1. What user experience are we protecting?
+2. How would a user know if this broke?
+3. What does "working" look like from the user's perspective?
+
+See the `/test-planning` skill for the full UX-first test design workflow.
+
+---
+
 ## Test Infrastructure
 
 ### Backend Testing Stack
@@ -82,11 +128,16 @@ This document describes the testing strategy, infrastructure, and conventions fo
 - **Browsers:** Chromium, Firefox, WebKit (Safari)
 
 **Configuration (playwright.config.ts):**
-- Parallel execution with 4 workers
+- **Smoke tests run first** - All browser projects depend on smoke tests passing
+- Parallel execution with workers
 - Automatic server startup via `webServer` configuration
 - Screenshots and videos on failure
 - Trace collection for debugging
 - Retry on failure (CI only)
+
+**Smoke Tests (e2e/tests/smoke/):**
+- `app-health.spec.ts` - Critical path verification that blocks all other tests
+- Verifies: Frontend loads, CSS applies, backend healthy, login works, auth tokens valid
 
 **Page Object Model:**
 - `BasePage` - Common functionality (navigation, auth)
@@ -160,6 +211,8 @@ frontend/src/
 ```
 e2e/
 ├── tests/                           # Test files
+│   ├── smoke/                       # ⚠️ RUNS FIRST - blocks all others
+│   │   └── app-health.spec.ts       # CSS, login, auth verification
 │   ├── auth/                        # Authentication
 │   │   ├── register.spec.ts
 │   │   ├── login.spec.ts
@@ -371,6 +424,43 @@ describe('RecipeCard', () => {
 3. **Use custom render:** Always include necessary providers
 4. **Mock API calls:** Use MSW for consistent, testable responses
 5. **Avoid testing internal state:** Test rendered output instead
+
+### E2E (Critical Patterns)
+
+1. **Verify API responses, not just URLs:**
+```typescript
+// ❌ BAD: Passes even when login is broken
+await loginPage.login(username, password);
+await expect(page).toHaveURL(/\/recipes/);
+
+// ✅ GOOD: Verifies API actually succeeded
+const responsePromise = page.waitForResponse(
+  resp => resp.url().includes('/users/login') && resp.status() === 200
+);
+await loginPage.login(username, password);
+await responsePromise;
+```
+
+2. **Verify CSS loads with computed styles:**
+```typescript
+// ❌ BAD: Passes even when CSS fails to load
+await expect(button).toBeVisible();
+
+// ✅ GOOD: Verifies styles are actually applied
+const styles = await button.evaluate(el => ({
+  backgroundColor: window.getComputedStyle(el).backgroundColor
+}));
+expect(styles.backgroundColor).not.toBe('rgba(0, 0, 0, 0)');
+```
+
+3. **Use specific locators:**
+```typescript
+// ❌ BAD: Matches multiple elements, causes flaky tests
+page.locator('text=My Recipes')
+
+// ✅ GOOD: Specific to element type
+page.locator('h1:has-text("My Recipes")')
+```
 
 ---
 
