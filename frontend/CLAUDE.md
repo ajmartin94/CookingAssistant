@@ -93,6 +93,30 @@ npm run lint
 
 ---
 
+<!-- Per AD-0100 -->
+## API Conventions
+
+- **Response transformation**: Backend uses snake_case (Python), frontend uses camelCase (TypeScript)
+- Transform at service layer (see `services/recipeApi.ts:transformRecipe`)
+- All API clients should follow this pattern for consistency
+
+---
+
+<!-- Per AD-0100 -->
+## Tailwind Gotchas
+
+- **No comments in className**: Tailwind's JIT scans template literals for class patterns. A comment containing a class name (e.g., `// collapse when...`) will be interpreted as that class.
+  ```tsx
+  // BAD: "collapse" in comment gets parsed as .collapse utility
+  className={`sidebar ${isOpen ? 'w-64' : 'w-16'} // collapse when closed`}
+
+  // GOOD: No comments in className
+  className={`sidebar ${isOpen ? 'w-64' : 'w-16'}`}
+  ```
+- **Tailwind v4 + Vite**: Use `@tailwindcss/vite` plugin, not `@tailwindcss/postcss`
+
+---
+
 ## Testing Patterns
 
 - **Custom render**: Use `test-utils.tsx` with providers

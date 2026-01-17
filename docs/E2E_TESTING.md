@@ -745,6 +745,16 @@ test('should create and edit recipe', async ({ authenticatedPage }) => {
 
 ## Troubleshooting
 
+<!-- Per AD-0100 -->
+### Windows Compatibility
+
+E2E tests are cross-platform compatible. The Playwright config automatically detects Windows and uses the correct Python path:
+
+- **Windows**: `venv\Scripts\python.exe`
+- **Unix/Mac**: `source venv/bin/activate && python`
+
+No manual configuration needed—just ensure your backend venv is set up correctly.
+
 ### Tests Fail Locally But Pass in CI
 
 **Causes:**

@@ -95,6 +95,15 @@ ruff check app/ tests/
 
 ---
 
+<!-- Per AD-0100 -->
+## API Response Conventions
+
+- All API responses use **snake_case** (Python convention)
+- Frontend handles transformation to camelCase
+- Example: `prep_time_minutes`, `cook_time_minutes`, `dietary_tags`
+
+---
+
 ## Adding New Features
 
 1. Define Pydantic schema in `app/schemas/`
