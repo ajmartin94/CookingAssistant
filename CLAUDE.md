@@ -28,9 +28,9 @@ Features and bugs require tests before code. The `/beads` skill includes the RED
 
 <!-- Per AD-0101 -->
 **Enforcement**: GitHub branch protection blocks PR merges unless all CI checks pass:
-- `backend-ci` (lint, type check, tests)
-- `frontend-ci` (lint, type check, build, tests)
-- `e2e-tests` (smoke tests, full E2E suite)
+- `Backend CI (3.11)` (lint, type check, tests)
+- `Frontend CI` (lint, type check, build, tests)
+- `E2E Tests (chromium)` (smoke tests, full E2E suite)
 
 See [docs/TESTING.md](docs/TESTING.md#enforcement-policy) for details.
 

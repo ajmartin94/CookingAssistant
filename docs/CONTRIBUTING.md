@@ -14,9 +14,9 @@ All PRs must pass CI checks before merge. **No exceptions.**
 
 | Check | Must Pass |
 |-------|-----------|
-| `backend-ci` (Python 3.11) | Yes |
-| `frontend-ci` | Yes |
-| `e2e-tests` (chromium) | Yes |
+| `Backend CI (3.11)` | Yes |
+| `Frontend CI` | Yes |
+| `E2E Tests (chromium)` | Yes |
 
 If any check fails, the merge button is disabled.
 

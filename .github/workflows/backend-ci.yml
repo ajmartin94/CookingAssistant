@@ -12,7 +12,8 @@ on:
       - 'backend/**'
 
 jobs:
-  test:
+  backend-test:
+    name: Backend CI (${{ matrix.python-version }})
     runs-on: ubuntu-latest
     strategy:
       matrix:

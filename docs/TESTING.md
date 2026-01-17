@@ -540,9 +540,9 @@ GitHub branch protection rules on `main` and `develop` require these status chec
 
 | Required Check | What It Validates |
 |----------------|-------------------|
-| `backend-ci` (3.11) | Lint (ruff), format (black), types (mypy), tests (pytest) |
-| `frontend-ci` | Lint (eslint), format (prettier), types (tsc), build, tests (vitest) |
-| `e2e-tests` (chromium) | Smoke tests, full E2E suite |
+| `Backend CI (3.11)` | Lint (ruff), format (black), types (mypy), tests (pytest) |
+| `Frontend CI` | Lint (eslint), format (prettier), types (tsc), build, tests (vitest) |
+| `E2E Tests (chromium)` | Smoke tests, full E2E suite |
 
 **Merge is blocked** if any required check fails. No exceptions without admin override.
 

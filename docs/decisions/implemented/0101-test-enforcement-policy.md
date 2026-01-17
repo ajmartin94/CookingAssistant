@@ -201,14 +201,18 @@ After analysis, **Option E (Layered Enforcement)** is the recommended approach. 
 Repository Settings → Branches → Add rule
 ├── Branch name pattern: main
 ├── ☑ Require status checks to pass before merging
-│   ├── backend-ci (3.11)
-│   ├── frontend-ci
-│   └── e2e-tests (chromium)
+│   ├── Backend CI (3.11)
+│   ├── Frontend CI
+│   └── E2E Tests (chromium)
 ├── ☑ Require branches to be up to date
 └── ☑ Do not allow bypassing (optional, for strict enforcement)
 
 Repeat for: develop
 ```
+
+**Note**: Status checks only appear in the dropdown after they've run at least once.
+To bootstrap, create a PR that touches all paths (backend/, frontend/, root) and
+let all workflows complete.
 
 ### Propagation Metadata
 - **Implementer**: Claude (AI Assistant)
