@@ -30,11 +30,11 @@ describe('shareApi', () => {
     });
 
     it('should send correct data to API', async () => {
-      let capturedBody: Record<string, unknown> | null = null;
+      let capturedBody: Record<string, unknown> | undefined;
 
       server.use(
         http.post(`${BASE_URL}/api/v1/shares`, async ({ request }) => {
-          capturedBody = await request.json();
+          capturedBody = (await request.json()) as Record<string, unknown>;
           return HttpResponse.json({
             share_token: 'test-token',
             share_url: '/shared/test-token',
@@ -49,9 +49,10 @@ describe('shareApi', () => {
         sharedWithId: 'user-456',
       });
 
-      expect(capturedBody.recipe_id).toBe('recipe-123');
-      expect(capturedBody.permission).toBe('edit');
-      expect(capturedBody.shared_with_id).toBe('user-456');
+      expect(capturedBody).toBeDefined();
+      expect(capturedBody!.recipe_id).toBe('recipe-123');
+      expect(capturedBody!.permission).toBe('edit');
+      expect(capturedBody!.shared_with_id).toBe('user-456');
     });
 
     it('should handle API errors', async () => {
@@ -102,7 +103,7 @@ describe('shareApi', () => {
     });
 
     it('should send pagination parameters', async () => {
-      let capturedParams: URLSearchParams | null = null;
+      let capturedParams: URLSearchParams | undefined;
 
       server.use(
         http.get(`${BASE_URL}/api/v1/shares/my-shares`, ({ request }) => {
@@ -114,8 +115,9 @@ describe('shareApi', () => {
 
       await shareApi.getMyShares({ skip: 10, limit: 20 });
 
-      expect(capturedParams?.get('skip')).toBe('10');
-      expect(capturedParams?.get('limit')).toBe('20');
+      expect(capturedParams).toBeDefined();
+      expect(capturedParams!.get('skip')).toBe('10');
+      expect(capturedParams!.get('limit')).toBe('20');
     });
   });
 

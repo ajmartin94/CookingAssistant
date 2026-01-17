@@ -4,8 +4,9 @@
 
 import { describe, it, expect, beforeEach } from 'vitest';
 import { render, screen, waitFor } from '../test/test-utils';
+import { render as rtlRender } from '@testing-library/react';
 import { useAuth } from './AuthContext';
-import { ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import { server } from '../test/mocks/server';
 import { http, HttpResponse } from 'msw';
 
@@ -132,7 +133,8 @@ describe('AuthContext', () => {
         useAuth();
         return null;
       }
-      render(<BadComponent />, {
+      // Use rtlRender directly to bypass the test-utils wrapper that includes AuthProvider
+      rtlRender(<BadComponent />, {
         wrapper: ({ children }: { children: ReactNode }) => <>{children}</>,
       });
     }).toThrow('useAuth must be used within an AuthProvider');

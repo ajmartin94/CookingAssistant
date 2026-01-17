@@ -31,7 +31,7 @@ describe('recipeApi', () => {
     });
 
     it('should send query parameters for filtering', async () => {
-      let capturedParams: URLSearchParams | null = null;
+      let capturedParams: URLSearchParams | undefined;
 
       server.use(
         http.get(`${BASE_URL}/api/v1/recipes`, ({ request }) => {
@@ -55,11 +55,12 @@ describe('recipeApi', () => {
         page_size: 20,
       });
 
-      expect(capturedParams?.get('cuisine_type')).toBe('Italian');
-      expect(capturedParams?.get('difficulty_level')).toBe('medium');
-      expect(capturedParams?.get('search')).toBe('pasta');
-      expect(capturedParams?.get('page')).toBe('2');
-      expect(capturedParams?.get('page_size')).toBe('20');
+      expect(capturedParams).toBeDefined();
+      expect(capturedParams!.get('cuisine_type')).toBe('Italian');
+      expect(capturedParams!.get('difficulty_level')).toBe('medium');
+      expect(capturedParams!.get('search')).toBe('pasta');
+      expect(capturedParams!.get('page')).toBe('2');
+      expect(capturedParams!.get('page_size')).toBe('20');
     });
 
     it('should handle empty results', async () => {
@@ -156,11 +157,11 @@ describe('recipeApi', () => {
     });
 
     it('should send recipe data in request body', async () => {
-      let capturedBody: Record<string, unknown> | null = null;
+      let capturedBody: Record<string, unknown> | undefined;
 
       server.use(
         http.post(`${BASE_URL}/api/v1/recipes`, async ({ request }) => {
-          capturedBody = await request.json();
+          capturedBody = (await request.json()) as Record<string, unknown>;
           return HttpResponse.json({
             id: '1',
             ...capturedBody,
@@ -175,8 +176,11 @@ describe('recipeApi', () => {
         description: 'Test description',
         ingredients: [],
         instructions: [],
+        prepTimeMinutes: 0,
+        cookTimeMinutes: 0,
         servings: 4,
         cuisineType: 'American',
+        dietaryTags: [],
         difficultyLevel: 'easy' as const,
       };
 
@@ -219,11 +223,11 @@ describe('recipeApi', () => {
     });
 
     it('should send partial update data', async () => {
-      let capturedBody: Record<string, unknown> | null = null;
+      let capturedBody: Record<string, unknown> | undefined;
 
       server.use(
         http.put(`${BASE_URL}/api/v1/recipes/:id`, async ({ request }) => {
-          capturedBody = await request.json();
+          capturedBody = (await request.json()) as Record<string, unknown>;
           return HttpResponse.json({
             id: '1',
             title: 'Original Title',
@@ -233,7 +237,7 @@ describe('recipeApi', () => {
             prep_time_minutes: 10,
             cook_time_minutes: 20,
             total_time_minutes: 30,
-            servings: capturedBody.servings || 4,
+            servings: (capturedBody?.servings as number) || 4,
             cuisine_type: 'American',
             dietary_tags: [],
             difficulty_level: 'easy',

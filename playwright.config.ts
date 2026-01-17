@@ -71,7 +71,7 @@ export default defineConfig({
     {
       command: process.platform === 'win32'
         ? 'cd backend && venv\\Scripts\\python.exe -m app.main'
-        : 'cd backend && source venv/bin/activate && python -m app.main',
+        : 'cd backend && . venv/bin/activate && python -m app.main',
       url: 'http://localhost:8000/api/v1/health',
       timeout: 120 * 1000,
       reuseExistingServer: !process.env.CI,

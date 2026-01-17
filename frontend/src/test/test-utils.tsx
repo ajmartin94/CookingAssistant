@@ -1,6 +1,8 @@
 /* eslint-disable react-refresh/only-export-components */
-import React, { ReactElement } from 'react';
-import { render, RenderOptions } from '@testing-library/react';
+import type { ReactElement } from 'react';
+import React from 'react';
+import { render } from '@testing-library/react';
+import type { RenderOptions } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { BrowserRouter } from 'react-router-dom';
 import { AuthProvider } from '../contexts/AuthContext';

@@ -18,11 +18,11 @@ describe('RecipeCard', () => {
     difficultyLevel: 'easy',
     dietaryTags: ['vegetarian'],
     imageUrl: 'https://example.com/cookie.jpg',
-    sourceUrl: null,
-    sourceName: null,
-    notes: null,
+    sourceUrl: undefined,
+    sourceName: undefined,
+    notes: undefined,
     ownerId: 'user1',
-    libraryId: null,
+    libraryId: undefined,
     createdAt: '2024-01-01T00:00:00Z',
     updatedAt: '2024-01-01T00:00:00Z',
   };
@@ -57,8 +57,8 @@ describe('RecipeCard', () => {
       expect(image).toHaveAttribute('src', 'https://example.com/cookie.jpg');
     });
 
-    it('should display placeholder icon when imageUrl is null', () => {
-      const recipeWithoutImage = { ...mockRecipe, imageUrl: null };
+    it('should display placeholder icon when imageUrl is undefined', () => {
+      const recipeWithoutImage = { ...mockRecipe, imageUrl: undefined };
       const { container } = render(<RecipeCard recipe={recipeWithoutImage} />);
 
       expect(screen.queryByAltText('Chocolate Chip Cookies')).not.toBeInTheDocument();
@@ -89,8 +89,8 @@ describe('RecipeCard', () => {
       expect(screen.getByText('American')).toBeInTheDocument();
     });
 
-    it('should not display cuisine type when null', () => {
-      const recipeWithoutCuisine = { ...mockRecipe, cuisineType: null };
+    it('should not display cuisine type when empty', () => {
+      const recipeWithoutCuisine = { ...mockRecipe, cuisineType: '' };
       render(<RecipeCard recipe={recipeWithoutCuisine} />);
 
       expect(screen.queryByText('American')).not.toBeInTheDocument();
@@ -163,8 +163,9 @@ describe('RecipeCard', () => {
       expect(screen.queryByText('vegetarian')).not.toBeInTheDocument();
     });
 
-    it('should not display dietary tags section when null', () => {
-      const recipeWithoutTags = { ...mockRecipe, dietaryTags: null };
+    it('should handle missing dietary tags gracefully', () => {
+      // Test defensive behavior with undefined dietaryTags (edge case)
+      const recipeWithoutTags = { ...mockRecipe, dietaryTags: undefined } as unknown as Recipe;
       render(<RecipeCard recipe={recipeWithoutTags} />);
 
       expect(screen.queryByText('vegetarian')).not.toBeInTheDocument();

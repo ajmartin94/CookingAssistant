@@ -29,7 +29,7 @@ describe('libraryApi', () => {
     });
 
     it('should send skip and limit parameters', async () => {
-      let capturedParams: URLSearchParams | null = null;
+      let capturedParams: URLSearchParams | undefined;
 
       server.use(
         http.get(`${BASE_URL}/api/v1/libraries`, ({ request }) => {
@@ -41,12 +41,13 @@ describe('libraryApi', () => {
 
       await libraryApi.getLibraries(10, 25);
 
-      expect(capturedParams?.get('skip')).toBe('10');
-      expect(capturedParams?.get('limit')).toBe('25');
+      expect(capturedParams).toBeDefined();
+      expect(capturedParams!.get('skip')).toBe('10');
+      expect(capturedParams!.get('limit')).toBe('25');
     });
 
     it('should use default parameters when not provided', async () => {
-      let capturedParams: URLSearchParams | null = null;
+      let capturedParams: URLSearchParams | undefined;
 
       server.use(
         http.get(`${BASE_URL}/api/v1/libraries`, ({ request }) => {
@@ -58,8 +59,9 @@ describe('libraryApi', () => {
 
       await libraryApi.getLibraries();
 
-      expect(capturedParams?.get('skip')).toBe('0');
-      expect(capturedParams?.get('limit')).toBe('50');
+      expect(capturedParams).toBeDefined();
+      expect(capturedParams!.get('skip')).toBe('0');
+      expect(capturedParams!.get('limit')).toBe('50');
     });
 
     it('should handle empty results', async () => {
@@ -91,7 +93,7 @@ describe('libraryApi', () => {
 
       expect(library.id).toBe('1');
       expect(library.name).toBeTruthy();
-      expect(library).toHaveProperty('recipes');
+      expect(library).toHaveProperty('ownerId');
     });
 
     it('should use correct library ID in request', async () => {
@@ -139,11 +141,11 @@ describe('libraryApi', () => {
     });
 
     it('should send library data in request body', async () => {
-      let capturedBody: Record<string, unknown> | null = null;
+      let capturedBody: Record<string, unknown> | undefined;
 
       server.use(
         http.post(`${BASE_URL}/api/v1/libraries`, async ({ request }) => {
-          capturedBody = await request.json();
+          capturedBody = (await request.json()) as Record<string, unknown>;
           return HttpResponse.json({
             id: '1',
             ...capturedBody,
@@ -189,11 +191,11 @@ describe('libraryApi', () => {
     });
 
     it('should send partial update data', async () => {
-      let capturedBody: Record<string, unknown> | null = null;
+      let capturedBody: Record<string, unknown> | undefined;
 
       server.use(
         http.put(`${BASE_URL}/api/v1/libraries/:id`, async ({ request }) => {
-          capturedBody = await request.json();
+          capturedBody = (await request.json()) as Record<string, unknown>;
           return HttpResponse.json({
             id: '1',
             name: 'Original Name',
