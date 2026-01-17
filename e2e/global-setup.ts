@@ -1,56 +1,41 @@
-import { chromium, FullConfig } from '@playwright/test';
-import fs from 'fs';
-import path from 'path';
+import type { FullConfig } from '@playwright/test';
 
-async function globalSetup(config: FullConfig) {
-  console.log('🚀 Starting E2E test environment setup...');
-
-  // Wait for backend health check
-  console.log('⏳ Waiting for backend server...');
-  const browser = await chromium.launch();
-  const page = await browser.newPage();
-
-  let backendReady = false;
-  for (let i = 0; i < 30; i++) {
+// Helper to wait for a URL to be ready
+async function waitForUrl(url: string, name: string, maxAttempts = 30): Promise<boolean> {
+  for (let i = 0; i < maxAttempts; i++) {
     try {
-      const response = await page.goto('http://localhost:8000/api/v1/health');
-      if (response?.ok()) {
-        console.log('✅ Backend server is ready');
-        backendReady = true;
-        break;
+      const response = await fetch(url);
+      if (response.ok) {
+        console.log(`✅ ${name} is ready`);
+        return true;
       }
     } catch {
-      await page.waitForTimeout(1000);
+      // Server not ready yet
     }
+    await new Promise((resolve) => setTimeout(resolve, 1000));
   }
+  return false;
+}
+
+async function globalSetup(_config: FullConfig) {
+  console.log('🚀 Starting E2E test environment setup...');
+
+  // Wait for backend health check using native fetch (no browser needed)
+  console.log('⏳ Waiting for backend server...');
+  const backendReady = await waitForUrl('http://localhost:8000/api/v1/health', 'Backend server');
 
   if (!backendReady) {
-    await browser.close();
     throw new Error('❌ Backend server failed to start');
   }
 
   // Wait for frontend
   console.log('⏳ Waiting for frontend server...');
-  let frontendReady = false;
-  for (let i = 0; i < 30; i++) {
-    try {
-      const response = await page.goto('http://localhost:5173');
-      if (response?.ok()) {
-        console.log('✅ Frontend server is ready');
-        frontendReady = true;
-        break;
-      }
-    } catch {
-      await page.waitForTimeout(1000);
-    }
-  }
+  const frontendReady = await waitForUrl('http://localhost:5173', 'Frontend server');
 
   if (!frontendReady) {
-    await browser.close();
     throw new Error('❌ Frontend server failed to start');
   }
 
-  await browser.close();
   console.log('✅ E2E test environment ready!');
 }
 
