@@ -66,7 +66,7 @@ async def list_recipes(
     total_pages = ceil(total / page_size) if total > 0 else 0
 
     return RecipeListResponse(
-        recipes=recipes,
+        recipes=[RecipeResponse.model_validate(r) for r in recipes],
         total=total,
         page=page,
         page_size=page_size,

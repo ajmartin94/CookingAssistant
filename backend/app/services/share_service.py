@@ -58,7 +58,7 @@ async def get_user_shares(
     )
 
     result = await db.execute(query)
-    return result.scalars().all()
+    return list(result.scalars().all())
 
 
 async def get_shares_with_user(
@@ -85,7 +85,7 @@ async def get_shares_with_user(
     )
 
     result = await db.execute(query)
-    return result.scalars().all()
+    return list(result.scalars().all())
 
 
 async def create_share(

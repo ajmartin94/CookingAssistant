@@ -4,8 +4,8 @@ Recipe Share Model
 Database model for sharing recipes and libraries with other users.
 """
 
-from sqlalchemy import Column, String, DateTime, ForeignKey, Enum
-from sqlalchemy.orm import relationship
+from sqlalchemy import String, DateTime, ForeignKey, Enum
+from sqlalchemy.orm import relationship, Mapped, mapped_column
 from datetime import datetime
 import uuid
 import enum
@@ -26,38 +26,44 @@ class RecipeShare(Base):
 
     __tablename__ = "recipe_shares"
 
-    id = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
+    id: Mapped[str] = mapped_column(
+        String(36), primary_key=True, default=lambda: str(uuid.uuid4())
+    )
 
     # Can share either a recipe or a library (one must be set)
-    recipe_id = Column(String(36), ForeignKey("recipes.id"), nullable=True, index=True)
-    library_id = Column(
+    recipe_id: Mapped[str | None] = mapped_column(
+        String(36), ForeignKey("recipes.id"), nullable=True, index=True
+    )
+    library_id: Mapped[str | None] = mapped_column(
         String(36), ForeignKey("recipe_libraries.id"), nullable=True, index=True
     )
 
     # Sharing metadata
-    shared_by_id = Column(
+    shared_by_id: Mapped[str] = mapped_column(
         String(36), ForeignKey("users.id"), nullable=False, index=True
     )
-    shared_with_id = Column(
+    shared_with_id: Mapped[str | None] = mapped_column(
         String(36), ForeignKey("users.id"), nullable=True, index=True
     )  # Null for public shares
 
     # Unique token for link-based sharing
-    share_token = Column(
+    share_token: Mapped[str] = mapped_column(
         String(64),
         unique=True,
         nullable=False,
         default=lambda: secrets.token_urlsafe(32),
     )
 
-    permission = Column(
+    permission: Mapped[SharePermission] = mapped_column(
         Enum(SharePermission), default=SharePermission.VIEW, nullable=False
     )
 
     # Optional expiration
-    expires_at = Column(DateTime, nullable=True)
+    expires_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
 
-    created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime, default=datetime.utcnow, nullable=False
+    )
 
     # Relationships
     recipe = relationship("Recipe", back_populates="shares")

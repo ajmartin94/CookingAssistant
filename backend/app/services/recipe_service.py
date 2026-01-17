@@ -71,12 +71,12 @@ async def get_recipes(
     # Get total count
     count_query = select(func.count()).select_from(query.subquery())
     total_result = await db.execute(count_query)
-    total = total_result.scalar()
+    total = total_result.scalar() or 0
 
     # Apply pagination and execute
     query = query.offset(skip).limit(limit).order_by(Recipe.created_at.desc())
     result = await db.execute(query)
-    recipes = result.scalars().all()
+    recipes = list(result.scalars().all())
 
     return recipes, total
 
@@ -147,11 +147,11 @@ async def update_recipe(
     update_data = recipe_update.model_dump(exclude_unset=True)
 
     # Convert Pydantic models to dicts for JSON fields
-    if "ingredients" in update_data and update_data["ingredients"]:
+    if "ingredients" in update_data and recipe_update.ingredients:
         update_data["ingredients"] = [
             ing.model_dump() for ing in recipe_update.ingredients
         ]
-    if "instructions" in update_data and update_data["instructions"]:
+    if "instructions" in update_data and recipe_update.instructions:
         update_data["instructions"] = [
             inst.model_dump() for inst in recipe_update.instructions
         ]

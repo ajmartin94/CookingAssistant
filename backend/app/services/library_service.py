@@ -60,7 +60,7 @@ async def get_libraries(
 
     query = query.offset(skip).limit(limit).order_by(RecipeLibrary.created_at.desc())
     result = await db.execute(query)
-    return result.scalars().all()
+    return list(result.scalars().all())
 
 
 async def create_library(
