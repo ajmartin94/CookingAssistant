@@ -30,7 +30,7 @@ describe('shareApi', () => {
     });
 
     it('should send correct data to API', async () => {
-      let capturedBody: any = null;
+      let capturedBody: Record<string, unknown> | null = null;
 
       server.use(
         http.post(`${BASE_URL}/api/v1/shares`, async ({ request }) => {

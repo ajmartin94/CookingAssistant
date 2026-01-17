@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach, afterEach, beforeAll, afterAll } from 'vitest';
+import { describe, it, expect, vi, afterEach, beforeAll, afterAll } from 'vitest';
 import { render, screen, waitFor } from '../test/test-utils';
 import LoginPage from './LoginPage';
 import { server } from '../test/mocks/server';

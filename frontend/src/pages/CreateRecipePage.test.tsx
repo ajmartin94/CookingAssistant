@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach, beforeAll, afterAll } from 'vitest';
-import { render, screen, waitFor } from '../test/test-utils';
+import { render, screen } from '../test/test-utils';
 import CreateRecipePage from './CreateRecipePage';
 import { server } from '../test/mocks/server';
 import { http, HttpResponse } from 'msw';

@@ -3,7 +3,7 @@ import { render, screen, waitFor } from '../test/test-utils';
 import EditRecipePage from './EditRecipePage';
 import { server } from '../test/mocks/server';
 import { http, HttpResponse } from 'msw';
-import { mockRecipe } from '../test/mocks/data';
+// mockRecipe import removed - using inline mock from handler instead
 
 const BASE_URL = 'http://localhost:8000';
 
@@ -93,6 +93,7 @@ describe('EditRecipePage', () => {
 
     it('should show error when recipe ID is not provided', async () => {
       // Override useParams to return undefined id
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       vi.mocked(mockParams).id = undefined as any;
 
       render(<EditRecipePage />);
@@ -149,6 +150,7 @@ describe('EditRecipePage', () => {
 
     it('should navigate to recipes list when id is missing and cancel is clicked', async () => {
       // Override useParams to return undefined id
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       vi.mocked(mockParams).id = undefined as any;
 
       const { user } = render(<EditRecipePage />);

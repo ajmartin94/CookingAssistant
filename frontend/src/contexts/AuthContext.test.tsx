@@ -4,7 +4,7 @@
 
 import { describe, it, expect, beforeEach } from 'vitest';
 import { render, screen, waitFor } from '../test/test-utils';
-import { AuthProvider, useAuth } from './AuthContext';
+import { useAuth } from './AuthContext';
 import { ReactNode } from 'react';
 import { server } from '../test/mocks/server';
 import { http, HttpResponse } from 'msw';

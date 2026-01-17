@@ -9,10 +9,25 @@ import {
 
 const BASE_URL = 'http://localhost:8000';
 
+// Request body types for mock handlers
+interface RegisterRequest {
+  username: string;
+  email: string;
+  full_name?: string;
+}
+
+interface UserUpdateRequest {
+  email?: string;
+  full_name?: string;
+}
+
+type RecipeRequest = Record<string, unknown>;
+type LibraryRequest = Record<string, unknown>;
+
 export const handlers = [
   // Auth endpoints
   http.post(`${BASE_URL}/api/v1/users/register`, async ({ request }) => {
-    const body = (await request.json()) as any;
+    const body = (await request.json()) as RegisterRequest;
     return HttpResponse.json(
       mockUser({
         username: body.username,
@@ -26,7 +41,8 @@ export const handlers = [
     // Login can receive form data or JSON
     const contentType = request.headers.get('content-type');
     if (contentType?.includes('application/x-www-form-urlencoded')) {
-      const formData = await request.text();
+      // Consume the request body (form data) but we don't need to inspect it for tests
+      await request.text();
       // Basic check - just return success for any login attempt in tests
       return HttpResponse.json(mockLoginResponse);
     }
@@ -42,7 +58,7 @@ export const handlers = [
   }),
 
   http.put(`${BASE_URL}/api/v1/users/me`, async ({ request }) => {
-    const body = (await request.json()) as any;
+    const body = (await request.json()) as UserUpdateRequest;
     return HttpResponse.json(mockUser({ ...body }));
   }),
 
@@ -63,14 +79,14 @@ export const handlers = [
   }),
 
   http.post(`${BASE_URL}/api/v1/recipes`, async ({ request }) => {
-    const body = await request.json();
-    return HttpResponse.json(mockBackendRecipe(body as any));
+    const body = (await request.json()) as RecipeRequest;
+    return HttpResponse.json(mockBackendRecipe(body));
   }),
 
   http.put(`${BASE_URL}/api/v1/recipes/:id`, async ({ params, request }) => {
     const { id } = params;
-    const body = await request.json();
-    return HttpResponse.json(mockBackendRecipe({ id: id as string, ...(body as any) }));
+    const body = (await request.json()) as RecipeRequest;
+    return HttpResponse.json(mockBackendRecipe({ id: id as string, ...body }));
   }),
 
   http.delete(`${BASE_URL}/api/v1/recipes/:id`, async () => {
@@ -88,14 +104,14 @@ export const handlers = [
   }),
 
   http.post(`${BASE_URL}/api/v1/libraries`, async ({ request }) => {
-    const body = await request.json();
-    return HttpResponse.json(mockLibrary(body as any));
+    const body = (await request.json()) as LibraryRequest;
+    return HttpResponse.json(mockLibrary(body));
   }),
 
   http.put(`${BASE_URL}/api/v1/libraries/:id`, async ({ params, request }) => {
     const { id } = params;
-    const body = await request.json();
-    return HttpResponse.json(mockLibrary({ id: id as string, ...(body as any) }));
+    const body = (await request.json()) as LibraryRequest;
+    return HttpResponse.json(mockLibrary({ id: id as string, ...body }));
   }),
 
   http.delete(`${BASE_URL}/api/v1/libraries/:id`, async () => {

@@ -26,6 +26,7 @@ describe('RecipeDetailPage', () => {
   beforeAll(() => server.listen());
   beforeEach(() => {
     localStorage.setItem('auth_token', 'test-token');
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (global.confirm as any).mockClear();
   });
   afterEach(() => {
@@ -234,6 +235,7 @@ describe('RecipeDetailPage', () => {
     });
 
     it('should not delete recipe when deletion is cancelled', async () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (global.confirm as any).mockReturnValueOnce(false);
 
       const { user } = render(<RecipeDetailPage />);

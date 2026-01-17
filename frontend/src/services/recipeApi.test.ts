@@ -156,7 +156,7 @@ describe('recipeApi', () => {
     });
 
     it('should send recipe data in request body', async () => {
-      let capturedBody: any = null;
+      let capturedBody: Record<string, unknown> | null = null;
 
       server.use(
         http.post(`${BASE_URL}/api/v1/recipes`, async ({ request }) => {
@@ -192,13 +192,15 @@ describe('recipeApi', () => {
         })
       );
 
+      const invalidRecipe = {
+        title: '',
+        ingredients: [],
+        instructions: [],
+        servings: 4,
+      };
       await expect(
-        recipeApi.createRecipe({
-          title: '',
-          ingredients: [],
-          instructions: [],
-          servings: 4,
-        } as any)
+        // @ts-expect-error Testing invalid input
+        recipeApi.createRecipe(invalidRecipe)
       ).rejects.toThrow();
     });
   });
@@ -217,7 +219,7 @@ describe('recipeApi', () => {
     });
 
     it('should send partial update data', async () => {
-      let capturedBody: any = null;
+      let capturedBody: Record<string, unknown> | null = null;
 
       server.use(
         http.put(`${BASE_URL}/api/v1/recipes/:id`, async ({ request }) => {

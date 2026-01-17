@@ -139,7 +139,7 @@ describe('libraryApi', () => {
     });
 
     it('should send library data in request body', async () => {
-      let capturedBody: any = null;
+      let capturedBody: Record<string, unknown> | null = null;
 
       server.use(
         http.post(`${BASE_URL}/api/v1/libraries`, async ({ request }) => {
@@ -189,7 +189,7 @@ describe('libraryApi', () => {
     });
 
     it('should send partial update data', async () => {
-      let capturedBody: any = null;
+      let capturedBody: Record<string, unknown> | null = null;
 
       server.use(
         http.put(`${BASE_URL}/api/v1/libraries/:id`, async ({ request }) => {
