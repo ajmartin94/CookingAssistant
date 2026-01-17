@@ -299,6 +299,8 @@ def sample_instructions() -> list[InstructionSchema]:
             duration_minutes=3,
         ),
         InstructionSchema(
-            step_number=3, instruction="Cook on medium heat for 10 minutes", duration_minutes=10
+            step_number=3,
+            instruction="Cook on medium heat for 10 minutes",
+            duration_minutes=10,
         ),
     ]

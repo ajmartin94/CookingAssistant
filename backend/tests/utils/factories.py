@@ -87,7 +87,9 @@ class RecipeFactory:
                 "name": fake.random_element(ingredients),
                 "amount": str(fake.random_int(min=1, max=10)),
                 "unit": fake.random_element(units),
-                "notes": fake.sentence() if fake.boolean(chance_of_getting_true=30) else "",
+                "notes": (
+                    fake.sentence() if fake.boolean(chance_of_getting_true=30) else ""
+                ),
             }
             for _ in range(count)
         ]
@@ -120,7 +122,9 @@ class RecipeFactory:
         ]
 
     @staticmethod
-    def create(owner_id: Optional[str] = None, library_id: Optional[str] = None, **kwargs) -> dict:
+    def create(
+        owner_id: Optional[str] = None, library_id: Optional[str] = None, **kwargs
+    ) -> dict:
         """
         Create recipe data dict for testing.
 
@@ -142,40 +146,69 @@ class RecipeFactory:
             "Japanese",
             "Thai",
         ]
-        dietary_tags = ["vegetarian", "vegan", "gluten-free", "dairy-free", "keto", "paleo"]
+        dietary_tags = [
+            "vegetarian",
+            "vegan",
+            "gluten-free",
+            "dairy-free",
+            "keto",
+            "paleo",
+        ]
 
         prep_time = kwargs.get("prep_time_minutes", fake.random_int(min=5, max=60))
         cook_time = kwargs.get("cook_time_minutes", fake.random_int(min=10, max=120))
 
         return {
             "id": kwargs.get("id", str(uuid.uuid4())),
-            "title": kwargs.get("title", f"{fake.word().title()} {fake.word().title()}"),
+            "title": kwargs.get(
+                "title", f"{fake.word().title()} {fake.word().title()}"
+            ),
             "description": kwargs.get("description", fake.paragraph(nb_sentences=2)),
-            "ingredients": kwargs.get("ingredients", RecipeFactory.create_ingredients()),
-            "instructions": kwargs.get("instructions", RecipeFactory.create_instructions()),
+            "ingredients": kwargs.get(
+                "ingredients", RecipeFactory.create_ingredients()
+            ),
+            "instructions": kwargs.get(
+                "instructions", RecipeFactory.create_instructions()
+            ),
             "prep_time_minutes": prep_time,
             "cook_time_minutes": cook_time,
-            "total_time_minutes": kwargs.get("total_time_minutes", prep_time + cook_time),
+            "total_time_minutes": kwargs.get(
+                "total_time_minutes", prep_time + cook_time
+            ),
             "servings": kwargs.get("servings", fake.random_int(min=1, max=8)),
-            "cuisine_type": kwargs.get("cuisine_type", fake.random_element(cuisine_types)),
+            "cuisine_type": kwargs.get(
+                "cuisine_type", fake.random_element(cuisine_types)
+            ),
             "dietary_tags": kwargs.get(
                 "dietary_tags",
-                fake.random_elements(dietary_tags, length=fake.random_int(min=0, max=3), unique=True),
+                fake.random_elements(
+                    dietary_tags, length=fake.random_int(min=0, max=3), unique=True
+                ),
             ),
             "difficulty_level": kwargs.get(
                 "difficulty_level",
-                fake.random_element([DifficultyLevel.EASY, DifficultyLevel.MEDIUM, DifficultyLevel.HARD]).value,
+                fake.random_element(
+                    [DifficultyLevel.EASY, DifficultyLevel.MEDIUM, DifficultyLevel.HARD]
+                ).value,
             ),
-            "source_url": kwargs.get("source_url", fake.url() if fake.boolean() else None),
-            "source_name": kwargs.get("source_name", fake.name() if fake.boolean() else None),
+            "source_url": kwargs.get(
+                "source_url", fake.url() if fake.boolean() else None
+            ),
+            "source_name": kwargs.get(
+                "source_name", fake.name() if fake.boolean() else None
+            ),
             "notes": kwargs.get("notes", fake.paragraph() if fake.boolean() else None),
-            "image_url": kwargs.get("image_url", fake.image_url() if fake.boolean() else None),
+            "image_url": kwargs.get(
+                "image_url", fake.image_url() if fake.boolean() else None
+            ),
             "owner_id": owner_id or kwargs.get("owner_id", str(uuid.uuid4())),
             "library_id": library_id or kwargs.get("library_id"),
         }
 
     @staticmethod
-    def build(owner_id: Optional[str] = None, library_id: Optional[str] = None, **kwargs) -> Recipe:
+    def build(
+        owner_id: Optional[str] = None, library_id: Optional[str] = None, **kwargs
+    ) -> Recipe:
         """
         Build a Recipe model instance (not saved to database).
 
@@ -288,6 +321,9 @@ class ShareFactory:
             RecipeShare: Share model instance
         """
         data = ShareFactory.create(
-            shared_by_id=shared_by_id, recipe_id=recipe_id, library_id=library_id, **kwargs
+            shared_by_id=shared_by_id,
+            recipe_id=recipe_id,
+            library_id=library_id,
+            **kwargs,
         )
         return RecipeShare(**data)

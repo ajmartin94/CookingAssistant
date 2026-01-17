@@ -195,7 +195,9 @@ async def test_login_missing_credentials(client: AsyncClient):
 
 
 @pytest.mark.asyncio
-async def test_get_current_user_authenticated(client: AsyncClient, auth_headers, test_user):
+async def test_get_current_user_authenticated(
+    client: AsyncClient, auth_headers, test_user
+):
     """Test getting current user profile when authenticated"""
     response = await client.get("/api/v1/users/me", headers=auth_headers)
 
@@ -305,7 +307,9 @@ async def test_update_profile_multiple_fields(client: AsyncClient, auth_headers)
 
 
 @pytest.mark.asyncio
-async def test_update_profile_duplicate_email(client: AsyncClient, auth_headers, test_user2):
+async def test_update_profile_duplicate_email(
+    client: AsyncClient, auth_headers, test_user2
+):
     """Test updating email to one already in use"""
     response = await client.put(
         "/api/v1/users/me",
@@ -333,7 +337,9 @@ async def test_update_profile_unauthenticated(client: AsyncClient):
 
 
 @pytest.mark.asyncio
-async def test_update_profile_empty_update(client: AsyncClient, auth_headers, test_user):
+async def test_update_profile_empty_update(
+    client: AsyncClient, auth_headers, test_user
+):
     """Test updating profile with no changes"""
     response = await client.put(
         "/api/v1/users/me",

@@ -9,7 +9,9 @@ from httpx import AsyncClient
 
 
 @pytest.mark.asyncio
-async def test_create_recipe_share_success(client: AsyncClient, auth_headers, test_recipe, test_user2):
+async def test_create_recipe_share_success(
+    client: AsyncClient, auth_headers, test_recipe, test_user2
+):
     """Test successful recipe share creation"""
     response = await client.post(
         "/api/v1/shares",
@@ -28,23 +30,35 @@ async def test_create_recipe_share_success(client: AsyncClient, auth_headers, te
 
 
 @pytest.mark.asyncio
-async def test_create_share_unauthenticated(client: AsyncClient, test_recipe, test_user2):
+async def test_create_share_unauthenticated(
+    client: AsyncClient, test_recipe, test_user2
+):
     """Test creating share without authentication"""
     response = await client.post(
         "/api/v1/shares",
-        json={"recipe_id": test_recipe.id, "shared_with_id": test_user2.id, "permission": "view"},
+        json={
+            "recipe_id": test_recipe.id,
+            "shared_with_id": test_user2.id,
+            "permission": "view",
+        },
     )
 
     assert response.status_code == 401
 
 
 @pytest.mark.asyncio
-async def test_create_share_not_owner(client: AsyncClient, auth_headers_user2, test_recipe, test_user):
+async def test_create_share_not_owner(
+    client: AsyncClient, auth_headers_user2, test_recipe, test_user
+):
     """Test creating share for recipe user doesn't own"""
     response = await client.post(
         "/api/v1/shares",
         headers=auth_headers_user2,
-        json={"recipe_id": test_recipe.id, "shared_with_id": test_user.id, "permission": "view"},
+        json={
+            "recipe_id": test_recipe.id,
+            "shared_with_id": test_user.id,
+            "permission": "view",
+        },
     )
 
     assert response.status_code == 403
@@ -71,7 +85,9 @@ async def test_list_received_shares(client: AsyncClient, auth_headers):
 
 
 @pytest.mark.asyncio
-async def test_get_shared_resource(client: AsyncClient, test_recipe, test_user, test_user2, test_db):
+async def test_get_shared_resource(
+    client: AsyncClient, test_recipe, test_user, test_user2, test_db
+):
     """Test accessing shared resource via token"""
     from app.services.share_service import create_share
     from app.schemas.share import ShareCreate
@@ -99,7 +115,9 @@ async def test_get_shared_resource_invalid_token(client: AsyncClient):
 
 
 @pytest.mark.asyncio
-async def test_delete_share_success(client: AsyncClient, auth_headers, test_recipe, test_user, test_user2, test_db):
+async def test_delete_share_success(
+    client: AsyncClient, auth_headers, test_recipe, test_user, test_user2, test_db
+):
     """Test successful share deletion"""
     from app.services.share_service import create_share
     from app.schemas.share import ShareCreate
@@ -117,7 +135,9 @@ async def test_delete_share_success(client: AsyncClient, auth_headers, test_reci
 
 
 @pytest.mark.asyncio
-async def test_delete_share_not_creator(client: AsyncClient, auth_headers_user2, test_recipe, test_user, test_user2, test_db):
+async def test_delete_share_not_creator(
+    client: AsyncClient, auth_headers_user2, test_recipe, test_user, test_user2, test_db
+):
     """Test deleting share user didn't create"""
     from app.services.share_service import create_share
     from app.schemas.share import ShareCreate
@@ -129,6 +149,8 @@ async def test_delete_share_not_creator(client: AsyncClient, auth_headers_user2,
     )
     share = await create_share(test_db, share_data, test_user)
 
-    response = await client.delete(f"/api/v1/shares/{share.id}", headers=auth_headers_user2)
+    response = await client.delete(
+        f"/api/v1/shares/{share.id}", headers=auth_headers_user2
+    )
 
     assert response.status_code == 403

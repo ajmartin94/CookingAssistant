@@ -29,8 +29,7 @@ export interface SidebarProps {
 }
 
 export function Sidebar({ children }: SidebarProps) {
-  const { isCollapsed, isMobileOpen, toggleCollapse, closeMobile } =
-    useSidebar();
+  const { isCollapsed, isMobileOpen, toggleCollapse, closeMobile } = useSidebar();
   const navigate = useNavigate();
 
   const handleNewRecipe = () => {
@@ -69,18 +68,12 @@ export function Sidebar({ children }: SidebarProps) {
           ${isCollapsed ? 'justify-center px-2' : 'justify-between px-4'}
         `}
         >
-          <Link
-            to="/recipes"
-            className="flex items-center gap-2"
-            onClick={closeMobile}
-          >
+          <Link to="/recipes" className="flex items-center gap-2" onClick={closeMobile}>
             <div className="w-8 h-8 bg-primary-500 rounded-lg flex items-center justify-center">
               <ChefHat className="w-5 h-5 text-white" />
             </div>
             {!isCollapsed && (
-              <span className="font-display font-bold text-lg text-neutral-900">
-                CookBook
-              </span>
+              <span className="font-display font-bold text-lg text-neutral-900">CookBook</span>
             )}
           </Link>
 

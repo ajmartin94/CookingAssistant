@@ -168,7 +168,9 @@ def assert_recipe_matches(actual: Recipe, expected: dict, check_owner: bool = Tr
     assert actual.description == expected.get("description", actual.description)
     assert actual.servings == expected.get("servings", actual.servings)
     assert actual.cuisine_type == expected.get("cuisine_type", actual.cuisine_type)
-    assert actual.difficulty_level == expected.get("difficulty_level", actual.difficulty_level)
+    assert actual.difficulty_level == expected.get(
+        "difficulty_level", actual.difficulty_level
+    )
 
     if check_owner:
         assert actual.owner_id == expected.get("owner_id")
@@ -182,7 +184,9 @@ def assert_recipe_matches(actual: Recipe, expected: dict, check_owner: bool = Tr
         assert len(actual.instructions) == len(expected["instructions"])
 
 
-def assert_library_matches(actual: RecipeLibrary, expected: dict, check_owner: bool = True):
+def assert_library_matches(
+    actual: RecipeLibrary, expected: dict, check_owner: bool = True
+):
     """
     Assert that a library matches expected values.
 

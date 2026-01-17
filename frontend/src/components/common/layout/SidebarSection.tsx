@@ -15,11 +15,7 @@ export interface SidebarSectionProps {
   defaultExpanded?: boolean;
 }
 
-export function SidebarSection({
-  title,
-  children,
-  defaultExpanded = true,
-}: SidebarSectionProps) {
+export function SidebarSection({ title, children, defaultExpanded = true }: SidebarSectionProps) {
   const { isCollapsed } = useSidebar();
   const [isExpanded, setIsExpanded] = useState(defaultExpanded);
 

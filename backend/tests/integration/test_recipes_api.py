@@ -47,7 +47,9 @@ async def test_list_recipes_filter_by_cuisine(
     """Test filtering recipes by cuisine type"""
     from tests.utils.helpers import create_test_recipe
 
-    await create_test_recipe(test_db, test_user, "Italian Pasta", cuisine_type="Italian")
+    await create_test_recipe(
+        test_db, test_user, "Italian Pasta", cuisine_type="Italian"
+    )
     await create_test_recipe(test_db, test_user, "Chinese Rice", cuisine_type="Chinese")
 
     response = await client.get(
@@ -82,7 +84,9 @@ async def test_list_recipes_filter_by_difficulty(
 
 
 @pytest.mark.asyncio
-async def test_list_recipes_search(client: AsyncClient, auth_headers, test_user, test_db):
+async def test_list_recipes_search(
+    client: AsyncClient, auth_headers, test_user, test_db
+):
     """Test searching recipes by title"""
     from tests.utils.helpers import create_test_recipe
 
@@ -135,7 +139,12 @@ async def test_list_recipes_pagination(
 
 @pytest.mark.asyncio
 async def test_list_recipes_only_shows_user_recipes(
-    client: AsyncClient, auth_headers, auth_headers_user2, test_user, test_user2, test_db
+    client: AsyncClient,
+    auth_headers,
+    auth_headers_user2,
+    test_user,
+    test_user2,
+    test_db,
 ):
     """Test that users only see their own recipes"""
     from tests.utils.helpers import create_test_recipe
@@ -187,7 +196,9 @@ async def test_create_recipe_success(
 
 
 @pytest.mark.asyncio
-async def test_create_recipe_unauthenticated(client: AsyncClient, sample_ingredients, sample_instructions):
+async def test_create_recipe_unauthenticated(
+    client: AsyncClient, sample_ingredients, sample_instructions
+):
     """Test creating recipe without authentication"""
     response = await client.post(
         "/api/v1/recipes",
@@ -258,9 +269,7 @@ async def test_get_recipe_success(client: AsyncClient, auth_headers, test_recipe
 @pytest.mark.asyncio
 async def test_get_recipe_not_found(client: AsyncClient, auth_headers):
     """Test getting non-existent recipe"""
-    response = await client.get(
-        "/api/v1/recipes/nonexistent-id", headers=auth_headers
-    )
+    response = await client.get("/api/v1/recipes/nonexistent-id", headers=auth_headers)
 
     assert response.status_code == 404
 
@@ -360,15 +369,15 @@ async def test_update_recipe_wrong_owner(
 
 
 @pytest.mark.asyncio
-async def test_delete_recipe_success(client: AsyncClient, auth_headers, test_db, test_user):
+async def test_delete_recipe_success(
+    client: AsyncClient, auth_headers, test_db, test_user
+):
     """Test successful recipe deletion"""
     from tests.utils.helpers import create_test_recipe
 
     recipe = await create_test_recipe(test_db, test_user, "To Delete")
 
-    response = await client.delete(
-        f"/api/v1/recipes/{recipe.id}", headers=auth_headers
-    )
+    response = await client.delete(f"/api/v1/recipes/{recipe.id}", headers=auth_headers)
 
     assert response.status_code == 204
 

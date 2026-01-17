@@ -13,11 +13,7 @@ export interface SidebarActionButtonProps {
   onClick: () => void;
 }
 
-export function SidebarActionButton({
-  icon,
-  label,
-  onClick,
-}: SidebarActionButtonProps) {
+export function SidebarActionButton({ icon, label, onClick }: SidebarActionButtonProps) {
   const { isCollapsed } = useSidebar();
 
   return (

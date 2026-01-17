@@ -8,8 +8,7 @@ import { forwardRef } from 'react';
 import type { ButtonHTMLAttributes, ReactNode } from 'react';
 import { Loader2 } from 'lucide-react';
 
-export interface IconButtonProps
-  extends ButtonHTMLAttributes<HTMLButtonElement> {
+export interface IconButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   icon: ReactNode;
   label: string; // Required for accessibility
   variant?: 'primary' | 'secondary' | 'ghost' | 'outline';
@@ -18,13 +17,10 @@ export interface IconButtonProps
 }
 
 const variantStyles = {
-  primary:
-    'bg-primary-500 text-white hover:bg-primary-600 focus:ring-primary-500',
-  secondary:
-    'bg-neutral-200 text-neutral-700 hover:bg-neutral-300 focus:ring-neutral-500',
+  primary: 'bg-primary-500 text-white hover:bg-primary-600 focus:ring-primary-500',
+  secondary: 'bg-neutral-200 text-neutral-700 hover:bg-neutral-300 focus:ring-neutral-500',
   ghost: 'text-neutral-600 hover:bg-neutral-100 focus:ring-neutral-500',
-  outline:
-    'border border-neutral-300 text-neutral-700 hover:bg-neutral-50 focus:ring-neutral-500',
+  outline: 'border border-neutral-300 text-neutral-700 hover:bg-neutral-50 focus:ring-neutral-500',
 };
 
 const sizeStyles = {

@@ -8,7 +8,12 @@ import pytest
 from fastapi import HTTPException
 
 from app.services import recipe_service
-from app.schemas.recipe import RecipeCreate, RecipeUpdate, IngredientSchema, InstructionSchema
+from app.schemas.recipe import (
+    RecipeCreate,
+    RecipeUpdate,
+    IngredientSchema,
+    InstructionSchema,
+)
 from app.models.recipe import DifficultyLevel
 from tests.utils.helpers import create_test_recipe, create_test_library
 
@@ -85,9 +90,15 @@ async def test_get_recipes_filter_by_library(test_db, test_user):
 @pytest.mark.asyncio
 async def test_get_recipes_filter_by_cuisine_type(test_db, test_user):
     """Test filtering recipes by cuisine type"""
-    await create_test_recipe(test_db, test_user, "Italian Recipe", cuisine_type="Italian")
-    await create_test_recipe(test_db, test_user, "Chinese Recipe", cuisine_type="Chinese")
-    await create_test_recipe(test_db, test_user, "Another Italian", cuisine_type="Italian")
+    await create_test_recipe(
+        test_db, test_user, "Italian Recipe", cuisine_type="Italian"
+    )
+    await create_test_recipe(
+        test_db, test_user, "Chinese Recipe", cuisine_type="Chinese"
+    )
+    await create_test_recipe(
+        test_db, test_user, "Another Italian", cuisine_type="Italian"
+    )
 
     recipes, total = await recipe_service.get_recipes(test_db, cuisine_type="Italian")
 
@@ -101,7 +112,9 @@ async def test_get_recipes_filter_by_difficulty(test_db, test_user):
     """Test filtering recipes by difficulty level"""
     await create_test_recipe(test_db, test_user, "Easy Recipe", difficulty_level="easy")
     await create_test_recipe(test_db, test_user, "Hard Recipe", difficulty_level="hard")
-    await create_test_recipe(test_db, test_user, "Another Easy", difficulty_level="easy")
+    await create_test_recipe(
+        test_db, test_user, "Another Easy", difficulty_level="easy"
+    )
 
     recipes, total = await recipe_service.get_recipes(test_db, difficulty="easy")
 
@@ -130,7 +143,9 @@ async def test_get_recipes_search_in_description(test_db, test_user):
     await create_test_recipe(
         test_db, test_user, "Recipe 1", description="A delicious chocolate dessert"
     )
-    await create_test_recipe(test_db, test_user, "Recipe 2", description="A vanilla treat")
+    await create_test_recipe(
+        test_db, test_user, "Recipe 2", description="A vanilla treat"
+    )
     await create_test_recipe(
         test_db, test_user, "Recipe 3", description="Another chocolate recipe"
     )
@@ -243,7 +258,9 @@ async def test_get_recipes_empty_result(test_db):
 
 
 @pytest.mark.asyncio
-async def test_create_recipe_success(test_db, test_user, sample_ingredients, sample_instructions):
+async def test_create_recipe_success(
+    test_db, test_user, sample_ingredients, sample_instructions
+):
     """Test successful recipe creation"""
     recipe_data = RecipeCreate(
         title="New Recipe",
@@ -267,7 +284,9 @@ async def test_create_recipe_success(test_db, test_user, sample_ingredients, sam
 
 
 @pytest.mark.asyncio
-async def test_create_recipe_calculates_total_time(test_db, test_user, sample_ingredients, sample_instructions):
+async def test_create_recipe_calculates_total_time(
+    test_db, test_user, sample_ingredients, sample_instructions
+):
     """Test that total time is calculated correctly"""
     recipe_data = RecipeCreate(
         title="Test Recipe",
@@ -317,7 +336,9 @@ async def test_create_recipe_converts_pydantic_to_dict(
 
 
 @pytest.mark.asyncio
-async def test_create_recipe_sets_owner_id(test_db, test_user, sample_ingredients, sample_instructions):
+async def test_create_recipe_sets_owner_id(
+    test_db, test_user, sample_ingredients, sample_instructions
+):
     """Test that owner_id is set correctly"""
     recipe_data = RecipeCreate(
         title="Test Recipe",
@@ -373,7 +394,9 @@ async def test_update_recipe_title_only(test_db, test_recipe):
 async def test_update_recipe_ingredients(test_db, test_recipe):
     """Test updating ingredients"""
     new_ingredients = [
-        IngredientSchema(name="new ingredient", amount="5", unit="cups", notes="updated")
+        IngredientSchema(
+            name="new ingredient", amount="5", unit="cups", notes="updated"
+        )
     ]
     update_data = RecipeUpdate(ingredients=new_ingredients)
 

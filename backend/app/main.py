@@ -66,6 +66,7 @@ app.include_router(sharing.router, prefix="/api/v1")
 async def startup_event():
     """Initialize services on application startup"""
     import os
+
     logger.info("Starting Cooking Assistant API...")
 
     # Import all models to register them with Base.metadata
@@ -73,7 +74,9 @@ async def startup_event():
     from app.database import init_db, engine, Base
 
     # Log imported models to ensure they're registered
-    logger.info(f"Imported models: {User.__tablename__}, {Recipe.__tablename__}, {RecipeLibrary.__tablename__}, {RecipeShare.__tablename__}")
+    logger.info(
+        f"Imported models: {User.__tablename__}, {Recipe.__tablename__}, {RecipeLibrary.__tablename__}, {RecipeShare.__tablename__}"
+    )
 
     # For E2E testing, drop and recreate all tables to ensure clean state
     if os.getenv("E2E_TESTING", "false").lower() == "true":

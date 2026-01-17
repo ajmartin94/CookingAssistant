@@ -38,22 +38,10 @@ function App() {
               <Route path="/recipes/:id/edit" element={<EditRecipePage />} />
               <Route path="/libraries" element={<LibrariesPage />} />
               <Route path="/libraries/:id" element={<LibraryDetailPage />} />
-              <Route
-                path="/discover"
-                element={<ComingSoonPage title="Discover" />}
-              />
-              <Route
-                path="/planning"
-                element={<ComingSoonPage title="Meal Planning" />}
-              />
-              <Route
-                path="/shopping"
-                element={<ComingSoonPage title="Shopping List" />}
-              />
-              <Route
-                path="/cooking"
-                element={<ComingSoonPage title="Cooking Mode" />}
-              />
+              <Route path="/discover" element={<ComingSoonPage title="Discover" />} />
+              <Route path="/planning" element={<ComingSoonPage title="Meal Planning" />} />
+              <Route path="/shopping" element={<ComingSoonPage title="Shopping List" />} />
+              <Route path="/cooking" element={<ComingSoonPage title="Cooking Mode" />} />
             </Route>
           </Routes>
         </Router>

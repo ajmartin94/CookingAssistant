@@ -5,13 +5,7 @@
  * Persists desktop collapse preference to localStorage.
  */
 
-import {
-  createContext,
-  useContext,
-  useState,
-  useEffect,
-  useCallback,
-} from 'react';
+import { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import type { ReactNode } from 'react';
 
 interface SidebarContextType {
@@ -104,7 +98,5 @@ export function SidebarProvider({ children }: SidebarProviderProps) {
     openMobile,
   };
 
-  return (
-    <SidebarContext.Provider value={value}>{children}</SidebarContext.Provider>
-  );
+  return <SidebarContext.Provider value={value}>{children}</SidebarContext.Provider>;
 }

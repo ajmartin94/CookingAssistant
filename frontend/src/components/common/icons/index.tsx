@@ -20,14 +20,7 @@ export {
 } from 'lucide-react';
 
 // Recipe & Food
-export {
-  Clock,
-  Users,
-  ChefHat,
-  UtensilsCrossed,
-  Flame,
-  Timer,
-} from 'lucide-react';
+export { Clock, Users, ChefHat, UtensilsCrossed, Flame, Timer } from 'lucide-react';
 
 // Content & Organization
 export {
@@ -53,13 +46,7 @@ export { Compass, Share2, ExternalLink, Link2, Copy, Check } from 'lucide-react'
 export { Edit, Trash2, MoreVertical, MoreHorizontal } from 'lucide-react';
 
 // Alerts & Status
-export {
-  AlertCircle,
-  AlertTriangle,
-  CheckCircle,
-  Info,
-  Loader2,
-} from 'lucide-react';
+export { AlertCircle, AlertTriangle, CheckCircle, Info, Loader2 } from 'lucide-react';
 
 // Icon size constants for consistent sizing
 export const ICON_SIZES = {

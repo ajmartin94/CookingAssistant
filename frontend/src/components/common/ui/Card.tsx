@@ -29,16 +29,7 @@ const paddingStyles = {
 };
 
 export const Card = forwardRef<HTMLDivElement, CardProps>(
-  (
-    {
-      variant = 'default',
-      padding = 'md',
-      children,
-      className = '',
-      ...props
-    },
-    ref
-  ) => {
+  ({ variant = 'default', padding = 'md', children, className = '', ...props }, ref) => {
     return (
       <div
         ref={ref}
@@ -65,11 +56,7 @@ export const CardHeader = ({
 }: {
   children: ReactNode;
   className?: string;
-}) => (
-  <div className={`border-b border-neutral-100 pb-4 mb-4 ${className}`}>
-    {children}
-  </div>
-);
+}) => <div className={`border-b border-neutral-100 pb-4 mb-4 ${className}`}>{children}</div>;
 
 export const CardContent = ({
   children,
@@ -85,10 +72,6 @@ export const CardFooter = ({
 }: {
   children: ReactNode;
   className?: string;
-}) => (
-  <div className={`border-t border-neutral-100 pt-4 mt-4 ${className}`}>
-    {children}
-  </div>
-);
+}) => <div className={`border-t border-neutral-100 pt-4 mt-4 ${className}`}>{children}</div>;
 
 export default Card;

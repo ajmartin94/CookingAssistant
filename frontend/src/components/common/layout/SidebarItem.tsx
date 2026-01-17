@@ -16,13 +16,7 @@ export interface SidebarItemProps {
   onClick?: () => void;
 }
 
-export function SidebarItem({
-  icon,
-  label,
-  to,
-  badge,
-  onClick,
-}: SidebarItemProps) {
+export function SidebarItem({ icon, label, to, badge, onClick }: SidebarItemProps) {
   const { isCollapsed, closeMobile } = useSidebar();
 
   const handleClick = () => {

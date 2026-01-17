@@ -9,7 +9,9 @@ from httpx import AsyncClient
 
 
 @pytest.mark.asyncio
-async def test_list_libraries_authenticated(client: AsyncClient, auth_headers, test_library):
+async def test_list_libraries_authenticated(
+    client: AsyncClient, auth_headers, test_library
+):
     """Test listing libraries when authenticated"""
     response = await client.get("/api/v1/libraries", headers=auth_headers)
 
@@ -56,7 +58,9 @@ async def test_create_library_unauthenticated(client: AsyncClient):
 @pytest.mark.asyncio
 async def test_get_library_success(client: AsyncClient, auth_headers, test_library):
     """Test getting library details"""
-    response = await client.get(f"/api/v1/libraries/{test_library.id}", headers=auth_headers)
+    response = await client.get(
+        f"/api/v1/libraries/{test_library.id}", headers=auth_headers
+    )
 
     assert response.status_code == 200
     data = response.json()
@@ -72,9 +76,13 @@ async def test_get_library_not_found(client: AsyncClient, auth_headers):
 
 
 @pytest.mark.asyncio
-async def test_get_library_wrong_owner(client: AsyncClient, auth_headers_user2, test_library):
+async def test_get_library_wrong_owner(
+    client: AsyncClient, auth_headers_user2, test_library
+):
     """Test getting library owned by different user"""
-    response = await client.get(f"/api/v1/libraries/{test_library.id}", headers=auth_headers_user2)
+    response = await client.get(
+        f"/api/v1/libraries/{test_library.id}", headers=auth_headers_user2
+    )
 
     assert response.status_code == 403
 
@@ -94,7 +102,9 @@ async def test_update_library_success(client: AsyncClient, auth_headers, test_li
 
 
 @pytest.mark.asyncio
-async def test_update_library_wrong_owner(client: AsyncClient, auth_headers_user2, test_library):
+async def test_update_library_wrong_owner(
+    client: AsyncClient, auth_headers_user2, test_library
+):
     """Test updating library owned by different user"""
     response = await client.put(
         f"/api/v1/libraries/{test_library.id}",
@@ -106,19 +116,25 @@ async def test_update_library_wrong_owner(client: AsyncClient, auth_headers_user
 
 
 @pytest.mark.asyncio
-async def test_delete_library_success(client: AsyncClient, auth_headers, test_db, test_user):
+async def test_delete_library_success(
+    client: AsyncClient, auth_headers, test_db, test_user
+):
     """Test successful library deletion"""
     from tests.utils.helpers import create_test_library
 
     library = await create_test_library(test_db, test_user, "To Delete")
 
-    response = await client.delete(f"/api/v1/libraries/{library.id}", headers=auth_headers)
+    response = await client.delete(
+        f"/api/v1/libraries/{library.id}", headers=auth_headers
+    )
 
     assert response.status_code == 204
 
 
 @pytest.mark.asyncio
-async def test_delete_library_wrong_owner(client: AsyncClient, auth_headers_user2, test_library):
+async def test_delete_library_wrong_owner(
+    client: AsyncClient, auth_headers_user2, test_library
+):
     """Test deleting library owned by different user"""
     response = await client.delete(
         f"/api/v1/libraries/{test_library.id}", headers=auth_headers_user2

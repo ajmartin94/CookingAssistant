@@ -24,10 +24,8 @@ const variantStyles = {
     'bg-secondary-500 text-white hover:bg-secondary-600 focus:ring-secondary-500 disabled:bg-secondary-300',
   outline:
     'border-2 border-primary-500 text-primary-600 hover:bg-primary-50 focus:ring-primary-500 disabled:border-neutral-300 disabled:text-neutral-400',
-  ghost:
-    'text-neutral-700 hover:bg-neutral-100 focus:ring-neutral-500 disabled:text-neutral-400',
-  danger:
-    'bg-error-500 text-white hover:bg-error-600 focus:ring-error-500 disabled:bg-error-300',
+  ghost: 'text-neutral-700 hover:bg-neutral-100 focus:ring-neutral-500 disabled:text-neutral-400',
+  danger: 'bg-error-500 text-white hover:bg-error-600 focus:ring-error-500 disabled:bg-error-300',
 };
 
 const sizeStyles = {
@@ -66,11 +64,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         disabled={disabled || isLoading}
         {...props}
       >
-        {isLoading ? (
-          <Loader2 className="w-4 h-4 animate-spin" />
-        ) : (
-          leftIcon
-        )}
+        {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : leftIcon}
         {children}
         {!isLoading && rightIcon}
       </button>

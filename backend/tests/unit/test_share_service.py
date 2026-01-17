@@ -150,7 +150,9 @@ async def test_create_recipe_share_success(test_db, test_user, test_user2, test_
 
 
 @pytest.mark.asyncio
-async def test_create_library_share_success(test_db, test_user, test_user2, test_library):
+async def test_create_library_share_success(
+    test_db, test_user, test_user2, test_library
+):
     """Test successful library share creation"""
     share_data = ShareCreate(
         library_id=test_library.id,
@@ -165,7 +167,9 @@ async def test_create_library_share_success(test_db, test_user, test_user2, test
 
 
 @pytest.mark.asyncio
-async def test_create_share_with_expiration(test_db, test_user, test_user2, test_recipe):
+async def test_create_share_with_expiration(
+    test_db, test_user, test_user2, test_recipe
+):
     """Test creating share with expiration date"""
     expires_at = datetime.utcnow() + timedelta(days=7)
     share_data = ShareCreate(
@@ -219,7 +223,9 @@ def test_check_share_ownership_creator(test_user, test_user2, test_recipe):
     share_service.check_share_ownership(share, test_user)
 
 
-def test_check_share_ownership_not_creator_raises_403(test_user, test_user2, test_recipe):
+def test_check_share_ownership_not_creator_raises_403(
+    test_user, test_user2, test_recipe
+):
     """Test ownership check when user didn't create the share"""
     share = RecipeShare(
         recipe_id=test_recipe.id,

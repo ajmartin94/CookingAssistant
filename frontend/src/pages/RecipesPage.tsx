@@ -80,155 +80,151 @@ export default function RecipesPage() {
         <h1 className="text-3xl font-display font-bold text-neutral-900">My Recipes</h1>
       </div>
 
-        {/* Search and Filters */}
-        <div className="bg-white rounded-lg shadow-soft p-6 mb-6">
-          <form onSubmit={handleSearch} className="mb-4">
-            <div className="flex gap-2">
-              <input
-                type="text"
-                placeholder="Search recipes..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="flex-1 px-4 py-2 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
-              />
-              <button
-                type="submit"
-                className="px-6 py-2 bg-primary-500 text-white rounded-lg font-semibold hover:bg-primary-600 transition"
-              >
-                Search
-              </button>
-            </div>
-          </form>
+      {/* Search and Filters */}
+      <div className="bg-white rounded-lg shadow-soft p-6 mb-6">
+        <form onSubmit={handleSearch} className="mb-4">
+          <div className="flex gap-2">
+            <input
+              type="text"
+              placeholder="Search recipes..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="flex-1 px-4 py-2 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+            />
+            <button
+              type="submit"
+              className="px-6 py-2 bg-primary-500 text-white rounded-lg font-semibold hover:bg-primary-600 transition"
+            >
+              Search
+            </button>
+          </div>
+        </form>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-neutral-700 mb-1">
-                Cuisine Type
-              </label>
-              <select
-                value={cuisineFilter}
-                onChange={(e) => {
-                  setCuisineFilter(e.target.value);
-                  setCurrentPage(1);
-                }}
-                className="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
-              >
-                <option value="">All Cuisines</option>
-                <option value="Italian">Italian</option>
-                <option value="Mexican">Mexican</option>
-                <option value="Chinese">Chinese</option>
-                <option value="Indian">Indian</option>
-                <option value="French">French</option>
-                <option value="Japanese">Japanese</option>
-                <option value="American">American</option>
-                <option value="Mediterranean">Mediterranean</option>
-                <option value="Thai">Thai</option>
-              </select>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-neutral-700 mb-1">Difficulty</label>
-              <select
-                value={difficultyFilter}
-                onChange={(e) => {
-                  setDifficultyFilter(e.target.value);
-                  setCurrentPage(1);
-                }}
-                className="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
-              >
-                <option value="">All Levels</option>
-                <option value="easy">Easy</option>
-                <option value="medium">Medium</option>
-                <option value="hard">Hard</option>
-              </select>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-neutral-700 mb-1">
-                Dietary Tags
-              </label>
-              <select
-                value={dietaryFilter}
-                onChange={(e) => {
-                  setDietaryFilter(e.target.value);
-                  setCurrentPage(1);
-                }}
-                className="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
-              >
-                <option value="">All Diets</option>
-                <option value="vegetarian">Vegetarian</option>
-                <option value="vegan">Vegan</option>
-                <option value="gluten-free">Gluten Free</option>
-                <option value="dairy-free">Dairy Free</option>
-                <option value="keto">Keto</option>
-                <option value="paleo">Paleo</option>
-                <option value="low-carb">Low Carb</option>
-              </select>
-            </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div>
+            <label className="block text-sm font-medium text-neutral-700 mb-1">Cuisine Type</label>
+            <select
+              value={cuisineFilter}
+              onChange={(e) => {
+                setCuisineFilter(e.target.value);
+                setCurrentPage(1);
+              }}
+              className="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+            >
+              <option value="">All Cuisines</option>
+              <option value="Italian">Italian</option>
+              <option value="Mexican">Mexican</option>
+              <option value="Chinese">Chinese</option>
+              <option value="Indian">Indian</option>
+              <option value="French">French</option>
+              <option value="Japanese">Japanese</option>
+              <option value="American">American</option>
+              <option value="Mediterranean">Mediterranean</option>
+              <option value="Thai">Thai</option>
+            </select>
           </div>
 
-          {(searchQuery || cuisineFilter || difficultyFilter || dietaryFilter) && (
-            <button
-              onClick={clearFilters}
-              className="mt-4 text-sm text-primary-500 hover:text-primary-600 font-medium"
+          <div>
+            <label className="block text-sm font-medium text-neutral-700 mb-1">Difficulty</label>
+            <select
+              value={difficultyFilter}
+              onChange={(e) => {
+                setDifficultyFilter(e.target.value);
+                setCurrentPage(1);
+              }}
+              className="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
             >
-              Clear all filters
-            </button>
-          )}
+              <option value="">All Levels</option>
+              <option value="easy">Easy</option>
+              <option value="medium">Medium</option>
+              <option value="hard">Hard</option>
+            </select>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-neutral-700 mb-1">Dietary Tags</label>
+            <select
+              value={dietaryFilter}
+              onChange={(e) => {
+                setDietaryFilter(e.target.value);
+                setCurrentPage(1);
+              }}
+              className="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+            >
+              <option value="">All Diets</option>
+              <option value="vegetarian">Vegetarian</option>
+              <option value="vegan">Vegan</option>
+              <option value="gluten-free">Gluten Free</option>
+              <option value="dairy-free">Dairy Free</option>
+              <option value="keto">Keto</option>
+              <option value="paleo">Paleo</option>
+              <option value="low-carb">Low Carb</option>
+            </select>
+          </div>
         </div>
 
-        {/* Loading State */}
-        {loading && (
-          <div className="flex justify-center items-center py-12">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500"></div>
-          </div>
+        {(searchQuery || cuisineFilter || difficultyFilter || dietaryFilter) && (
+          <button
+            onClick={clearFilters}
+            className="mt-4 text-sm text-primary-500 hover:text-primary-600 font-medium"
+          >
+            Clear all filters
+          </button>
         )}
+      </div>
 
-        {/* Error State */}
-        {error && (
-          <div className="bg-error-50 border border-error-200 rounded-lg p-4 mb-6">
-            <p className="text-error-700">
-              <strong>Error:</strong> {error}
-            </p>
-          </div>
-        )}
+      {/* Loading State */}
+      {loading && (
+        <div className="flex justify-center items-center py-12">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500"></div>
+        </div>
+      )}
 
-        {/* Results Info */}
-        {!loading && !error && (
-          <div className="mb-4 text-neutral-600">
-            Showing {recipes.length} of {total} recipes
-          </div>
-        )}
+      {/* Error State */}
+      {error && (
+        <div className="bg-error-50 border border-error-200 rounded-lg p-4 mb-6">
+          <p className="text-error-700">
+            <strong>Error:</strong> {error}
+          </p>
+        </div>
+      )}
 
-        {/* Recipes Grid */}
-        {!loading && !error && recipes.length > 0 && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6 mb-8">
-            {recipes.map((recipe) => (
-              <RecipeCard key={recipe.id} recipe={recipe} />
-            ))}
-          </div>
-        )}
+      {/* Results Info */}
+      {!loading && !error && (
+        <div className="mb-4 text-neutral-600">
+          Showing {recipes.length} of {total} recipes
+        </div>
+      )}
 
-        {/* Empty State */}
-        {!loading && !error && recipes.length === 0 && (
-          <div className="text-center py-12">
-            <FileText className="mx-auto h-12 w-12 text-neutral-400" />
-            <h3 className="mt-2 text-sm font-medium text-neutral-900">No recipes found</h3>
-            <p className="mt-1 text-sm text-neutral-500">
-              {searchQuery || cuisineFilter || difficultyFilter || dietaryFilter
-                ? 'Try adjusting your filters'
-                : 'Get started by creating a new recipe'}
-            </p>
-            <div className="mt-6">
-              <Link
-                to="/recipes/create"
-                className="px-4 py-2 bg-primary-500 text-white rounded-lg font-semibold hover:bg-primary-600 transition"
-              >
-                + New Recipe
-              </Link>
-            </div>
+      {/* Recipes Grid */}
+      {!loading && !error && recipes.length > 0 && (
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6 mb-8">
+          {recipes.map((recipe) => (
+            <RecipeCard key={recipe.id} recipe={recipe} />
+          ))}
+        </div>
+      )}
+
+      {/* Empty State */}
+      {!loading && !error && recipes.length === 0 && (
+        <div className="text-center py-12">
+          <FileText className="mx-auto h-12 w-12 text-neutral-400" />
+          <h3 className="mt-2 text-sm font-medium text-neutral-900">No recipes found</h3>
+          <p className="mt-1 text-sm text-neutral-500">
+            {searchQuery || cuisineFilter || difficultyFilter || dietaryFilter
+              ? 'Try adjusting your filters'
+              : 'Get started by creating a new recipe'}
+          </p>
+          <div className="mt-6">
+            <Link
+              to="/recipes/create"
+              className="px-4 py-2 bg-primary-500 text-white rounded-lg font-semibold hover:bg-primary-600 transition"
+            >
+              + New Recipe
+            </Link>
           </div>
-        )}
+        </div>
+      )}
 
       {/* Pagination */}
       {!loading && !error && totalPages > 1 && (
