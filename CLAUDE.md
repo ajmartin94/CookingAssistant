@@ -32,6 +32,14 @@ Every AI feature should support:
 - **AI Assist**: AI suggests, user approves
 - **AI Automation**: End-to-end with minimal input
 
+### 4. Documentation Changes via ADR
+Documentation changes flow through the Architecture Decision Workflow. See [docs/ARCHITECTURE_DECISION_WORKFLOW.md](docs/ARCHITECTURE_DECISION_WORKFLOW.md).
+
+Key points:
+- **Step 1**: Gather evidence → Gate 1 (docs change needed?)
+- **Step 2**: Draft AD → Gate 2 (approve decision?)
+- **Step 3**: Propagate → Gate 3 (changes correct?)
+
 ---
 
 ## Repository Structure
@@ -41,6 +49,7 @@ CookingAssistant/
 ├── backend/          # FastAPI (see backend/CLAUDE.md)
 ├── frontend/         # React/TypeScript (see frontend/CLAUDE.md)
 ├── docs/             # Documentation
+│   └── decisions/    # Architecture Decision Records
 ├── .beads/           # Issue tracking
 └── .claude/          # Skills and hooks
 ```
