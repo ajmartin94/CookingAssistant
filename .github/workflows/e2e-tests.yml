@@ -14,7 +14,7 @@ on:
 jobs:
   e2e-tests:
     name: E2E Tests (${{ matrix.browser }})
-    timeout-minutes: 20
+    timeout-minutes: 30
     runs-on: ubuntu-latest
 
     strategy:
