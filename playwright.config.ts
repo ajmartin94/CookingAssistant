@@ -69,9 +69,12 @@ export default defineConfig({
   // CRITICAL: Start both servers before tests
   webServer: [
     {
-      command: process.platform === 'win32'
-        ? 'cd backend && venv\\Scripts\\python.exe -m app.main'
-        : 'cd backend && . venv/bin/activate && python -m app.main',
+      // In CI, Python packages are installed globally; locally we use venv
+      command: process.env.CI
+        ? 'cd backend && python -m app.main'
+        : process.platform === 'win32'
+          ? 'cd backend && venv\\Scripts\\python.exe -m app.main'
+          : 'cd backend && . venv/bin/activate && python -m app.main',
       url: 'http://localhost:8000/api/v1/health',
       timeout: 120 * 1000,
       reuseExistingServer: !process.env.CI,
