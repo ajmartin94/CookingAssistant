@@ -56,6 +56,17 @@ Capture the facts and context from a trigger event so that someone can evaluate 
 - Tech debt discussion surfaces pain points with current documented practices
 - New team member questions existing documented practice
 - PR introduces changes that may conflict with documented standards
+- **Retroactive documentation** — Decision already implemented in code but lacks formal ADR
+
+#### Retroactive Documentation
+
+When documenting decisions that were made during initial development (before the ADR process existed), use `retroactive-documentation` as the trigger type. These ADRs:
+
+- Skip Step 1 (evidence gathering) since the decision already exists in code
+- Include a "Retroactive Documentation Notice" section explaining this is historical documentation
+- Include a "Code Evidence" section with file paths demonstrating the implementation
+- Have all gates pre-approved in batch with notation indicating retroactive approval
+- Use numbering range 0001-0099 (reserved for foundational decisions)
 
 ### Executor
 
