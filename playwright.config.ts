@@ -35,33 +35,22 @@ export default defineConfig({
   },
 
   projects: [
-    // Smoke tests run FIRST - if they fail, nothing else runs
-    {
-      name: 'smoke',
-      testDir: './e2e/tests/smoke',
-      testMatch: '**/*.spec.ts',
-      use: { ...devices['Desktop Chrome'] },
-    },
-    // Browser tests depend on smoke - won't run if smoke fails
+    // Chromium tests - includes smoke tests that run first
     {
       name: 'chromium',
-      dependencies: ['smoke'],
       testDir: './e2e/tests',
-      testIgnore: '**/smoke/**',
       use: { ...devices['Desktop Chrome'] },
     },
+    // Firefox tests
     {
       name: 'firefox',
-      dependencies: ['smoke'],
       testDir: './e2e/tests',
-      testIgnore: '**/smoke/**',
       use: { ...devices['Desktop Firefox'] },
     },
+    // WebKit tests
     {
       name: 'webkit',
-      dependencies: ['smoke'],
       testDir: './e2e/tests',
-      testIgnore: '**/smoke/**',
       use: { ...devices['Desktop Safari'] },
     },
   ],
