@@ -1,7 +1,6 @@
 # CLAUDE.md - Cooking Assistant
 
 **Project:** AI-powered cooking companion
-**Status:** Early Development (Phase 1 Complete)
 
 ---
 
@@ -10,12 +9,6 @@
 - **Local-first**: Easy to run, privacy-focused, SQLite + JSON
 - **AI-everywhere**: Manual, AI-assist, and full automation modes
 - **LLM-friendly structures**: Data designed for AI consumption
-
-### Key Features (Planned)
-- Recipe management with AI suggestions
-- Meal planning and smart grocery lists
-- Interactive step-by-step cooking mode
-- Voice-assisted guidance
 
 ---
 
