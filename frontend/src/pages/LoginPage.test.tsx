@@ -90,10 +90,7 @@ describe('LoginPage', () => {
     it('should clear error message when switching modes', async () => {
       server.use(
         http.post(`${BASE_URL}/api/v1/users/login`, () => {
-          return HttpResponse.json(
-            { detail: 'Invalid credentials' },
-            { status: 401 }
-          );
+          return HttpResponse.json({ detail: 'Invalid credentials' }, { status: 401 });
         })
       );
 
@@ -133,10 +130,7 @@ describe('LoginPage', () => {
     it('should display error message on login failure', async () => {
       server.use(
         http.post(`${BASE_URL}/api/v1/users/login`, () => {
-          return HttpResponse.json(
-            { detail: 'Invalid username or password' },
-            { status: 401 }
-          );
+          return HttpResponse.json({ detail: 'Invalid username or password' }, { status: 401 });
         })
       );
 
@@ -172,7 +166,6 @@ describe('LoginPage', () => {
       const signUpLinks = screen.getAllByRole('button', { name: /sign up/i });
       await user.click(signUpLinks[0]);
 
-
       expect(screen.getByLabelText(/username/i)).toBeInTheDocument();
       expect(screen.getByLabelText(/email/i)).toBeInTheDocument();
       expect(screen.getByLabelText(/^password/i)).toBeInTheDocument();
@@ -198,10 +191,7 @@ describe('LoginPage', () => {
     it('should display error message on register failure', async () => {
       server.use(
         http.post(`${BASE_URL}/api/v1/users/register`, () => {
-          return HttpResponse.json(
-            { detail: 'Username already exists' },
-            { status: 400 }
-          );
+          return HttpResponse.json({ detail: 'Username already exists' }, { status: 400 });
         })
       );
 
@@ -245,7 +235,7 @@ describe('LoginPage', () => {
       await user.click(screen.getByRole('button', { name: /login/i }));
 
       // Form should not submit (navigate should not be called)
-      await new Promise(resolve => setTimeout(resolve, 100));
+      await new Promise((resolve) => setTimeout(resolve, 100));
       expect(mockNavigate).not.toHaveBeenCalled();
     });
 

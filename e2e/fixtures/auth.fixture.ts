@@ -31,7 +31,7 @@ export const test = base.extend<AuthFixtures>({
     await page.waitForURL(/\/recipes/, { timeout: 10000 });
 
     // Verify authentication token exists
-    const token = await page.evaluate(() => localStorage.getItem('token'));
+    const token = await page.evaluate(() => localStorage.getItem('auth_token'));
     if (!token) {
       throw new Error('Authentication failed - no token found after registration');
     }

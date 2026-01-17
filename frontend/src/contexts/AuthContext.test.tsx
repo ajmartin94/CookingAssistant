@@ -113,10 +113,7 @@ describe('AuthContext', () => {
   it('should handle login error', async () => {
     server.use(
       http.post(`${BASE_URL}/api/v1/users/login`, () => {
-        return HttpResponse.json(
-          { detail: 'Invalid credentials' },
-          { status: 401 }
-        );
+        return HttpResponse.json({ detail: 'Invalid credentials' }, { status: 401 });
       })
     );
 
@@ -135,7 +132,9 @@ describe('AuthContext', () => {
         useAuth();
         return null;
       }
-      render(<BadComponent />, { wrapper: ({ children }: { children: ReactNode }) => <>{children}</> });
+      render(<BadComponent />, {
+        wrapper: ({ children }: { children: ReactNode }) => <>{children}</>,
+      });
     }).toThrow('useAuth must be used within an AuthProvider');
   });
 });

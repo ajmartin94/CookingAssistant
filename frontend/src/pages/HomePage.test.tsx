@@ -13,9 +13,7 @@ describe('HomePage', () => {
     it('should render the tagline', () => {
       render(<HomePage />);
 
-      expect(
-        screen.getByText(/your ai-powered cooking companion/i)
-      ).toBeInTheDocument();
+      expect(screen.getByText(/your ai-powered cooking companion/i)).toBeInTheDocument();
     });
 
     it('should render Browse Recipes link', () => {
@@ -40,9 +38,7 @@ describe('HomePage', () => {
       render(<HomePage />);
 
       expect(screen.getByRole('heading', { name: /recipe library/i })).toBeInTheDocument();
-      expect(
-        screen.getByText(/store and organize your favorite recipes/i)
-      ).toBeInTheDocument();
+      expect(screen.getByText(/store and organize your favorite recipes/i)).toBeInTheDocument();
     });
 
     it('should display Meal Planning feature card', () => {
@@ -58,9 +54,7 @@ describe('HomePage', () => {
       render(<HomePage />);
 
       expect(screen.getByRole('heading', { name: /interactive cooking/i })).toBeInTheDocument();
-      expect(
-        screen.getByText(/step-by-step guidance with voice assistance/i)
-      ).toBeInTheDocument();
+      expect(screen.getByText(/step-by-step guidance with voice assistance/i)).toBeInTheDocument();
     });
   });
 

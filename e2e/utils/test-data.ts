@@ -38,3 +38,19 @@ export const testCredentials = {
   email: 'e2e_test@example.com',
   password: 'TestPassword123!',
 };
+
+export const generateLibraryData = (overrides?: Partial<{
+  name: string;
+  description: string;
+  is_public: boolean;
+}>) => {
+  const timestamp = Date.now();
+  const random = Math.random().toString(36).substring(7);
+
+  return {
+    name: `Test Library ${timestamp}_${random}`,
+    description: 'A test library created by E2E tests',
+    is_public: false,
+    ...overrides,
+  };
+};

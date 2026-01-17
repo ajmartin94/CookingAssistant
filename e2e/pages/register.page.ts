@@ -45,6 +45,23 @@ export class RegisterPage extends BasePage {
     await this.page.waitForURL(/\/recipes/, { timeout: 10000 });
   }
 
+  /**
+   * Attempt registration without expecting success.
+   * Use this when testing error scenarios like duplicate username/email.
+   */
+  async attemptRegister(username: string, email: string, password: string, fullName?: string) {
+    await this.fillField(this.usernameInput, username);
+    await this.fillField(this.emailInput, email);
+    if (fullName && await this.fullNameInput.isVisible()) {
+      await this.fillField(this.fullNameInput, fullName);
+    }
+    await this.fillField(this.passwordInput, password);
+    await this.registerButton.click();
+
+    // Wait for loading to finish (button re-enabled or error appears)
+    await this.page.waitForSelector('button[type="submit"]:not(:disabled)', { timeout: 10000 }).catch(() => {});
+  }
+
   async hasError(): Promise<boolean> {
     return this.errorMessage.isVisible();
   }

@@ -5,6 +5,7 @@
  */
 
 import React, { useState } from 'react';
+import { X } from '../common/icons';
 import * as shareApi from '../../services/shareApi';
 
 interface ShareModalProps {
@@ -90,25 +91,11 @@ const ShareModal: React.FC<ShareModalProps> = ({
             className="text-neutral-400 hover:text-neutral-600"
             aria-label="Close"
           >
-            <svg
-              className="w-6 h-6"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M6 18L18 6M6 6l12 12"
-              />
-            </svg>
+            <X className="w-6 h-6" />
           </button>
         </div>
 
-        <p className="text-neutral-600 mb-4">
-          Create a shareable link for "{itemName}"
-        </p>
+        <p className="text-neutral-600 mb-4">Create a shareable link for "{itemName}"</p>
 
         {error && (
           <div className="bg-error-50 border border-error-200 rounded-lg p-3 mb-4">
@@ -167,9 +154,7 @@ const ShareModal: React.FC<ShareModalProps> = ({
         ) : (
           <>
             <div className="mb-4">
-              <label className="block text-sm font-medium text-neutral-700 mb-2">
-                Share Link
-              </label>
+              <label className="block text-sm font-medium text-neutral-700 mb-2">Share Link</label>
               <div className="flex gap-2">
                 <input
                   type="text"
@@ -192,7 +177,8 @@ const ShareModal: React.FC<ShareModalProps> = ({
 
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
               <p className="text-blue-800 text-sm">
-                Anyone with this link can {permission === 'view' ? 'view' : 'view and edit'} this {recipeId ? 'recipe' : 'library'}.
+                Anyone with this link can {permission === 'view' ? 'view' : 'view and edit'} this{' '}
+                {recipeId ? 'recipe' : 'library'}.
               </p>
             </div>
 

@@ -245,7 +245,7 @@ describe('RecipeDetailPage', () => {
       const deleteButton = screen.getByRole('button', { name: /delete/i });
       await user.click(deleteButton);
 
-      await new Promise(resolve => setTimeout(resolve, 100));
+      await new Promise((resolve) => setTimeout(resolve, 100));
       expect(mockNavigate).not.toHaveBeenCalled();
     });
   });
@@ -254,10 +254,7 @@ describe('RecipeDetailPage', () => {
     it('should display error message when recipe fetch fails', async () => {
       server.use(
         http.get(`${BASE_URL}/api/v1/recipes/:id`, () => {
-          return HttpResponse.json(
-            { detail: 'Recipe not found' },
-            { status: 404 }
-          );
+          return HttpResponse.json({ detail: 'Recipe not found' }, { status: 404 });
         })
       );
 
@@ -271,10 +268,7 @@ describe('RecipeDetailPage', () => {
     it('should show Back to Recipes button in error state', async () => {
       server.use(
         http.get(`${BASE_URL}/api/v1/recipes/:id`, () => {
-          return HttpResponse.json(
-            { detail: 'Recipe not found' },
-            { status: 404 }
-          );
+          return HttpResponse.json({ detail: 'Recipe not found' }, { status: 404 });
         })
       );
 
@@ -288,10 +282,7 @@ describe('RecipeDetailPage', () => {
     it('should display error when deletion fails', async () => {
       server.use(
         http.delete(`${BASE_URL}/api/v1/recipes/:id`, () => {
-          return HttpResponse.json(
-            { detail: 'Failed to delete recipe' },
-            { status: 500 }
-          );
+          return HttpResponse.json({ detail: 'Failed to delete recipe' }, { status: 500 });
         })
       );
 

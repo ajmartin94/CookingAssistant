@@ -60,10 +60,7 @@ describe('CreateRecipePage', () => {
     it('should display error message when API call fails', async () => {
       server.use(
         http.post(`${BASE_URL}/api/v1/recipes`, () => {
-          return HttpResponse.json(
-            { detail: 'Failed to create recipe' },
-            { status: 500 }
-          );
+          return HttpResponse.json({ detail: 'Failed to create recipe' }, { status: 500 });
         })
       );
 

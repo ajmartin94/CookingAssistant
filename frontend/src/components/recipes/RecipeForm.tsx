@@ -17,12 +17,8 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
   // Form state
   const [title, setTitle] = useState(initialData?.title || '');
   const [description, setDescription] = useState(initialData?.description || '');
-  const [prepTimeMinutes, setPrepTimeMinutes] = useState(
-    initialData?.prepTimeMinutes || 0
-  );
-  const [cookTimeMinutes, setCookTimeMinutes] = useState(
-    initialData?.cookTimeMinutes || 0
-  );
+  const [prepTimeMinutes, setPrepTimeMinutes] = useState(initialData?.prepTimeMinutes || 0);
+  const [cookTimeMinutes, setCookTimeMinutes] = useState(initialData?.cookTimeMinutes || 0);
   const [servings, setServings] = useState(initialData?.servings || 4);
   const [cuisineType, setCuisineType] = useState(initialData?.cuisineType || '');
   const [difficultyLevel, setDifficultyLevel] = useState<'easy' | 'medium' | 'hard'>(
@@ -43,9 +39,7 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
   );
 
   // Dietary tags state
-  const [dietaryTags, setDietaryTags] = useState<string[]>(
-    initialData?.dietaryTags || []
-  );
+  const [dietaryTags, setDietaryTags] = useState<string[]>(initialData?.dietaryTags || []);
 
   // Error state
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -63,11 +57,7 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
   };
 
   // Update ingredient
-  const updateIngredient = (
-    index: number,
-    field: keyof Ingredient,
-    value: string
-  ) => {
+  const updateIngredient = (index: number, field: keyof Ingredient, value: string) => {
     const updated = [...ingredients];
     updated[index] = { ...updated[index], [field]: value };
     setIngredients(updated);
@@ -75,10 +65,7 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
 
   // Add instruction
   const addInstruction = () => {
-    setInstructions([
-      ...instructions,
-      { stepNumber: instructions.length + 1, instruction: '' },
-    ]);
+    setInstructions([...instructions, { stepNumber: instructions.length + 1, instruction: '' }]);
   };
 
   // Remove instruction
@@ -131,16 +118,12 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
       newErrors.servings = 'Servings must be at least 1';
     }
 
-    const hasValidIngredient = ingredients.some(
-      (ing) => ing.name.trim() && ing.amount.trim()
-    );
+    const hasValidIngredient = ingredients.some((ing) => ing.name.trim() && ing.amount.trim());
     if (!hasValidIngredient) {
       newErrors.ingredients = 'At least one ingredient is required';
     }
 
-    const hasValidInstruction = instructions.some((inst) =>
-      inst.instruction.trim()
-    );
+    const hasValidInstruction = instructions.some((inst) => inst.instruction.trim());
     if (!hasValidInstruction) {
       newErrors.instructions = 'At least one instruction is required';
     }
@@ -158,9 +141,7 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
     }
 
     // Filter out empty ingredients and instructions
-    const validIngredients = ingredients.filter(
-      (ing) => ing.name.trim() && ing.amount.trim()
-    );
+    const validIngredients = ingredients.filter((ing) => ing.name.trim() && ing.amount.trim());
     const validInstructions = instructions
       .filter((inst) => inst.instruction.trim())
       .map((inst, i) => ({ ...inst, stepNumber: i + 1 }));
@@ -188,9 +169,7 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
     <form onSubmit={handleSubmit} className="space-y-6">
       {/* Basic Information */}
       <div className="bg-white rounded-lg shadow-soft p-6">
-        <h2 className="text-xl font-semibold text-neutral-900 mb-4">
-          Basic Information
-        </h2>
+        <h2 className="text-xl font-semibold text-neutral-900 mb-4">Basic Information</h2>
 
         <div className="space-y-4">
           {/* Title */}
@@ -208,16 +187,12 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
               }`}
               placeholder="e.g., Homemade Margherita Pizza"
             />
-            {errors.title && (
-              <p className="mt-1 text-sm text-error-500">{errors.title}</p>
-            )}
+            {errors.title && <p className="mt-1 text-sm text-error-500">{errors.title}</p>}
           </div>
 
           {/* Description */}
           <div>
-            <label className="block text-sm font-medium text-neutral-700 mb-1">
-              Description *
-            </label>
+            <label className="block text-sm font-medium text-neutral-700 mb-1">Description *</label>
             <textarea
               name="description"
               value={description}
@@ -274,9 +249,7 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-neutral-700 mb-1">
-                Servings *
-              </label>
+              <label className="block text-sm font-medium text-neutral-700 mb-1">Servings *</label>
               <input
                 type="number"
                 name="servings"
@@ -287,9 +260,7 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
                   errors.servings ? 'border-error-500' : 'border-neutral-300'
                 }`}
               />
-              {errors.servings && (
-                <p className="mt-1 text-sm text-error-500">{errors.servings}</p>
-              )}
+              {errors.servings && <p className="mt-1 text-sm text-error-500">{errors.servings}</p>}
             </div>
           </div>
 
@@ -326,9 +297,7 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
               <select
                 name="difficulty_level"
                 value={difficultyLevel}
-                onChange={(e) =>
-                  setDifficultyLevel(e.target.value as 'easy' | 'medium' | 'hard')
-                }
+                onChange={(e) => setDifficultyLevel(e.target.value as 'easy' | 'medium' | 'hard')}
                 className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
               >
                 <option value="easy">Easy</option>
@@ -343,9 +312,7 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
       {/* Ingredients */}
       <div className="bg-white rounded-lg shadow-soft p-6">
         <h2 className="text-xl font-semibold text-neutral-900 mb-4">Ingredients *</h2>
-        {errors.ingredients && (
-          <p className="mb-3 text-sm text-error-500">{errors.ingredients}</p>
-        )}
+        {errors.ingredients && <p className="mb-3 text-sm text-error-500">{errors.ingredients}</p>}
         <div className="space-y-3">
           {ingredients.map((ingredient, index) => (
             <div key={index} className="flex gap-2" data-testid="ingredient-row">
@@ -471,9 +438,7 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
         </h2>
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-neutral-700 mb-1">
-              Source Name
-            </label>
+            <label className="block text-sm font-medium text-neutral-700 mb-1">Source Name</label>
             <input
               type="text"
               value={sourceName}
@@ -483,9 +448,7 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-neutral-700 mb-1">
-              Source URL
-            </label>
+            <label className="block text-sm font-medium text-neutral-700 mb-1">Source URL</label>
             <input
               type="url"
               value={sourceUrl}
@@ -499,9 +462,7 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
 
       {/* Notes */}
       <div className="bg-white rounded-lg shadow-soft p-6">
-        <h2 className="text-xl font-semibold text-neutral-900 mb-4">
-          Additional Notes (Optional)
-        </h2>
+        <h2 className="text-xl font-semibold text-neutral-900 mb-4">Additional Notes (Optional)</h2>
         <textarea
           value={notes}
           onChange={(e) => setNotes(e.target.value)}

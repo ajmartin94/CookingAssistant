@@ -40,8 +40,8 @@ test.describe('User Registration', () => {
     const registerPage2 = new RegisterPage(page2);
     await registerPage2.goto();
 
-    // Try to register with same username
-    await registerPage2.register(username, email2, password);
+    // Try to register with same username (expect failure)
+    await registerPage2.attemptRegister(username, email2, password);
 
     // Should show error
     const hasError = await registerPage2.hasError();
@@ -65,8 +65,8 @@ test.describe('User Registration', () => {
     const registerPage2 = new RegisterPage(page2);
     await registerPage2.goto();
 
-    // Try to register with same email
-    await registerPage2.register(username2, email, password);
+    // Try to register with same email (expect failure)
+    await registerPage2.attemptRegister(username2, email, password);
 
     // Should show error
     const hasError = await registerPage2.hasError();
