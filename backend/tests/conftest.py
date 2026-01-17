@@ -17,7 +17,6 @@ from app.main import app
 from app.models.user import User
 from app.models.recipe import Recipe
 from app.models.library import RecipeLibrary
-from app.models.share import RecipeShare
 from app.services.auth_service import create_access_token, get_password_hash
 from app.schemas.recipe import IngredientSchema, InstructionSchema
 

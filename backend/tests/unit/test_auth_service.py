@@ -6,12 +6,11 @@ and authentication logic.
 """
 
 import pytest
-from datetime import timedelta, datetime
+from datetime import timedelta
 from jose import jwt
 
 from app.services import auth_service
 from app.schemas.user import UserCreate, TokenData
-from app.models.user import User
 from app.config import settings
 
 

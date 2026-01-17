@@ -10,7 +10,7 @@ from fastapi import HTTPException
 from app.services import recipe_service
 from app.schemas.recipe import RecipeCreate, RecipeUpdate, IngredientSchema, InstructionSchema
 from app.models.recipe import DifficultyLevel
-from tests.utils.helpers import create_test_recipe, create_test_user, create_test_library
+from tests.utils.helpers import create_test_recipe, create_test_library
 
 
 # Get Recipe Tests
