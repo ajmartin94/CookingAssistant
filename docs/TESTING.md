@@ -526,3 +526,59 @@ npm run test:coverage
 - [Vitest documentation](https://vitest.dev/)
 - [React Testing Library](https://testing-library.com/react)
 - [MSW (Mock Service Worker)](https://mswjs.io/)
+
+---
+
+<!-- Per AD-0101 -->
+## Enforcement Policy
+
+**Tests are not optional.** PRs cannot merge unless all CI checks pass.
+
+### Branch Protection (Primary Enforcement)
+
+GitHub branch protection rules on `main` and `develop` require these status checks:
+
+| Required Check | What It Validates |
+|----------------|-------------------|
+| `backend-ci` (3.11) | Lint (ruff), format (black), types (mypy), tests (pytest) |
+| `frontend-ci` | Lint (eslint), format (prettier), types (tsc), build, tests (vitest) |
+| `e2e-tests` (chromium) | Smoke tests, full E2E suite |
+
+**Merge is blocked** if any required check fails. No exceptions without admin override.
+
+### What Gets Blocked
+
+- Failing tests (unit, integration, or E2E)
+- Lint violations (ruff, eslint, stylelint)
+- Format violations (black, prettier)
+- Type errors (mypy, tsc)
+- Build failures
+- Smoke test failures (app won't load, CSS broken, auth broken)
+
+### Local Pre-commit Hooks (Optional)
+
+For faster feedback, you can enable local hooks:
+
+```bash
+# Install pre-commit
+pip install pre-commit
+
+# Install hooks
+pre-commit install
+
+# Run manually
+pre-commit run --all-files
+```
+
+Local hooks run lint checks only (fast). Full test suite runs in CI.
+
+**Note**: Local hooks are opt-in. CI enforcement is the authoritative gate.
+
+### Dealing with Flaky Tests
+
+If a test is flaky (intermittently fails):
+1. **Do not skip it** — fix the root cause
+2. **Quarantine temporarily** — move to a separate job that doesn't block
+3. **Track in beads** — create an issue with priority
+
+Flaky tests undermine confidence in the entire suite.

@@ -1,7 +1,7 @@
 ---
 name: updating-docs
 description: |
-  Guide documentation updates through the Architecture Decision Workflow. Use this skill when: (1) Code changes reveal undocumented or conflicting conventions, (2) A learning or incident suggests documentation should change, (3) Reviewing changes for durable context updates, (4) Asked to update documentation, (5) PR introduces patterns that may need documenting. Ensures all documentation changes are intentional, traceable, and human-auditable.
+  Guide documentation updates through the Architecture Decision Workflow. You must use this skill when: (1) Code changes reveal undocumented or conflicting conventions, (2) A learning or incident suggests documentation should change, (3) Reviewing changes for durable context updates, (4) Asked to update documentation, (5) PR introduces patterns that may need documenting, (6) You plan on adding or changing a file in the docs/ directory or any CLAUDE.md files. Ensures all documentation changes are intentional, traceable, and human-auditable.
 ---
 
 # Documentation Update Workflow

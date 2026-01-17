@@ -50,9 +50,9 @@ jobs:
       run: |
         black --check .
 
+    # Per AD-0101: Type errors now block PR merges
     - name: Type check with mypy
       working-directory: ./backend
-      continue-on-error: true
       run: |
         mypy app --ignore-missing-imports
 

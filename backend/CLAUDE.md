@@ -113,3 +113,16 @@ ruff check app/ tests/
 5. Write tests: unit for service, integration for API
 
 **Pattern reference**: Read existing files in `app/services/` and `tests/` for conventions.
+
+---
+
+<!-- Per AD-0101 -->
+## Test Enforcement
+
+All PRs must pass `backend-ci` before merge. This includes:
+- **Lint**: `ruff check .`
+- **Format**: `black --check .`
+- **Types**: `mypy app` (errors block merge)
+- **Tests**: `pytest` (failures block merge)
+
+See [docs/TESTING.md](../docs/TESTING.md#enforcement-policy) for full enforcement policy.

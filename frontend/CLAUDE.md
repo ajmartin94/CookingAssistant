@@ -125,3 +125,17 @@ npm run lint
 - **User events**: Use `userEvent` from `@testing-library/user-event`
 
 **Pattern reference**: Read existing `.test.tsx` files for conventions.
+
+---
+
+<!-- Per AD-0101 -->
+## Test Enforcement
+
+All PRs must pass `frontend-ci` before merge. This includes:
+- **Lint**: `eslint`, `stylelint`
+- **Format**: `prettier --check`
+- **Types**: `tsc --noEmit` (errors block merge)
+- **Build**: `npm run build` (failures block merge)
+- **Tests**: `vitest --run` (failures block merge)
+
+See [docs/TESTING.md](../docs/TESTING.md#enforcement-policy) for full enforcement policy.
