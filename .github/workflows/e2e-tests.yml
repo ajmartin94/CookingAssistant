@@ -54,7 +54,12 @@ jobs:
         run: npm ci
 
       - name: Install Playwright browsers
-        run: npx playwright install --with-deps ${{ matrix.browser }}
+        # Always install chromium (needed for smoke tests) + the test browser
+        run: |
+          npx playwright install --with-deps chromium
+          if [ "${{ matrix.browser }}" != "chromium" ]; then
+            npx playwright install --with-deps ${{ matrix.browser }}
+          fi
 
       - name: Set up test environment
         run: |
