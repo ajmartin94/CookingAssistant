@@ -15,7 +15,7 @@ export class RecipesPage extends BasePage {
     this.createRecipeButton = page.locator('a[href="/recipes/create"]');
     this.searchInput = page.locator('input[placeholder*="Search"]');
     this.recipeCards = page.locator('[data-testid="recipe-card"]');
-    this.logoutButton = page.locator('button:has-text("Logout")');
+    this.logoutButton = page.locator('button[aria-label="Logout"]');
     this.cuisineFilter = page.locator('select[name="cuisine"], select').first();
     this.difficultyFilter = page.locator('select[name="difficulty"], select').nth(1);
     this.clearFiltersButton = page.locator('button:has-text("Clear"), button:has-text("Reset")');

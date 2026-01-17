@@ -231,3 +231,6 @@ cooking_assistant_test_e2e.db
 cooking_assistant_test_e2e.db-journal
 test-results/
 .playwright/
+
+# Ideation
+.ideation/

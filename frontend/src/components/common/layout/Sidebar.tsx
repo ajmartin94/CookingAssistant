@@ -56,12 +56,8 @@ export function Sidebar({ children }: SidebarProps) {
           bg-white border-r border-neutral-200
           flex flex-col
           transition-all duration-200 ease-in-out
-
-          /* Mobile: slide in/out */
           ${isMobileOpen ? 'translate-x-0' : '-translate-x-full'}
           lg:translate-x-0
-
-          /* Width based on collapse state */
           ${isCollapsed ? 'lg:w-16' : 'lg:w-72'}
           w-72
         `}
