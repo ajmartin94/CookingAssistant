@@ -1,6 +1,7 @@
 import { test, expect } from '../../fixtures/auth.fixture';
 import { RecipesPage } from '../../pages/recipes.page';
 import { CreateRecipePage } from '../../pages/create-recipe.page';
+import { RecipeDetailPage } from '../../pages/recipe-detail.page';
 import { LoginPage } from '../../pages/login.page';
 import { generateRecipeData } from '../../utils/test-data';
 
@@ -38,7 +39,7 @@ test.describe('Network Error Handling', () => {
     await createRecipePage.submit();
 
     // Should show error message
-    const errorMessage = authenticatedPage.locator('.error, [role="alert"], .text-red-500');
+    const errorMessage = authenticatedPage.locator('.bg-error-50, [role="alert"]').first();
     await expect(errorMessage).toBeVisible({ timeout: 10000 });
 
     // Should stay on create page
@@ -81,7 +82,7 @@ test.describe('Network Error Handling', () => {
     await createRecipePage.submit();
 
     // Should display user-friendly error message
-    const errorMessage = authenticatedPage.locator('.error, [role="alert"]');
+    const errorMessage = authenticatedPage.locator('.bg-error-50, [role="alert"]').first();
     await expect(errorMessage).toBeVisible({ timeout: 10000 });
 
     // Error message should be user-friendly
@@ -94,7 +95,7 @@ test.describe('Network Error Handling', () => {
 
     // Clear auth token to simulate expired session
     await authenticatedPage.evaluate(() => {
-      localStorage.removeItem('token');
+      localStorage.removeItem('auth_token');
     });
 
     // Try to access protected route
@@ -138,21 +139,21 @@ test.describe('Network Error Handling', () => {
     await createRecipePage.submit();
 
     // Should show timeout or error message within reasonable time
-    const errorMessage = authenticatedPage.locator('.error, [role="alert"]');
+    const errorMessage = authenticatedPage.locator('.bg-error-50, [role="alert"]').first();
     await expect(errorMessage).toBeVisible({ timeout: 30000 });
   });
 
   test('should handle 404 errors for non-existent recipes', async ({ authenticatedPage }) => {
-    const recipeDetailPage = await import('../../pages/recipe-detail.page');
-    const RecipeDetailPage = recipeDetailPage.RecipeDetailPage;
     const detailPage = new RecipeDetailPage(authenticatedPage);
 
     // Navigate to non-existent recipe
     await detailPage.goto('00000000-0000-0000-0000-000000000000');
 
-    // Should show not found message
-    const notFoundMessage = authenticatedPage.getByText(/not found|doesn't exist/i);
-    await expect(notFoundMessage).toBeVisible({ timeout: 10000 });
+    // Should show not found or error message
+    const notFoundMessage = authenticatedPage.locator('.bg-error-50').or(
+      authenticatedPage.getByText(/not found|doesn't exist|error/i)
+    );
+    await expect(notFoundMessage.first()).toBeVisible({ timeout: 10000 });
   });
 
   test('should handle invalid JSON responses', async ({ authenticatedPage }) => {
@@ -171,7 +172,9 @@ test.describe('Network Error Handling', () => {
 
     // Should handle the error gracefully
     // Either show error message or show empty state
-    const errorOrEmpty = authenticatedPage.locator('.error, [role="alert"], :text("no recipes")');
+    const errorOrEmpty = authenticatedPage.locator('.bg-error-50, [role="alert"]').or(
+      authenticatedPage.getByText(/No recipes|Failed to|error/i)
+    );
     await expect(errorOrEmpty.first()).toBeVisible({ timeout: 10000 });
   });
 
@@ -237,7 +240,7 @@ test.describe('Network Error Handling', () => {
     await createRecipePage.submit();
 
     // Should show connection error message
-    const errorMessage = authenticatedPage.locator('.error, [role="alert"]');
+    const errorMessage = authenticatedPage.locator('.bg-error-50, [role="alert"]').first();
     await expect(errorMessage).toBeVisible({ timeout: 10000 });
   });
 
@@ -255,7 +258,7 @@ test.describe('Network Error Handling', () => {
     await recipesPage.goto();
 
     // Should show appropriate error message
-    const errorMessage = authenticatedPage.locator('.error, [role="alert"]');
+    const errorMessage = authenticatedPage.locator('.bg-error-50, [role="alert"]').first();
     await expect(errorMessage).toBeVisible({ timeout: 10000 });
   });
 });

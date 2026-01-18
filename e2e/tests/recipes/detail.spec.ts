@@ -8,7 +8,7 @@ test.describe('Recipe Detail', () => {
 
   test('should display all recipe fields', async ({ authenticatedPage, request }) => {
     const api = new APIHelper(request);
-    const token = await authenticatedPage.evaluate(() => localStorage.getItem('token'));
+    const token = await authenticatedPage.evaluate(() => localStorage.getItem('auth_token'));
 
     // Create a recipe with all fields
     const recipeData = generateRecipeData({
@@ -53,7 +53,7 @@ test.describe('Recipe Detail', () => {
 
   test('should display ingredients correctly', async ({ authenticatedPage, request }) => {
     const api = new APIHelper(request);
-    const token = await authenticatedPage.evaluate(() => localStorage.getItem('token'));
+    const token = await authenticatedPage.evaluate(() => localStorage.getItem('auth_token'));
 
     const recipeData = generateRecipeData({
       ingredients: [
@@ -81,7 +81,7 @@ test.describe('Recipe Detail', () => {
 
   test('should display instructions in order', async ({ authenticatedPage, request }) => {
     const api = new APIHelper(request);
-    const token = await authenticatedPage.evaluate(() => localStorage.getItem('token'));
+    const token = await authenticatedPage.evaluate(() => localStorage.getItem('auth_token'));
 
     const recipeData = generateRecipeData({
       instructions: [
@@ -113,7 +113,7 @@ test.describe('Recipe Detail', () => {
 
   test('should show edit and delete buttons for recipe owner', async ({ authenticatedPage, request }) => {
     const api = new APIHelper(request);
-    const token = await authenticatedPage.evaluate(() => localStorage.getItem('token'));
+    const token = await authenticatedPage.evaluate(() => localStorage.getItem('auth_token'));
 
     const recipeData = generateRecipeData();
     const recipe = await api.createRecipe(token!, recipeData);
@@ -129,7 +129,7 @@ test.describe('Recipe Detail', () => {
   test('should not show edit/delete buttons for non-owner', async ({ authenticatedPage, context, request }) => {
     // Create a recipe with the first user
     const api = new APIHelper(request);
-    const token1 = await authenticatedPage.evaluate(() => localStorage.getItem('token'));
+    const token1 = await authenticatedPage.evaluate(() => localStorage.getItem('auth_token'));
     const recipeData = generateRecipeData();
     const recipe = await api.createRecipe(token1!, recipeData);
 
@@ -169,7 +169,7 @@ test.describe('Recipe Detail', () => {
 
   test('should navigate to edit page when clicking edit button', async ({ authenticatedPage, request }) => {
     const api = new APIHelper(request);
-    const token = await authenticatedPage.evaluate(() => localStorage.getItem('token'));
+    const token = await authenticatedPage.evaluate(() => localStorage.getItem('auth_token'));
 
     const recipeData = generateRecipeData();
     const recipe = await api.createRecipe(token!, recipeData);
@@ -186,7 +186,7 @@ test.describe('Recipe Detail', () => {
 
   test('should calculate total time correctly', async ({ authenticatedPage, request }) => {
     const api = new APIHelper(request);
-    const token = await authenticatedPage.evaluate(() => localStorage.getItem('token'));
+    const token = await authenticatedPage.evaluate(() => localStorage.getItem('auth_token'));
 
     const recipeData = generateRecipeData({
       prep_time_minutes: 20,
@@ -204,7 +204,7 @@ test.describe('Recipe Detail', () => {
 
   test('should display recipe metadata', async ({ authenticatedPage, request }) => {
     const api = new APIHelper(request);
-    const token = await authenticatedPage.evaluate(() => localStorage.getItem('token'));
+    const token = await authenticatedPage.evaluate(() => localStorage.getItem('auth_token'));
 
     const recipeData = generateRecipeData();
     const recipe = await api.createRecipe(token!, recipeData);

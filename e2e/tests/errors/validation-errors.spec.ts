@@ -268,7 +268,7 @@ test.describe('Validation Error Handling', () => {
       await createRecipePage.submit();
 
       // Check for error messages
-      const errorMessages = createRecipePage.page.locator('.error, .validation-error, [role="alert"]');
+      const errorMessages = createRecipePage.page.locator('.error, .validation-error, [role="alert"], .text-error-500');
       const errorCount = await errorMessages.count();
 
       // Should have at least one error message

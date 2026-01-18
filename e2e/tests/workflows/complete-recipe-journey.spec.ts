@@ -175,7 +175,7 @@ test.describe('Complete Recipe Journey', () => {
     await expect(page).toHaveURL(/\/login/);
 
     // Auth token should be removed
-    const tokenAfterLogout = await page.evaluate(() => localStorage.getItem('token'));
+    const tokenAfterLogout = await page.evaluate(() => localStorage.getItem('auth_token'));
     expect(tokenAfterLogout).toBeNull();
 
     // === STEP 10: VERIFY LOGGED OUT STATE ===
@@ -193,7 +193,7 @@ test.describe('Complete Recipe Journey', () => {
     await expect(page).toHaveURL(/\/recipes/);
 
     // Should have new auth token
-    const newToken = await page.evaluate(() => localStorage.getItem('token'));
+    const newToken = await page.evaluate(() => localStorage.getItem('auth_token'));
     expect(newToken).toBeTruthy();
 
     // === STEP 12: VERIFY NO RECIPES (deleted earlier) ===

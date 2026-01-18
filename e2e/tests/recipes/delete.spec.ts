@@ -10,7 +10,7 @@ test.describe('Recipe Deletion', () => {
 
   test('should delete recipe successfully', async ({ authenticatedPage, request }) => {
     const api = new APIHelper(request);
-    const token = await authenticatedPage.evaluate(() => localStorage.getItem('token'));
+    const token = await authenticatedPage.evaluate(() => localStorage.getItem('auth_token'));
 
     // Create a recipe
     const recipeData = generateRecipeData({ title: 'Recipe to Delete' });
@@ -36,7 +36,7 @@ test.describe('Recipe Deletion', () => {
 
   test('should show confirmation dialog before deleting', async ({ authenticatedPage, request }) => {
     const api = new APIHelper(request);
-    const token = await authenticatedPage.evaluate(() => localStorage.getItem('token'));
+    const token = await authenticatedPage.evaluate(() => localStorage.getItem('auth_token'));
 
     const recipeData = generateRecipeData();
     const recipe = await api.createRecipe(token!, recipeData);
@@ -65,7 +65,7 @@ test.describe('Recipe Deletion', () => {
 
   test('should cancel deletion when dismissing confirmation', async ({ authenticatedPage, request }) => {
     const api = new APIHelper(request);
-    const token = await authenticatedPage.evaluate(() => localStorage.getItem('token'));
+    const token = await authenticatedPage.evaluate(() => localStorage.getItem('auth_token'));
 
     const recipeData = generateRecipeData({ title: 'Should Not Be Deleted' });
     const recipe = await api.createRecipe(token!, recipeData);
@@ -88,7 +88,7 @@ test.describe('Recipe Deletion', () => {
 
   test('should remove recipe from database', async ({ authenticatedPage, request, context }) => {
     const api = new APIHelper(request);
-    const token = await authenticatedPage.evaluate(() => localStorage.getItem('token'));
+    const token = await authenticatedPage.evaluate(() => localStorage.getItem('auth_token'));
 
     // Create a recipe
     const recipeData = generateRecipeData();
@@ -112,7 +112,7 @@ test.describe('Recipe Deletion', () => {
 
   test('should not show delete button for non-owner', async ({ authenticatedPage, context, request }) => {
     const api = new APIHelper(request);
-    const token1 = await authenticatedPage.evaluate(() => localStorage.getItem('token'));
+    const token1 = await authenticatedPage.evaluate(() => localStorage.getItem('auth_token'));
 
     // User 1 creates a recipe
     const recipeData = generateRecipeData();
@@ -141,7 +141,7 @@ test.describe('Recipe Deletion', () => {
 
   test('should delete multiple recipes in sequence', async ({ authenticatedPage, request }) => {
     const api = new APIHelper(request);
-    const token = await authenticatedPage.evaluate(() => localStorage.getItem('token'));
+    const token = await authenticatedPage.evaluate(() => localStorage.getItem('auth_token'));
 
     // Create multiple recipes
     const recipe1 = await api.createRecipe(token!, generateRecipeData({ title: 'Recipe 1' }));
@@ -172,7 +172,7 @@ test.describe('Recipe Deletion', () => {
 
   test('should handle delete with ingredients and instructions', async ({ authenticatedPage, request }) => {
     const api = new APIHelper(request);
-    const token = await authenticatedPage.evaluate(() => localStorage.getItem('token'));
+    const token = await authenticatedPage.evaluate(() => localStorage.getItem('auth_token'));
 
     // Create a complex recipe
     const recipeData = generateRecipeData({
@@ -207,7 +207,7 @@ test.describe('Recipe Deletion', () => {
 
   test('should update recipe count after deletion', async ({ authenticatedPage, request }) => {
     const api = new APIHelper(request);
-    const token = await authenticatedPage.evaluate(() => localStorage.getItem('token'));
+    const token = await authenticatedPage.evaluate(() => localStorage.getItem('auth_token'));
 
     // Create 3 recipes
     await api.createRecipe(token!, generateRecipeData({ title: 'Recipe A' }));

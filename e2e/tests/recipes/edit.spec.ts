@@ -10,7 +10,7 @@ test.describe('Recipe Edit', () => {
 
   test('should update recipe title and description', async ({ authenticatedPage, request }) => {
     const api = new APIHelper(request);
-    const token = await authenticatedPage.evaluate(() => localStorage.getItem('token'));
+    const token = await authenticatedPage.evaluate(() => localStorage.getItem('auth_token'));
 
     // Create a recipe
     const recipeData = generateRecipeData({
@@ -44,7 +44,7 @@ test.describe('Recipe Edit', () => {
 
   test('should update prep time, cook time, and servings', async ({ authenticatedPage, request }) => {
     const api = new APIHelper(request);
-    const token = await authenticatedPage.evaluate(() => localStorage.getItem('token'));
+    const token = await authenticatedPage.evaluate(() => localStorage.getItem('auth_token'));
 
     const recipeData = generateRecipeData({
       prep_time_minutes: 10,
@@ -82,7 +82,7 @@ test.describe('Recipe Edit', () => {
 
   test('should update cuisine and difficulty', async ({ authenticatedPage, request }) => {
     const api = new APIHelper(request);
-    const token = await authenticatedPage.evaluate(() => localStorage.getItem('token'));
+    const token = await authenticatedPage.evaluate(() => localStorage.getItem('auth_token'));
 
     const recipeData = generateRecipeData({
       cuisine_type: 'Italian',
@@ -109,7 +109,7 @@ test.describe('Recipe Edit', () => {
 
   test('should add new ingredients', async ({ authenticatedPage, request }) => {
     const api = new APIHelper(request);
-    const token = await authenticatedPage.evaluate(() => localStorage.getItem('token'));
+    const token = await authenticatedPage.evaluate(() => localStorage.getItem('auth_token'));
 
     const recipeData = generateRecipeData({
       ingredients: [
@@ -136,7 +136,7 @@ test.describe('Recipe Edit', () => {
 
   test('should remove ingredients', async ({ authenticatedPage, request }) => {
     const api = new APIHelper(request);
-    const token = await authenticatedPage.evaluate(() => localStorage.getItem('token'));
+    const token = await authenticatedPage.evaluate(() => localStorage.getItem('auth_token'));
 
     const recipeData = generateRecipeData({
       ingredients: [
@@ -166,7 +166,7 @@ test.describe('Recipe Edit', () => {
 
   test('should modify existing ingredients', async ({ authenticatedPage, request }) => {
     const api = new APIHelper(request);
-    const token = await authenticatedPage.evaluate(() => localStorage.getItem('token'));
+    const token = await authenticatedPage.evaluate(() => localStorage.getItem('auth_token'));
 
     const recipeData = generateRecipeData({
       ingredients: [
@@ -195,7 +195,7 @@ test.describe('Recipe Edit', () => {
 
   test('should add new instructions', async ({ authenticatedPage, request }) => {
     const api = new APIHelper(request);
-    const token = await authenticatedPage.evaluate(() => localStorage.getItem('token'));
+    const token = await authenticatedPage.evaluate(() => localStorage.getItem('auth_token'));
 
     const recipeData = generateRecipeData({
       instructions: [
@@ -222,7 +222,7 @@ test.describe('Recipe Edit', () => {
 
   test('should remove instructions', async ({ authenticatedPage, request }) => {
     const api = new APIHelper(request);
-    const token = await authenticatedPage.evaluate(() => localStorage.getItem('token'));
+    const token = await authenticatedPage.evaluate(() => localStorage.getItem('auth_token'));
 
     const recipeData = generateRecipeData({
       instructions: [
@@ -252,7 +252,7 @@ test.describe('Recipe Edit', () => {
 
   test('should persist changes after page refresh', async ({ authenticatedPage, request }) => {
     const api = new APIHelper(request);
-    const token = await authenticatedPage.evaluate(() => localStorage.getItem('token'));
+    const token = await authenticatedPage.evaluate(() => localStorage.getItem('auth_token'));
 
     const recipeData = generateRecipeData({
       title: 'Original Title'
@@ -278,7 +278,7 @@ test.describe('Recipe Edit', () => {
 
   test('should cancel edit without saving changes', async ({ authenticatedPage, request }) => {
     const api = new APIHelper(request);
-    const token = await authenticatedPage.evaluate(() => localStorage.getItem('token'));
+    const token = await authenticatedPage.evaluate(() => localStorage.getItem('auth_token'));
 
     const recipeData = generateRecipeData({
       title: 'Original Title'
@@ -305,7 +305,7 @@ test.describe('Recipe Edit', () => {
 
   test('should validate required fields on edit', async ({ authenticatedPage, request }) => {
     const api = new APIHelper(request);
-    const token = await authenticatedPage.evaluate(() => localStorage.getItem('token'));
+    const token = await authenticatedPage.evaluate(() => localStorage.getItem('auth_token'));
 
     const recipeData = generateRecipeData();
     const recipe = await api.createRecipe(token!, recipeData);

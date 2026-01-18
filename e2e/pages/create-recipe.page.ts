@@ -24,7 +24,7 @@ export class CreateRecipePage extends BasePage {
     this.cuisineSelect = page.locator('select[name="cuisine_type"]');
     this.difficultySelect = page.locator('select[name="difficulty_level"]');
     this.addIngredientButton = page.locator('button:has-text("Add Ingredient")');
-    this.addInstructionButton = page.locator('button:has-text("Add Instruction")');
+    this.addInstructionButton = page.locator('button:has-text("Add Step")');
     this.saveButton = page.locator('button[type="submit"]:has-text("Create")');
     this.cancelButton = page.locator('button:has-text("Cancel")');
   }
@@ -141,7 +141,7 @@ export class CreateRecipePage extends BasePage {
   }
 
   async hasValidationErrors(): Promise<boolean> {
-    const errorMessages = this.page.locator('.error, .validation-error, [role="alert"], .text-red-500');
+    const errorMessages = this.page.locator('.error, .validation-error, [role="alert"], .text-red-500, .text-error-500');
     return (await errorMessages.count()) > 0;
   }
 
