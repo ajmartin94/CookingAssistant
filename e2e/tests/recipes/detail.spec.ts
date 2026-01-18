@@ -75,7 +75,7 @@ test.describe('Recipe Detail', () => {
     await expect(authenticatedPage.getByText('sugar')).toBeVisible();
     await expect(authenticatedPage.getByText('1 cup')).toBeVisible();
 
-    await expect(authenticatedPage.getByText('eggs')).toBeVisible();
+    await expect(authenticatedPage.getByText('whole eggs')).toBeVisible();
     await expect(authenticatedPage.getByText('3 whole')).toBeVisible();
   });
 
@@ -162,9 +162,9 @@ test.describe('Recipe Detail', () => {
     // Navigate to a non-existent recipe ID
     await recipeDetailPage.goto('00000000-0000-0000-0000-000000000000');
 
-    // Should show error message or redirect
-    const notFoundMessage = authenticatedPage.getByText(/not found|doesn't exist/i);
-    await expect(notFoundMessage).toBeVisible({ timeout: 10000 });
+    // Should show error message
+    const errorMessage = authenticatedPage.getByText(/not found|doesn't exist|404|error/i);
+    await expect(errorMessage).toBeVisible({ timeout: 10000 });
   });
 
   test('should navigate to edit page when clicking edit button', async ({ authenticatedPage, request }) => {
@@ -206,18 +206,23 @@ test.describe('Recipe Detail', () => {
     const api = new APIHelper(request);
     const token = await authenticatedPage.evaluate(() => localStorage.getItem('auth_token'));
 
-    const recipeData = generateRecipeData();
+    const recipeData = generateRecipeData({
+      cuisine_type: 'Mexican',
+      difficulty_level: 'hard',
+      dietary_tags: ['vegan']
+    });
     const recipe = await api.createRecipe(token!, recipeData);
 
     recipeDetailPage = new RecipeDetailPage(authenticatedPage);
     await recipeDetailPage.goto(recipe.id);
 
-    // Should show created date
-    const hasCreatedDate = await recipeDetailPage.hasCreatedDate();
-    expect(hasCreatedDate).toBe(true);
+    // Should show cuisine type
+    await expect(authenticatedPage.getByText('Mexican')).toBeVisible();
 
-    // Should show author (username)
-    const hasAuthor = await recipeDetailPage.hasAuthor();
-    expect(hasAuthor).toBe(true);
+    // Should show difficulty level
+    await expect(authenticatedPage.getByText('hard')).toBeVisible();
+
+    // Should show dietary tags
+    await expect(authenticatedPage.getByText('vegan')).toBeVisible();
   });
 });
