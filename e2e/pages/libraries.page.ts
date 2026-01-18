@@ -14,7 +14,7 @@ export class LibrariesPage extends BasePage {
 
   constructor(page: Page) {
     super(page);
-    this.createLibraryButton = page.locator('button:has-text("New Library")');
+    this.createLibraryButton = page.locator('button:has-text("New Library")').first();
     this.libraryCards = page.locator('[data-testid="library-card"]');
     this.createModal = page.locator('form').filter({ hasText: 'Create New Library' });
     this.libraryNameInput = page.locator('#library-name');

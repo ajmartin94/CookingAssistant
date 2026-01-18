@@ -313,7 +313,7 @@ test.describe('Validation Error Handling', () => {
       await expect(page).toHaveURL(/\/recipes\/[^/]+/, { timeout: 10000 });
 
       // Navigate to edit
-      const editButton = page.locator('a:has-text("Edit"), button:has-text("Edit")');
+      const editButton = page.locator('a:has-text("Edit"), button:has-text("Edit")').first();
       await editButton.click();
 
       // Try to clear the title
@@ -327,7 +327,7 @@ test.describe('Validation Error Handling', () => {
       // Should stay on edit page with validation error
       await expect(page).toHaveURL(/\/edit/);
 
-      const errorMessages = page.locator('.error, .validation-error, [role="alert"]');
+      const errorMessages = page.locator('.error, .validation-error, [role="alert"], .text-error-500');
       await expect(errorMessages.first()).toBeVisible({ timeout: 5000 });
     });
   });
