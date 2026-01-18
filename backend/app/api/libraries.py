@@ -15,6 +15,7 @@ from app.schemas.library import (
     LibraryUpdate,
     LibraryDetailResponse,
 )
+from app.schemas.recipe import RecipeResponse
 from app.services.library_service import (
     get_library,
     get_libraries,
@@ -22,6 +23,9 @@ from app.services.library_service import (
     update_library,
     delete_library,
     check_library_ownership,
+    get_recipe,
+    add_recipe_to_library,
+    remove_recipe_from_library,
 )
 from app.utils.dependencies import CurrentUser
 
@@ -142,3 +146,84 @@ async def delete_existing_library(
 
     await delete_library(db, library)
     return None
+
+
+@router.post("/{library_id}/recipes/{recipe_id}", response_model=RecipeResponse)
+async def add_recipe_to_library_endpoint(
+    library_id: str,
+    recipe_id: str,
+    current_user: CurrentUser,
+    db: Annotated[AsyncSession, Depends(get_db)],
+):
+    """
+    Add a recipe to a library
+
+    Both the library and recipe must be owned by the current user.
+    """
+    library = await get_library(db, library_id)
+    if not library:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Library not found",
+        )
+
+    # Verify library ownership
+    check_library_ownership(library, current_user)
+
+    recipe = await get_recipe(db, recipe_id)
+    if not recipe:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Recipe not found",
+        )
+
+    # Verify recipe ownership
+    if recipe.owner_id != current_user.id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Not authorized to modify this recipe",
+        )
+
+    updated_recipe = await add_recipe_to_library(db, library, recipe)
+    return updated_recipe
+
+
+@router.delete("/{library_id}/recipes/{recipe_id}", response_model=RecipeResponse)
+async def remove_recipe_from_library_endpoint(
+    library_id: str,
+    recipe_id: str,
+    current_user: CurrentUser,
+    db: Annotated[AsyncSession, Depends(get_db)],
+):
+    """
+    Remove a recipe from a library
+
+    The library and recipe must be owned by the current user,
+    and the recipe must currently be in the specified library.
+    """
+    library = await get_library(db, library_id)
+    if not library:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Library not found",
+        )
+
+    # Verify library ownership
+    check_library_ownership(library, current_user)
+
+    recipe = await get_recipe(db, recipe_id)
+    if not recipe:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Recipe not found",
+        )
+
+    # Verify recipe is in this library
+    if recipe.library_id != library_id:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Recipe is not in this library",
+        )
+
+    updated_recipe = await remove_recipe_from_library(db, recipe)
+    return updated_recipe

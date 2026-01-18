@@ -11,6 +11,7 @@ from sqlalchemy.orm import selectinload
 from fastapi import HTTPException, status
 
 from app.models.library import RecipeLibrary
+from app.models.recipe import Recipe
 from app.models.user import User
 from app.schemas.library import LibraryCreate, LibraryUpdate
 
@@ -142,3 +143,55 @@ def check_library_ownership(library: RecipeLibrary, user: User) -> None:
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Not authorized to access this library",
         )
+
+
+async def get_recipe(db: AsyncSession, recipe_id: str) -> Optional[Recipe]:
+    """
+    Get a recipe by ID
+
+    Args:
+        db: Database session
+        recipe_id: Recipe ID
+
+    Returns:
+        Recipe or None
+    """
+    result = await db.execute(select(Recipe).where(Recipe.id == recipe_id))
+    return result.scalar_one_or_none()
+
+
+async def add_recipe_to_library(
+    db: AsyncSession, library: RecipeLibrary, recipe: Recipe
+) -> Recipe:
+    """
+    Add a recipe to a library
+
+    Args:
+        db: Database session
+        library: Library to add recipe to
+        recipe: Recipe to add
+
+    Returns:
+        Updated recipe
+    """
+    recipe.library_id = library.id
+    await db.commit()
+    await db.refresh(recipe)
+    return recipe
+
+
+async def remove_recipe_from_library(db: AsyncSession, recipe: Recipe) -> Recipe:
+    """
+    Remove a recipe from its library
+
+    Args:
+        db: Database session
+        recipe: Recipe to remove from library
+
+    Returns:
+        Updated recipe
+    """
+    recipe.library_id = None
+    await db.commit()
+    await db.refresh(recipe)
+    return recipe
