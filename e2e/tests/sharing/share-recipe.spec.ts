@@ -21,8 +21,8 @@ test.describe('Recipe Sharing', () => {
       permission: 'view',
     });
 
-    expect(share.token).toBeTruthy();
-    expect(share.shareUrl || share.share_url).toBeTruthy();
+    expect(share.share_token).toBeTruthy();
+    expect(share.share_url).toBeTruthy();
   });
 
   test('should access shared recipe without authentication', async ({ page, request }) => {
@@ -46,8 +46,7 @@ test.describe('Recipe Sharing', () => {
     });
 
     // Access shared recipe in a fresh page (no auth)
-    const shareToken = share.token;
-    await page.goto(`/shared/${shareToken}`);
+    await page.goto(`/shared/${share.share_token}`);
 
     // Should see recipe content
     await expect(page.getByText('Publicly Shared Recipe')).toBeVisible();
@@ -71,12 +70,16 @@ test.describe('Recipe Sharing', () => {
       generateRecipeData({ title: 'View Only Recipe' })
     );
 
-    const share = await api.createShare(token!, {
+    await api.createShare(token!, {
       recipe_id: recipe.id,
       permission: 'view',
     });
 
-    expect(share.permission).toBe('view');
+    // Verify by fetching from my-shares
+    const shares = await api.getMyShares(token!);
+    const viewShare = shares.find((s: any) => s.recipe_id === recipe.id);
+    expect(viewShare).toBeTruthy();
+    expect(viewShare.permission).toBe('view');
   });
 
   test('should create edit share', async ({ authenticatedPage, request }) => {
@@ -89,12 +92,16 @@ test.describe('Recipe Sharing', () => {
       generateRecipeData({ title: 'Editable Recipe' })
     );
 
-    const share = await api.createShare(token!, {
+    await api.createShare(token!, {
       recipe_id: recipe.id,
       permission: 'edit',
     });
 
-    expect(share.permission).toBe('edit');
+    // Verify by fetching from my-shares
+    const shares = await api.getMyShares(token!);
+    const editShare = shares.find((s: any) => s.recipe_id === recipe.id);
+    expect(editShare).toBeTruthy();
+    expect(editShare.permission).toBe('edit');
   });
 
   test('should list my shares', async ({ authenticatedPage, request }) => {
@@ -129,17 +136,22 @@ test.describe('Recipe Sharing', () => {
       generateRecipeData({ title: 'Revoke Test Recipe' })
     );
 
-    const share = await api.createShare(token!, {
+    await api.createShare(token!, {
       recipe_id: recipe.id,
       permission: 'view',
     });
+
+    // Get the share ID from my-shares
+    const sharesBefore = await api.getMyShares(token!);
+    const share = sharesBefore.find((s: any) => s.recipe_id === recipe.id);
+    expect(share).toBeTruthy();
 
     // Revoke it
     await api.revokeShare(token!, share.id);
 
     // Verify it's gone
-    const shares = await api.getMyShares(token!);
-    const found = shares.find((s: any) => s.id === share.id);
+    const sharesAfter = await api.getMyShares(token!);
+    const found = sharesAfter.find((s: any) => s.id === share.id);
     expect(found).toBeFalsy();
   });
 
@@ -156,16 +168,20 @@ test.describe('Recipe Sharing', () => {
       generateRecipeData({ title: 'Will Be Revoked' })
     );
 
-    const share = await api.createShare(authToken, {
+    const createResponse = await api.createShare(authToken, {
       recipe_id: recipe.id,
       permission: 'view',
     });
+
+    // Get the share ID from my-shares
+    const shares = await api.getMyShares(authToken);
+    const share = shares.find((s: any) => s.recipe_id === recipe.id);
 
     // Revoke it
     await api.revokeShare(authToken, share.id);
 
     // Try to access - should fail
-    await page.goto(`/shared/${share.token}`);
+    await page.goto(`/shared/${createResponse.share_token}`);
     await expect(page.getByText(/unable to load/i)).toBeVisible();
   });
 });
