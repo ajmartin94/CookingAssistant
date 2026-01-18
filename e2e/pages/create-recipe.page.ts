@@ -83,13 +83,25 @@ export class CreateRecipePage extends BasePage {
   }
 
   async addIngredient(name: string, amount: string, unit: string, notes?: string) {
+    // Wait for button and click
+    await this.addIngredientButton.waitFor({ state: 'visible' });
     await this.addIngredientButton.click();
-    const ingredientRows = this.page.locator('.ingredient-row, [data-testid="ingredient-row"]');
+
+    // Wait for ingredient rows to be present
+    const ingredientRows = this.page.locator('[data-testid="ingredient-row"]');
+    await ingredientRows.first().waitFor({ state: 'visible' });
     const lastRow = ingredientRows.last();
 
-    await lastRow.locator('input[placeholder*="name"], input[name*="name"]').fill(name);
-    await lastRow.locator('input[placeholder*="amount"], input[name*="amount"]').fill(amount);
-    await lastRow.locator('input[placeholder*="unit"], input[name*="unit"]').fill(unit);
+    // Wait for and fill each input
+    const nameInput = lastRow.locator('input[name="ingredient-name"]');
+    await nameInput.waitFor({ state: 'visible' });
+    await nameInput.fill(name);
+
+    const amountInput = lastRow.locator('input[name="ingredient-amount"]');
+    await amountInput.fill(amount);
+
+    const unitInput = lastRow.locator('input[name="ingredient-unit"]');
+    await unitInput.fill(unit);
 
     if (notes) {
       const notesInput = lastRow.locator('input[placeholder*="notes"], input[name*="notes"]');
@@ -100,11 +112,19 @@ export class CreateRecipePage extends BasePage {
   }
 
   async addInstruction(text: string, durationMinutes?: number) {
+    // Wait for button and click
+    await this.addInstructionButton.waitFor({ state: 'visible' });
     await this.addInstructionButton.click();
-    const instructionRows = this.page.locator('.instruction-row, [data-testid="instruction-row"]');
+
+    // Wait for instruction rows to be present
+    const instructionRows = this.page.locator('[data-testid="instruction-row"]');
+    await instructionRows.first().waitFor({ state: 'visible' });
     const lastRow = instructionRows.last();
 
-    await lastRow.locator('textarea, input[type="text"]').fill(text);
+    // Wait for and fill the textarea
+    const textArea = lastRow.locator('textarea[name="instruction-text"]');
+    await textArea.waitFor({ state: 'visible' });
+    await textArea.fill(text);
 
     if (durationMinutes !== undefined) {
       const durationInput = lastRow.locator('input[placeholder*="duration"], input[name*="duration"]');

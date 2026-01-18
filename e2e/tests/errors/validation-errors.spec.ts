@@ -314,14 +314,19 @@ test.describe('Validation Error Handling', () => {
 
       // Navigate to edit
       const editButton = page.locator('a:has-text("Edit"), button:has-text("Edit")').first();
+      await editButton.waitFor({ state: 'visible' });
       await editButton.click();
+
+      // Wait for edit page to load
+      await expect(page).toHaveURL(/\/edit/, { timeout: 10000 });
 
       // Try to clear the title
       const titleInput = page.locator('input[name="title"]');
+      await titleInput.waitFor({ state: 'visible' });
       await titleInput.clear();
 
       // Try to submit
-      const submitButton = page.locator('button[type="submit"]');
+      const submitButton = page.locator('button[type="submit"]').first();
       await submitButton.click();
 
       // Should stay on edit page with validation error

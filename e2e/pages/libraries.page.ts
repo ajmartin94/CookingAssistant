@@ -16,7 +16,7 @@ export class LibrariesPage extends BasePage {
     super(page);
     this.createLibraryButton = page.locator('button:has-text("New Library")').first();
     this.libraryCards = page.locator('[data-testid="library-card"]');
-    this.createModal = page.locator('form').filter({ hasText: 'Create New Library' });
+    this.createModal = page.locator('div.fixed >> div.bg-white:has(h2:text("Create New Library"))');
     this.libraryNameInput = page.locator('#library-name');
     this.libraryDescriptionInput = page.locator('#library-description');
     this.isPublicCheckbox = page.locator('input[type="checkbox"]');
@@ -30,6 +30,7 @@ export class LibrariesPage extends BasePage {
   }
 
   async openCreateModal() {
+    await this.createLibraryButton.waitFor({ state: 'visible' });
     await this.createLibraryButton.click();
     await this.createModal.waitFor({ state: 'visible' });
   }
