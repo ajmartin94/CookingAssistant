@@ -25,7 +25,7 @@ export class CreateRecipePage extends BasePage {
     this.difficultySelect = page.locator('select[name="difficulty_level"]');
     this.addIngredientButton = page.locator('button:has-text("Add Ingredient")');
     this.addInstructionButton = page.locator('button:has-text("Add Step")');
-    this.saveButton = page.locator('button[type="submit"]:has-text("Create")');
+    this.saveButton = page.locator('button[type="submit"]:has-text("Create"), button[type="submit"]:has-text("Update")');
     this.cancelButton = page.locator('button:has-text("Cancel")');
   }
 

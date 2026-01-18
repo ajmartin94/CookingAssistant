@@ -160,7 +160,7 @@ test.describe('Recipe Edit', () => {
 
     // Verify sugar is removed but others remain
     await expect(authenticatedPage.getByText('flour')).toBeVisible();
-    await expect(authenticatedPage.getByText('eggs')).toBeVisible();
+    await expect(authenticatedPage.getByText('whole eggs')).toBeVisible();
     await expect(authenticatedPage.getByText('sugar')).not.toBeVisible();
   });
 
@@ -268,6 +268,9 @@ test.describe('Recipe Edit', () => {
     await editRecipePage.titleInput.clear();
     await editRecipePage.titleInput.fill('Updated After Refresh');
     await editRecipePage.submit();
+
+    // Wait for navigation to detail page before refreshing
+    await expect(authenticatedPage).toHaveURL(`/recipes/${recipe.id}`);
 
     // Refresh the page
     await authenticatedPage.reload();
