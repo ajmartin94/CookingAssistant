@@ -205,3 +205,32 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+
+# Frontend - Node.js
+node_modules/
+frontend/dist/
+frontend/.vite/
+
+# Database
+*.db
+*.db-journal
+cooking_assistant.db
+
+# Uploads
+uploads/
+
+# Claude Code
+.claude/settings.local.json
+
+# E2E Testing
+e2e/reports/
+e2e/test-results/
+playwright-report/
+playwright/.cache/
+cooking_assistant_test_e2e.db
+cooking_assistant_test_e2e.db-journal
+test-results/
+.playwright/
+
+# Session artifacts (temp files, screenshots, ideation)
+temp/
