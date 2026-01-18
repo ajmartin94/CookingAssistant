@@ -197,18 +197,22 @@ test.describe('Smoke Tests', () => {
     const pageLoaded = await Promise.race([
       page
         .locator('text=My Recipes')
+        .first()
         .isVisible()
         .then(() => true),
       page
         .locator('text=No recipes')
+        .first()
         .isVisible()
         .then(() => true),
       page
         .locator('[data-testid="recipes-list"]')
+        .first()
         .isVisible()
         .then(() => true),
       page
         .locator('text=Create')
+        .first()
         .isVisible()
         .then(() => true),
       new Promise((resolve) => setTimeout(() => resolve(false), 5000)),
