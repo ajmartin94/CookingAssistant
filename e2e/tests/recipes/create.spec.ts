@@ -59,8 +59,8 @@ test.describe('Recipe Creation', () => {
     // Submit the form
     await createRecipePage.submit();
 
-    // Should redirect to recipe detail page
-    await expect(authenticatedPage).toHaveURL(/\/recipes\/[^/]+/, { timeout: 10000 });
+    // Should redirect to recipe detail page (UUID pattern, not /create)
+    await expect(authenticatedPage).toHaveURL(/\/recipes\/[0-9a-f-]{36}/, { timeout: 10000 });
 
     // Verify recipe was created with correct data
     const detailPage = new RecipeDetailPage(authenticatedPage);
@@ -170,7 +170,7 @@ test.describe('Recipe Creation', () => {
     }
 
     await createRecipePage.submit();
-    await expect(authenticatedPage).toHaveURL(/\/recipes\/[^/]+/, { timeout: 10000 });
+    await expect(authenticatedPage).toHaveURL(/\/recipes\/[0-9a-f-]{36}/, { timeout: 10000 });
 
     // Get the recipe ID from URL
     const url = authenticatedPage.url();

@@ -70,6 +70,32 @@ interface BackendRecipe {
   updated_at: string;
 }
 
+// Transform frontend form data to backend format for API requests
+const transformFormToBackend = (data: RecipeFormData) => ({
+  title: data.title,
+  description: data.description,
+  ingredients: data.ingredients.map((ing) => ({
+    name: ing.name,
+    amount: ing.amount,
+    unit: ing.unit,
+    notes: ing.notes,
+  })),
+  instructions: data.instructions.map((inst) => ({
+    step_number: inst.stepNumber,
+    instruction: inst.instruction,
+    duration_minutes: inst.durationMinutes,
+  })),
+  prep_time_minutes: data.prepTimeMinutes,
+  cook_time_minutes: data.cookTimeMinutes,
+  servings: data.servings,
+  cuisine_type: data.cuisineType,
+  dietary_tags: data.dietaryTags,
+  difficulty_level: data.difficultyLevel,
+  source_url: data.sourceUrl,
+  source_name: data.sourceName,
+  notes: data.notes,
+});
+
 // Transform backend recipe to frontend recipe
 const transformRecipe = (backend: BackendRecipe): Recipe => ({
   id: backend.id,
@@ -134,7 +160,8 @@ export const getRecipe = async (recipeId: string): Promise<Recipe> => {
  * Create a new recipe
  */
 export const createRecipe = async (data: RecipeFormData): Promise<Recipe> => {
-  const response = await apiClient.post<BackendRecipe>('/api/v1/recipes', data);
+  const backendData = transformFormToBackend(data);
+  const response = await apiClient.post<BackendRecipe>('/api/v1/recipes', backendData);
   return transformRecipe(response.data);
 };
 
@@ -145,7 +172,36 @@ export const updateRecipe = async (
   recipeId: string,
   data: Partial<RecipeFormData>
 ): Promise<Recipe> => {
-  const response = await apiClient.put<BackendRecipe>(`/api/v1/recipes/${recipeId}`, data);
+  // Transform partial data to backend format
+  const backendData: Record<string, unknown> = {};
+  if (data.title !== undefined) backendData.title = data.title;
+  if (data.description !== undefined) backendData.description = data.description;
+  if (data.ingredients !== undefined) {
+    backendData.ingredients = data.ingredients.map((ing) => ({
+      name: ing.name,
+      amount: ing.amount,
+      unit: ing.unit,
+      notes: ing.notes,
+    }));
+  }
+  if (data.instructions !== undefined) {
+    backendData.instructions = data.instructions.map((inst) => ({
+      step_number: inst.stepNumber,
+      instruction: inst.instruction,
+      duration_minutes: inst.durationMinutes,
+    }));
+  }
+  if (data.prepTimeMinutes !== undefined) backendData.prep_time_minutes = data.prepTimeMinutes;
+  if (data.cookTimeMinutes !== undefined) backendData.cook_time_minutes = data.cookTimeMinutes;
+  if (data.servings !== undefined) backendData.servings = data.servings;
+  if (data.cuisineType !== undefined) backendData.cuisine_type = data.cuisineType;
+  if (data.dietaryTags !== undefined) backendData.dietary_tags = data.dietaryTags;
+  if (data.difficultyLevel !== undefined) backendData.difficulty_level = data.difficultyLevel;
+  if (data.sourceUrl !== undefined) backendData.source_url = data.sourceUrl;
+  if (data.sourceName !== undefined) backendData.source_name = data.sourceName;
+  if (data.notes !== undefined) backendData.notes = data.notes;
+
+  const response = await apiClient.put<BackendRecipe>(`/api/v1/recipes/${recipeId}`, backendData);
   return transformRecipe(response.data);
 };
 

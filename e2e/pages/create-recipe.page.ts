@@ -83,28 +83,39 @@ export class CreateRecipePage extends BasePage {
   }
 
   async addIngredient(name: string, amount: string, unit: string, notes?: string) {
-    // Wait for button and click
+    // Wait for button to be visible
     await this.addIngredientButton.waitFor({ state: 'visible' });
-    await this.addIngredientButton.click();
 
-    // Wait for ingredient rows to be present
+    // Get ingredient rows
     const ingredientRows = this.page.locator('[data-testid="ingredient-row"]');
     await ingredientRows.first().waitFor({ state: 'visible' });
+
+    // Check if the last row is empty (initial empty row)
     const lastRow = ingredientRows.last();
-
-    // Wait for and fill each input
     const nameInput = lastRow.locator('input[name="ingredient-name"]');
-    await nameInput.waitFor({ state: 'visible' });
-    await nameInput.fill(name);
+    const currentName = await nameInput.inputValue();
 
-    const amountInput = lastRow.locator('input[name="ingredient-amount"]');
+    // If last row is not empty, add a new row
+    if (currentName.trim() !== '') {
+      await this.addIngredientButton.click();
+      // Wait for new row to appear
+      await this.page.waitForTimeout(100);
+    }
+
+    // Get the row to fill (may be new or existing empty row)
+    const targetRow = ingredientRows.last();
+    const targetNameInput = targetRow.locator('input[name="ingredient-name"]');
+    await targetNameInput.waitFor({ state: 'visible' });
+    await targetNameInput.fill(name);
+
+    const amountInput = targetRow.locator('input[name="ingredient-amount"]');
     await amountInput.fill(amount);
 
-    const unitInput = lastRow.locator('input[name="ingredient-unit"]');
+    const unitInput = targetRow.locator('input[name="ingredient-unit"]');
     await unitInput.fill(unit);
 
     if (notes) {
-      const notesInput = lastRow.locator('input[placeholder*="notes"], input[name*="notes"]');
+      const notesInput = targetRow.locator('input[placeholder*="notes"], input[name*="notes"]');
       if (await notesInput.count() > 0) {
         await notesInput.fill(notes);
       }
@@ -112,22 +123,33 @@ export class CreateRecipePage extends BasePage {
   }
 
   async addInstruction(text: string, durationMinutes?: number) {
-    // Wait for button and click
+    // Wait for button to be visible
     await this.addInstructionButton.waitFor({ state: 'visible' });
-    await this.addInstructionButton.click();
 
-    // Wait for instruction rows to be present
+    // Get instruction rows
     const instructionRows = this.page.locator('[data-testid="instruction-row"]');
     await instructionRows.first().waitFor({ state: 'visible' });
-    const lastRow = instructionRows.last();
 
-    // Wait for and fill the textarea
+    // Check if the last row is empty (initial empty row)
+    const lastRow = instructionRows.last();
     const textArea = lastRow.locator('textarea[name="instruction-text"]');
-    await textArea.waitFor({ state: 'visible' });
-    await textArea.fill(text);
+    const currentText = await textArea.inputValue();
+
+    // If last row is not empty, add a new row
+    if (currentText.trim() !== '') {
+      await this.addInstructionButton.click();
+      // Wait for new row to appear
+      await this.page.waitForTimeout(100);
+    }
+
+    // Get the row to fill (may be new or existing empty row)
+    const targetRow = instructionRows.last();
+    const targetTextArea = targetRow.locator('textarea[name="instruction-text"]');
+    await targetTextArea.waitFor({ state: 'visible' });
+    await targetTextArea.fill(text);
 
     if (durationMinutes !== undefined) {
-      const durationInput = lastRow.locator('input[placeholder*="duration"], input[name*="duration"]');
+      const durationInput = targetRow.locator('input[placeholder*="duration"], input[name*="duration"]');
       if (await durationInput.count() > 0) {
         await durationInput.fill(durationMinutes.toString());
       }

@@ -58,15 +58,20 @@ export class LibrariesPage extends BasePage {
 
   async deleteLibrary(name: string) {
     const card = this.page.locator(`[data-testid="library-card"]:has-text("${name}")`);
+    await card.waitFor({ state: 'visible' });
+
     const deleteButton = card.locator('button:has-text("Delete")');
+    await deleteButton.waitFor({ state: 'visible' });
+
+    // Set up dialog handler for window.confirm() BEFORE clicking
+    this.page.once('dialog', async (dialog) => {
+      await dialog.accept();
+    });
+
     await deleteButton.click();
 
-    // Handle confirmation dialog if present
-    const confirmButton = this.page.locator('button:has-text("Confirm"), button:has-text("Yes")');
-    if ((await confirmButton.count()) > 0) {
-      await confirmButton.click();
-    }
-    await this.page.waitForTimeout(500);
+    // Wait for card to be removed
+    await card.waitFor({ state: 'hidden', timeout: 10000 });
   }
 
   async cancelCreate() {
