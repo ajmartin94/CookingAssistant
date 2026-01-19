@@ -37,8 +37,12 @@ export default function RecipeDetailPage() {
         setError(null);
         const data = await recipeApi.getRecipe(id);
         setRecipe(data);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to fetch recipe');
+      } catch (err: unknown) {
+        // Check for 404 errors and show a user-friendly message
+        const isNotFound =
+          (err as { response?: { status?: number } })?.response?.status === 404 ||
+          (err instanceof Error && err.message.includes('404'));
+        setError(isNotFound ? 'Recipe not found' : (err instanceof Error ? err.message : 'Failed to fetch recipe'));
       } finally {
         setLoading(false);
       }
