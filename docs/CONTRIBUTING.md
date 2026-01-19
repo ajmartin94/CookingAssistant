@@ -43,11 +43,21 @@ If any check fails, the merge button is disabled.
 
 ## Local Development Setup
 
+<!-- Per AD-0104 -->
+
 ### Prerequisites
 
 - Python 3.10+
 - Node.js 20+
 - Git
+- Beads CLI (for issue tracking)
+
+### Install Beads CLI
+
+```bash
+curl -sSL https://raw.githubusercontent.com/steveyegge/beads/main/scripts/install.sh | bash
+bd --version  # Verify installation
+```
 
 ### Backend Setup
 
@@ -63,6 +73,14 @@ pip install -r requirements.txt
 ```bash
 cd frontend
 npm install
+```
+
+### E2E Test Setup
+
+```bash
+# From project root
+npm install              # Install Playwright dependencies
+npx playwright install   # Install browsers
 ```
 
 ### Running Locally

@@ -60,6 +60,30 @@ Every feature supports:
 
 ## 🧑‍💻 Development Setup
 
+<!-- Per AD-0104 -->
+
+### Prerequisites
+
+Before setting up, ensure you have:
+
+- **Python 3.10+** - Backend runtime
+- **Node.js 20+** - Frontend runtime
+- **Git** - Version control
+- **Beads CLI** - Issue tracking (install below)
+
+### Install Beads CLI
+
+This project uses [Beads](https://github.com/steveyegge/beads) for issue tracking. Install before starting:
+
+```bash
+curl -sSL https://raw.githubusercontent.com/steveyegge/beads/main/scripts/install.sh | bash
+```
+
+Verify installation:
+```bash
+bd --version
+```
+
 ### ✅ Project Initialization Complete!
 
 The Project Initialization Phase has been implemented. Both backend and frontend are ready to run.
@@ -121,6 +145,18 @@ The Project Initialization Phase has been implemented. Both backend and frontend
    ```
 
    App available at: **http://localhost:5173**
+
+### E2E Test Setup (Playwright)
+
+1. **Install root dependencies** (from project root)
+   ```bash
+   npm install
+   ```
+
+2. **Install Playwright browsers**
+   ```bash
+   npx playwright install
+   ```
 
 ### Running Tests
 
