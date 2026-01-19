@@ -5,6 +5,7 @@
  */
 
 import axios, { type AxiosInstance, type AxiosError } from 'axios';
+import { navigate } from './navigationService';
 
 // Base API URL - can be configured via environment variables
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
@@ -44,13 +45,12 @@ apiClient.interceptors.response.use(
         case 401:
           // Unauthorized - redirect to login
           localStorage.removeItem('auth_token');
-          // Only redirect if not in test environment and not already on login page
+          // Only redirect if not already on login page
           if (
-            import.meta.env.MODE !== 'test' &&
             typeof window !== 'undefined' &&
             window.location.pathname !== '/login'
           ) {
-            window.location.href = '/login';
+            navigate('/login', { replace: true });
           }
           break;
         case 403:

@@ -5,7 +5,9 @@
  * Uses a sidebar-based layout for authenticated pages.
  */
 
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom';
+import { setNavigate } from './services/navigationService';
 import { AuthProvider } from './contexts/AuthContext';
 import { SidebarProvider } from './contexts/SidebarContext';
 import { ProtectedLayout } from './components/common/layout';
@@ -24,6 +26,7 @@ function App() {
     <AuthProvider>
       <SidebarProvider>
         <Router>
+          <NavigationSetter />
           <Routes>
             {/* Public routes - no sidebar */}
             <Route path="/" element={<HomePage />} />
@@ -60,6 +63,17 @@ function ComingSoonPage({ title }: { title: string }) {
       </div>
     </div>
   );
+}
+
+// Sets up the navigation service for use outside React components
+function NavigationSetter() {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    setNavigate(navigate);
+  }, [navigate]);
+
+  return null;
 }
 
 export default App;
