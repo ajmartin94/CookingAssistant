@@ -109,10 +109,11 @@ test.describe('Network Error Handling', () => {
     const createRecipePage = new CreateRecipePage(authenticatedPage);
     await createRecipePage.goto();
 
-    // Intercept and delay API request to simulate timeout
+    // Intercept and abort with timeout error
+    // Using route.abort('timedout') instead of delaying because WebKit doesn't
+    // trigger axios timeout when Playwright holds the request at browser level
     await authenticatedPage.route('**/api/v1/recipes', async route => {
-      await new Promise(resolve => setTimeout(resolve, 60000)); // 60 second delay
-      route.continue();
+      route.abort('timedout');
     });
 
     const recipeData = generateRecipeData();
