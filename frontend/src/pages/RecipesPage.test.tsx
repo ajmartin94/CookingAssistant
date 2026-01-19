@@ -36,7 +36,7 @@ describe('RecipesPage', () => {
       expect(screen.getByRole('heading', { name: /my recipes/i })).toBeInTheDocument();
     });
 
-    it('should render New Recipe link in empty state', async () => {
+    it('should render sidebar guidance in empty state', async () => {
       // Mock empty response to show empty state
       server.use(
         http.get(`${BASE_URL}/api/v1/recipes`, () => {
@@ -53,7 +53,7 @@ describe('RecipesPage', () => {
       render(<RecipesPage />);
 
       await waitFor(() => {
-        expect(screen.getByRole('link', { name: /new recipe/i })).toBeInTheDocument();
+        expect(screen.getByText(/clicking new recipe in the sidebar/i)).toBeInTheDocument();
       });
     });
 
@@ -140,7 +140,7 @@ describe('RecipesPage', () => {
       });
     });
 
-    it('should show create recipe link in empty state', async () => {
+    it('should show sidebar guidance in empty state', async () => {
       server.use(
         http.get(`${BASE_URL}/api/v1/recipes`, () => {
           return HttpResponse.json({
@@ -156,8 +156,7 @@ describe('RecipesPage', () => {
       render(<RecipesPage />);
 
       await waitFor(() => {
-        const createLinks = screen.getAllByRole('link', { name: /new recipe/i });
-        expect(createLinks.length).toBeGreaterThan(0);
+        expect(screen.getByText(/clicking new recipe in the sidebar/i)).toBeInTheDocument();
       });
     });
 
@@ -451,27 +450,4 @@ describe('RecipesPage', () => {
     });
   });
 
-  describe('Navigation', () => {
-    it('should have correct href on New Recipe link', async () => {
-      // Mock empty response to show empty state with New Recipe link
-      server.use(
-        http.get(`${BASE_URL}/api/v1/recipes`, () => {
-          return HttpResponse.json({
-            recipes: [],
-            total: 0,
-            page: 1,
-            page_size: 12,
-            total_pages: 0,
-          });
-        })
-      );
-
-      render(<RecipesPage />);
-
-      await waitFor(() => {
-        const newRecipeLink = screen.getByRole('link', { name: /new recipe/i });
-        expect(newRecipeLink).toHaveAttribute('href', '/recipes/create');
-      });
-    });
-  });
 });

@@ -5,7 +5,6 @@
  */
 
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
 import { FileText } from '../components/common/icons';
 import RecipeCard from '../components/recipes/RecipeCard';
 import { recipeApi } from '../services/recipeApi';
@@ -213,16 +212,8 @@ export default function RecipesPage() {
           <p className="mt-1 text-sm text-neutral-500">
             {searchQuery || cuisineFilter || difficultyFilter || dietaryFilter
               ? 'Try adjusting your filters'
-              : 'Get started by creating a new recipe'}
+              : 'Get started by clicking New Recipe in the sidebar'}
           </p>
-          <div className="mt-6">
-            <Link
-              to="/recipes/create"
-              className="px-4 py-2 bg-primary-500 text-white rounded-lg font-semibold hover:bg-primary-600 transition"
-            >
-              + New Recipe
-            </Link>
-          </div>
         </div>
       )}
 
