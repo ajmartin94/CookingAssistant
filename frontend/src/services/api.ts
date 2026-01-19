@@ -46,10 +46,7 @@ apiClient.interceptors.response.use(
           // Unauthorized - redirect to login
           localStorage.removeItem('auth_token');
           // Only redirect if not already on login page
-          if (
-            typeof window !== 'undefined' &&
-            window.location.pathname !== '/login'
-          ) {
+          if (typeof window !== 'undefined' && window.location.pathname !== '/login') {
             navigate('/login', { replace: true });
           }
           break;

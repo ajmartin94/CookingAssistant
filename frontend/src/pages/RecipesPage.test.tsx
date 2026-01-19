@@ -449,5 +449,4 @@ describe('RecipesPage', () => {
       });
     });
   });
-
 });

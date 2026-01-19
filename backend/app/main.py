@@ -119,7 +119,9 @@ if __name__ == "__main__":
     import os
 
     parser = argparse.ArgumentParser(description="Cooking Assistant API Server")
-    parser.add_argument("--port", type=int, default=8000, help="Port to run the server on")
+    parser.add_argument(
+        "--port", type=int, default=8000, help="Port to run the server on"
+    )
     args = parser.parse_args()
 
     # Disable reload during E2E testing to prevent database initialization issues

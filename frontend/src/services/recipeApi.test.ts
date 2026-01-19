@@ -186,7 +186,19 @@ describe('recipeApi', () => {
 
       await recipeApi.createRecipe(recipeData);
 
-      expect(capturedBody).toMatchObject(recipeData);
+      // Request body should be transformed to snake_case for backend
+      expect(capturedBody).toMatchObject({
+        title: 'Test Recipe',
+        description: 'Test description',
+        ingredients: [],
+        instructions: [],
+        prep_time_minutes: 0,
+        cook_time_minutes: 0,
+        servings: 4,
+        cuisine_type: 'American',
+        dietary_tags: [],
+        difficulty_level: 'easy',
+      });
     });
 
     it('should handle validation errors', async () => {

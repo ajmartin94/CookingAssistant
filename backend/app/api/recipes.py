@@ -35,7 +35,9 @@ async def list_recipes(
     current_user: CurrentUser,
     library_id: Optional[str] = Query(None, description="Filter by library ID"),
     cuisine_type: Optional[str] = Query(None, description="Filter by cuisine type"),
-    difficulty_level: Optional[str] = Query(None, description="Filter by difficulty level"),
+    difficulty_level: Optional[str] = Query(
+        None, description="Filter by difficulty level"
+    ),
     dietary_tag: Optional[str] = Query(None, description="Filter by dietary tag"),
     search: Optional[str] = Query(None, description="Search in title and description"),
     page: int = Query(1, ge=1, description="Page number"),

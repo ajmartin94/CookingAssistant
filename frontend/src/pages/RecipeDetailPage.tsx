@@ -42,7 +42,13 @@ export default function RecipeDetailPage() {
         const isNotFound =
           (err as { response?: { status?: number } })?.response?.status === 404 ||
           (err instanceof Error && err.message.includes('404'));
-        setError(isNotFound ? 'Recipe not found' : (err instanceof Error ? err.message : 'Failed to fetch recipe'));
+        setError(
+          isNotFound
+            ? 'Recipe not found'
+            : err instanceof Error
+              ? err.message
+              : 'Failed to fetch recipe'
+        );
       } finally {
         setLoading(false);
       }
