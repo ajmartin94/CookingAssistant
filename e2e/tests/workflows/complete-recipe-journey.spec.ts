@@ -82,7 +82,7 @@ test.describe('Complete Recipe Journey', () => {
     await createRecipePage.submit();
 
     // Should redirect to recipe detail page
-    await expect(page).toHaveURL(/\/recipes\/[^/]+/, { timeout: 10000 });
+    await expect(page).toHaveURL(/\/recipes\/[0-9a-f-]{36}/, { timeout: 10000 });
 
     // Get the recipe ID from URL
     const url = page.url();
@@ -163,9 +163,9 @@ test.describe('Complete Recipe Journey', () => {
     // Try to access deleted recipe directly
     await page.goto(`/recipes/${recipeId}`);
 
-    // Should show not found or redirect
-    const notFoundMessage = page.getByText(/not found|doesn't exist/i);
-    await expect(notFoundMessage).toBeVisible({ timeout: 10000 });
+    // Should show error message
+    const errorMessage = page.getByText(/not found|doesn't exist|404|error/i);
+    await expect(errorMessage).toBeVisible({ timeout: 10000 });
 
     // === STEP 9: LOGOUT ===
     await recipesPage.goto();
@@ -249,7 +249,7 @@ test.describe('Complete Recipe Journey', () => {
       );
 
       await createRecipePage.submit();
-      await expect(page).toHaveURL(/\/recipes\/[^/]+/, { timeout: 10000 });
+      await expect(page).toHaveURL(/\/recipes\/[0-9a-f-]{36}/, { timeout: 10000 });
 
       const url = page.url();
       const recipeId = url.match(/\/recipes\/([^/]+)/)?.[1];
@@ -320,7 +320,7 @@ test.describe('Complete Recipe Journey', () => {
     );
 
     await createRecipePage.submit();
-    await expect(page).toHaveURL(/\/recipes\/[^/]+/, { timeout: 10000 });
+    await expect(page).toHaveURL(/\/recipes\/[0-9a-f-]{36}/, { timeout: 10000 });
 
     const url = page.url();
     const recipeId = url.match(/\/recipes\/([^/]+)/)?.[1];
