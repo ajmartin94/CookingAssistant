@@ -18,6 +18,7 @@
 - [CI/CD Integration](#cicd-integration)
 - [Best Practices](#best-practices)
 - [Troubleshooting](#troubleshooting)
+- [Infrastructure Conventions](#infrastructure-conventions)
 
 ---
 
@@ -26,8 +27,8 @@
 ### What Are E2E Tests?
 
 End-to-end (E2E) tests verify the entire application stack working together:
-- **Backend API** (FastAPI on port 8000)
-- **Frontend UI** (React on port 5173)
+- **Backend API** (FastAPI on port 8001 for E2E, 8000 for dev)
+- **Frontend UI** (React on port 5174 for E2E, 5173 for dev)
 - **Database** (SQLite test database)
 - **Browser** (Real browser automation)
 
@@ -867,6 +868,106 @@ npx playwright test --project=chromium
 
 # Use API for test data setup (not UI)
 ```
+
+<!-- Per AD-0102 -->
+### Cross-Browser Differences
+
+**Symptom:** Test passes in Chromium but fails in WebKit or Firefox
+
+**Common Issues:**
+
+| Browser | Known Quirk | Solution |
+|---------|-------------|----------|
+| WebKit | Network interception doesn't trigger axios timeouts | Use `route.abort('timedout')` |
+| WebKit | Slower rendering | Increase timeouts or add explicit waits |
+| Firefox | Stricter CORS handling | Ensure backend CORS is properly configured |
+
+**Debugging:**
+```bash
+# Run single browser to isolate issue
+npx playwright test --project=webkit
+npx playwright test --project=firefox
+
+# Use headed mode to observe behavior
+npx playwright test --project=webkit --headed
+```
+
+See [Infrastructure Conventions](#infrastructure-conventions) for detailed patterns.
+
+---
+
+<!-- Per AD-0102 -->
+## Infrastructure Conventions
+
+These conventions emerged from debugging real failures and represent hard-won knowledge. See [AD-0102](decisions/implemented/0102-e2e-infrastructure-conventions.md) for full context.
+
+### Port Isolation
+
+E2E tests use **isolated ports** to avoid conflicts with development servers:
+
+| Service | Dev Server | E2E Tests |
+|---------|------------|-----------|
+| Backend | 8000 | 8001 |
+| Frontend | 5173 | 5174 |
+
+**Why?** Playwright's `reuseExistingServer` can silently reuse a running dev server that lacks `E2E_TESTING=true`, causing tests to hit the wrong database.
+
+**If tests fail mysteriously locally but pass in CI**, check if dev servers are running on ports 8000/5173.
+
+### Cross-Browser Network Patterns
+
+When simulating network errors, use `route.abort()` with specific error types:
+
+```typescript
+// ✅ Works in all browsers (Chromium, Firefox, WebKit)
+await page.route('**/api/**', route => route.abort('timedout'));
+await page.route('**/api/**', route => route.abort('connectionrefused'));
+
+// ❌ WebKit: axios timeout never fires when Playwright holds the request
+await page.route('**/api/**', async route => {
+  await new Promise(r => setTimeout(r, 60000));  // Doesn't work!
+  await route.continue();
+});
+```
+
+**Why?** WebKit handles network interception differently. It doesn't trigger client-side timeouts when Playwright intercepts and holds requests at the browser level.
+
+### SPA Navigation Patterns
+
+Use React Router navigation for programmatic redirects, **not** `window.location.href`:
+
+```typescript
+// ✅ Works with Playwright - uses React Router
+import { navigationService } from './services/navigationService';
+navigationService.navigate('/login');
+
+// ❌ Causes Playwright navigation conflicts
+window.location.href = '/login';
+```
+
+**Why?** Hard navigation with `window.location.href` races with Playwright's `page.goto()`, causing unpredictable test behavior. The navigation service (`frontend/src/services/navigationService.ts`) provides access to React Router outside components.
+
+### UI Testability (Strict Mode)
+
+Playwright's strict mode fails when locators match multiple elements. Design UI to avoid duplicates:
+
+```typescript
+// ❌ Fails if page has multiple "New Recipe" buttons
+await page.locator('a[href="/recipes/create"]').click();
+
+// ✅ Explicit about which element (if duplicates unavoidable)
+await page.locator('a[href="/recipes/create"]').first().click();
+
+// ✅ Better: use unique data-testid
+await page.locator('[data-testid="sidebar-new-recipe"]').click();
+```
+
+**Guideline**: When adding UI elements:
+1. Check if similar elements exist elsewhere on the page
+2. Use unique `data-testid` attributes for test targeting
+3. Prefer removing duplicates over adding `.first()` to tests
+
+**Real example**: A duplicate "New Recipe" button (sidebar + empty state) caused 21 test failures.
 
 ---
 

@@ -102,6 +102,26 @@ npm run lint
 
 ---
 
+<!-- Per AD-0102 -->
+## Navigation Patterns
+
+For programmatic redirects (e.g., 401 handling), use the navigation service instead of `window.location.href`:
+
+```typescript
+// ✅ Use navigation service (works with E2E tests)
+import { navigationService } from './services/navigationService';
+navigationService.navigate('/login');
+
+// ❌ Avoid window.location.href (breaks Playwright E2E tests)
+window.location.href = '/login';
+```
+
+**Why?** Hard navigation conflicts with Playwright's `page.goto()`, causing unpredictable E2E test behavior. The navigation service uses React Router internally.
+
+See [E2E Infrastructure Conventions](../docs/E2E_TESTING.md#infrastructure-conventions) for full context.
+
+---
+
 <!-- Per AD-0100 -->
 ## Tailwind Gotchas
 
