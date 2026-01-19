@@ -114,12 +114,17 @@ async def shutdown_event():
 
 
 if __name__ == "__main__":
+    import argparse
     import uvicorn
     import os
+
+    parser = argparse.ArgumentParser(description="Cooking Assistant API Server")
+    parser.add_argument("--port", type=int, default=8000, help="Port to run the server on")
+    args = parser.parse_args()
 
     # Disable reload during E2E testing to prevent database initialization issues
     reload = os.getenv("E2E_TESTING", "false").lower() != "true"
 
     uvicorn.run(
-        "app.main:app", host="0.0.0.0", port=8000, reload=reload, log_level="info"
+        "app.main:app", host="0.0.0.0", port=args.port, reload=reload, log_level="info"
     )

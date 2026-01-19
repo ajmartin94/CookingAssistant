@@ -1,9 +1,12 @@
 import { APIRequestContext } from '@playwright/test';
 
+// E2E uses port 8001 to avoid conflicts with dev server on 8000
+const E2E_BACKEND_PORT = 8001;
+
 export class APIHelper {
   constructor(
     private request: APIRequestContext,
-    private baseURL: string = 'http://localhost:8000'
+    private baseURL: string = `http://localhost:${E2E_BACKEND_PORT}`
   ) {}
 
   async registerUser(username: string, email: string, password: string, fullName?: string) {

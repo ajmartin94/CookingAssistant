@@ -5,10 +5,16 @@ import { defineConfig, devices } from '@playwright/test';
  *
  * This configuration:
  * - Starts backend (FastAPI) and frontend (Vite) servers before tests
+ * - Uses DIFFERENT PORTS than dev servers to avoid conflicts (8001, 5174)
  * - Uses a test-specific SQLite database
  * - Runs tests in parallel across multiple browsers
  * - Generates HTML reports and traces on failure
  */
+
+// E2E uses different ports to avoid conflicts with dev servers
+const E2E_BACKEND_PORT = 8001;
+const E2E_FRONTEND_PORT = 5174;
+
 export default defineConfig({
   testDir: './e2e/tests',
   testMatch: '**/*.spec.ts',
@@ -27,7 +33,7 @@ export default defineConfig({
   ],
 
   use: {
-    baseURL: 'http://localhost:5173',
+    baseURL: `http://localhost:${E2E_FRONTEND_PORT}`,
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',
@@ -66,34 +72,34 @@ export default defineConfig({
     },
   ],
 
-  // CRITICAL: Start both servers before tests
+  // CRITICAL: Start both servers before tests on SEPARATE PORTS from dev
   webServer: [
     {
       // In CI, Python packages are installed globally; locally we use venv
       command: process.env.CI
-        ? 'cd backend && python -m app.main'
+        ? `cd backend && python -m app.main --port ${E2E_BACKEND_PORT}`
         : process.platform === 'win32'
-          ? 'cd backend && venv\\Scripts\\python.exe -m app.main'
-          : 'cd backend && . venv/bin/activate && python -m app.main',
-      url: 'http://localhost:8000/api/v1/health',
+          ? `cd backend && venv\\Scripts\\python.exe -m app.main --port ${E2E_BACKEND_PORT}`
+          : `cd backend && . venv/bin/activate && python -m app.main --port ${E2E_BACKEND_PORT}`,
+      url: `http://localhost:${E2E_BACKEND_PORT}/api/v1/health`,
       timeout: 120 * 1000,
       reuseExistingServer: !process.env.CI,
       cwd: process.cwd(),
       env: {
         DATABASE_URL: 'sqlite+aiosqlite:///./cooking_assistant_test_e2e.db',
         SECRET_KEY: 'test-secret-key-for-e2e-testing-only',
-        CORS_ORIGINS: '["http://localhost:5173"]',
+        CORS_ORIGINS: `["http://localhost:${E2E_FRONTEND_PORT}"]`,
         E2E_TESTING: 'true',
       },
     },
     {
-      command: 'npm run dev',
-      url: 'http://localhost:5173',
+      command: `npm run dev -- --port ${E2E_FRONTEND_PORT}`,
+      url: `http://localhost:${E2E_FRONTEND_PORT}`,
       timeout: 120 * 1000,
       reuseExistingServer: !process.env.CI,
       cwd: './frontend',
       env: {
-        VITE_API_URL: 'http://localhost:8000',
+        VITE_API_URL: `http://localhost:${E2E_BACKEND_PORT}`,
       },
     },
   ],

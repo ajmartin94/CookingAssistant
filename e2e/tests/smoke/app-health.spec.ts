@@ -1,5 +1,9 @@
 import { test, expect } from '@playwright/test';
 
+// E2E uses port 8001 to avoid conflicts with dev server on 8000
+const E2E_BACKEND_PORT = 8001;
+const E2E_BACKEND_URL = `http://localhost:${E2E_BACKEND_PORT}`;
+
 /**
  * Smoke Tests - Critical Path Verification
  *
@@ -90,7 +94,7 @@ test.describe('Smoke Tests', () => {
   });
 
   test('backend API is healthy', async ({ request }) => {
-    const response = await request.get('http://localhost:8000/api/v1/health');
+    const response = await request.get(`${E2E_BACKEND_URL}/api/v1/health`);
 
     expect(response.status()).toBe(200);
 
@@ -109,7 +113,7 @@ test.describe('Smoke Tests', () => {
 
     // Register user via API
     const registerResponse = await request.post(
-      'http://localhost:8000/api/v1/users/register',
+      `${E2E_BACKEND_URL}/api/v1/users/register`,
       {
         data: testUser,
       }
@@ -163,13 +167,13 @@ test.describe('Smoke Tests', () => {
     };
 
     // Register
-    await request.post('http://localhost:8000/api/v1/users/register', {
+    await request.post(`${E2E_BACKEND_URL}/api/v1/users/register`, {
       data: testUser,
     });
 
     // Login via API to get token
     const loginResponse = await request.post(
-      'http://localhost:8000/api/v1/users/login',
+      `${E2E_BACKEND_URL}/api/v1/users/login`,
       {
         form: {
           username: testUser.username,
