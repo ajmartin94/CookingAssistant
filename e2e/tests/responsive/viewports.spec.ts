@@ -54,7 +54,8 @@ test.describe('Responsive - Mobile (375px)', () => {
     await recipesPage.goto();
 
     // Check create button is at least 44px tall (touch target)
-    const createButton = recipesPage.createRecipeButton;
+    // Use .first() since there may be multiple matching elements (sidebar button and empty state link)
+    const createButton = recipesPage.createRecipeButton.first();
     if (await createButton.isVisible()) {
       const height = await createButton.evaluate((el) => el.getBoundingClientRect().height);
       expect(height).toBeGreaterThanOrEqual(44);
@@ -209,7 +210,8 @@ test.describe('Responsive - Recipe Detail Page', () => {
 
     // Key elements should be visible
     await expect(authenticatedPage.getByText('Mobile Detail Test')).toBeVisible();
-    await expect(authenticatedPage.getByText(/ingredients/i)).toBeVisible();
-    await expect(authenticatedPage.getByText(/instructions/i)).toBeVisible();
+    // Use heading role to avoid matching ingredient items that contain the word
+    await expect(authenticatedPage.getByRole('heading', { name: /ingredients/i })).toBeVisible();
+    await expect(authenticatedPage.getByRole('heading', { name: /instructions/i })).toBeVisible();
   });
 });
