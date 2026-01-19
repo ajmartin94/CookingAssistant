@@ -116,7 +116,7 @@ async def test_get_recipes_filter_by_difficulty(test_db, test_user):
         test_db, test_user, "Another Easy", difficulty_level="easy"
     )
 
-    recipes, total = await recipe_service.get_recipes(test_db, difficulty="easy")
+    recipes, total = await recipe_service.get_recipes(test_db, difficulty_level="easy")
 
     assert len(recipes) == 2
     assert total == 2
@@ -196,7 +196,7 @@ async def test_get_recipes_multiple_filters(test_db, test_user):
     )
 
     recipes, total = await recipe_service.get_recipes(
-        test_db, cuisine_type="Italian", difficulty="easy"
+        test_db, cuisine_type="Italian", difficulty_level="easy"
     )
 
     assert len(recipes) == 1

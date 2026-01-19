@@ -35,7 +35,8 @@ async def list_recipes(
     current_user: CurrentUser,
     library_id: Optional[str] = Query(None, description="Filter by library ID"),
     cuisine_type: Optional[str] = Query(None, description="Filter by cuisine type"),
-    difficulty: Optional[str] = Query(None, description="Filter by difficulty level"),
+    difficulty_level: Optional[str] = Query(None, description="Filter by difficulty level"),
+    dietary_tag: Optional[str] = Query(None, description="Filter by dietary tag"),
     search: Optional[str] = Query(None, description="Search in title and description"),
     page: int = Query(1, ge=1, description="Page number"),
     page_size: int = Query(20, ge=1, le=100, description="Items per page"),
@@ -45,7 +46,8 @@ async def list_recipes(
 
     - **library_id**: Filter recipes by library
     - **cuisine_type**: Filter by cuisine type
-    - **difficulty**: Filter by difficulty (easy, medium, hard)
+    - **difficulty_level**: Filter by difficulty (easy, medium, hard)
+    - **dietary_tag**: Filter by dietary tag (vegetarian, vegan, gluten-free, etc.)
     - **search**: Search term for title and description
     - **page**: Page number (starts at 1)
     - **page_size**: Number of items per page (1-100)
@@ -57,7 +59,8 @@ async def list_recipes(
         owner_id=current_user.id,
         library_id=library_id,
         cuisine_type=cuisine_type,
-        difficulty=difficulty,
+        difficulty_level=difficulty_level,
+        dietary_tag=dietary_tag,
         search=search,
         skip=skip,
         limit=page_size,

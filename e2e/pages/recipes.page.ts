@@ -8,6 +8,7 @@ export class RecipesPage extends BasePage {
   readonly logoutButton: Locator;
   readonly cuisineFilter: Locator;
   readonly difficultyFilter: Locator;
+  readonly dietaryFilter: Locator;
   readonly clearFiltersButton: Locator;
 
   constructor(page: Page) {
@@ -16,8 +17,10 @@ export class RecipesPage extends BasePage {
     this.searchInput = page.locator('input[placeholder*="Search"]');
     this.recipeCards = page.locator('[data-testid="recipe-card"]');
     this.logoutButton = page.locator('button[aria-label="Logout"]');
-    this.cuisineFilter = page.locator('select[name="cuisine"], select').first();
-    this.difficultyFilter = page.locator('select[name="difficulty"], select').nth(1);
+    // The filters are rendered as 3 select elements in a grid
+    this.cuisineFilter = page.locator('select').first();
+    this.difficultyFilter = page.locator('select').nth(1);
+    this.dietaryFilter = page.locator('select').nth(2);
     this.clearFiltersButton = page.locator('button:has-text("Clear"), button:has-text("Reset")');
   }
 
@@ -64,19 +67,8 @@ export class RecipesPage extends BasePage {
   }
 
   async filterByDietaryTag(tag: string) {
-    // Dietary tags might be checkboxes or a multi-select
-    const tagCheckbox = this.page.locator(`input[type="checkbox"][value="${tag}"]`);
-    if (await tagCheckbox.count() > 0) {
-      await tagCheckbox.check();
-      await this.page.waitForTimeout(500); // Wait for filter to apply
-    } else {
-      // Might be a select with multiple option
-      const tagSelect = this.page.locator('select[name="dietary_tags"]');
-      if (await tagSelect.count() > 0) {
-        await tagSelect.selectOption(tag);
-        await this.page.waitForTimeout(500);
-      }
-    }
+    await this.dietaryFilter.selectOption(tag);
+    await this.page.waitForTimeout(500); // Wait for filter to apply
   }
 
   async clearFilters() {
@@ -88,6 +80,7 @@ export class RecipesPage extends BasePage {
       // Alternative: manually reset filters
       await this.cuisineFilter.selectOption('');
       await this.difficultyFilter.selectOption('');
+      await this.dietaryFilter.selectOption('');
       await this.searchInput.clear();
     }
   }

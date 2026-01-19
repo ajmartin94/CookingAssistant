@@ -74,7 +74,7 @@ async def test_list_recipes_filter_by_difficulty(
     await create_test_recipe(test_db, test_user, "Hard Recipe", difficulty_level="hard")
 
     response = await client.get(
-        "/api/v1/recipes", headers=auth_headers, params={"difficulty": "easy"}
+        "/api/v1/recipes", headers=auth_headers, params={"difficulty_level": "easy"}
     )
 
     assert response.status_code == 200

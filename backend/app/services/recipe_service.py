@@ -6,7 +6,7 @@ Business logic for recipe management.
 
 from typing import Optional
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, or_, func
+from sqlalchemy import select, or_, func, String
 from fastapi import HTTPException, status
 
 from app.models.recipe import Recipe
@@ -25,8 +25,8 @@ async def get_recipes(
     owner_id: Optional[str] = None,
     library_id: Optional[str] = None,
     cuisine_type: Optional[str] = None,
-    dietary_tags: Optional[list[str]] = None,
-    difficulty: Optional[str] = None,
+    dietary_tag: Optional[str] = None,
+    difficulty_level: Optional[str] = None,
     search: Optional[str] = None,
     skip: int = 0,
     limit: int = 50,
@@ -39,8 +39,8 @@ async def get_recipes(
         owner_id: Filter by recipe owner
         library_id: Filter by library
         cuisine_type: Filter by cuisine type
-        dietary_tags: Filter by dietary tags
-        difficulty: Filter by difficulty level
+        dietary_tag: Filter by a single dietary tag
+        difficulty_level: Filter by difficulty level
         search: Search in title and description
         skip: Number of records to skip
         limit: Maximum number of records to return
@@ -57,8 +57,14 @@ async def get_recipes(
         query = query.where(Recipe.library_id == library_id)
     if cuisine_type:
         query = query.where(Recipe.cuisine_type == cuisine_type)
-    if difficulty:
-        query = query.where(Recipe.difficulty_level == difficulty)
+    if difficulty_level:
+        query = query.where(Recipe.difficulty_level == difficulty_level)
+    if dietary_tag:
+        # SQLite stores JSON arrays as strings like '["vegetarian", "vegan"]'
+        # Use LIKE to search for the tag within the JSON array
+        query = query.where(
+            func.cast(Recipe.dietary_tags, String).ilike(f'%"{dietary_tag}"%')
+        )
     if search:
         query = query.where(
             or_(
@@ -66,7 +72,6 @@ async def get_recipes(
                 Recipe.description.ilike(f"%{search}%"),
             )
         )
-    # Note: Dietary tags filtering would need JSON operator support
 
     # Get total count
     count_query = select(func.count()).select_from(query.subquery())
