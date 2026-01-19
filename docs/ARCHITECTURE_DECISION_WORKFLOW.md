@@ -4,6 +4,18 @@
 
 This document defines the process for identifying, deciding, and propagating architectural decisions through documentation. The workflow ensures that documentation changes are intentional, traceable, and human-auditable.
 
+<!-- Per AD-0103 -->
+### Scope
+
+Despite the "Architecture Decision" naming, this workflow applies to **all documentation changes**—not just architectural ones. The value of this process is traceability and intentionality, not architectural gatekeeping. Use this workflow for:
+
+- Architectural decisions (e.g., choosing a database, defining API patterns)
+- Convention updates (e.g., coding standards, testing policies)
+- Factual corrections (e.g., fixing an outdated directory listing)
+- Process changes (e.g., updating CI workflows, deployment procedures)
+
+The "AD" prefix is retained for continuity with existing decisions (AD-0001 through AD-0102+).
+
 ### Design Principles
 
 1. **Steps produce outputs; Gates make decisions** — Clear separation between work and approval

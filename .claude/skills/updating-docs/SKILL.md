@@ -10,6 +10,9 @@ description: |
 
 **Documentation changes must be intentional, traceable, and human-auditable.**
 
+<!-- Per AD-0103 -->
+**Scope:** Despite the "Architecture Decision" naming, this workflow applies to **all documentation changes**—architectural decisions, convention updates, factual corrections, and process changes. The value is traceability, not architectural gatekeeping.
+
 All documentation updates follow the Architecture Decision Workflow defined in:
 **[docs/ARCHITECTURE_DECISION_WORKFLOW.md](docs/ARCHITECTURE_DECISION_WORKFLOW.md)**
 

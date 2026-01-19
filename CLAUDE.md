@@ -52,12 +52,15 @@ Key points:
 
 ## Repository Structure
 
+<!-- Per AD-0103 -->
 ```
 CookingAssistant/
 ├── backend/          # FastAPI (see backend/CLAUDE.md)
 ├── frontend/         # React/TypeScript (see frontend/CLAUDE.md)
+├── e2e/              # End-to-end tests (Playwright)
 ├── docs/             # Documentation
 │   └── decisions/    # Architecture Decision Records
+├── .github/          # CI workflows
 ├── .beads/           # Issue tracking
 └── .claude/          # Skills and hooks
 ```
