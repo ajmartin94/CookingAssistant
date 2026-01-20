@@ -264,7 +264,9 @@ describe('ToolConfirmation', () => {
     it('should display dietary tags when provided', () => {
       render(<ToolConfirmation {...defaultProps} />);
 
-      expect(screen.getByText(/dairy-free/i)).toBeInTheDocument();
+      // Use getAllByText since "dairy-free" appears in both the title and as a tag
+      const dairyFreeElements = screen.getAllByText(/dairy-free/i);
+      expect(dairyFreeElements.length).toBeGreaterThanOrEqual(1);
       expect(screen.getByText(/vegan/i)).toBeInTheDocument();
     });
 
