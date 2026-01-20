@@ -1,0 +1,26 @@
+# Dependencies
+node_modules/
+
+# Build outputs (will be created in container)
+dist/
+
+# Testing
+coverage/
+.vitest/
+
+# IDE
+.vscode/
+.idea/
+
+# Environment files (use build args instead)
+.env
+.env.local
+.env.*.local
+
+# Misc
+*.log
+.DS_Store
+npm-debug.log*
+
+# TypeScript cache
+*.tsbuildinfo

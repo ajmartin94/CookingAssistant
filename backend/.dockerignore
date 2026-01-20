@@ -1,0 +1,36 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+.venv/
+ENV/
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+.mypy_cache/
+.ruff_cache/
+
+# IDE
+.vscode/
+.idea/
+
+# Database (will be mounted as volume)
+*.db
+cooking_assistant.db
+
+# Environment files (use docker-compose env instead)
+.env
+
+# Build artifacts
+*.egg-info/
+dist/
+build/
+
+# Misc
+*.log
+.DS_Store

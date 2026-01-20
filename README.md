@@ -181,6 +181,123 @@ npm run test:e2e:debug   # Run in debug mode
 
 For detailed E2E testing documentation, see [docs/E2E_TESTING.md](docs/E2E_TESTING.md)
 
+---
+
+## 🐳 Docker Deployment
+
+Run the full stack with Docker Compose, including local AI via Ollama.
+
+### Prerequisites
+
+- Docker and Docker Compose
+- 8GB+ RAM (16GB recommended for AI features)
+- Optional: NVIDIA GPU for faster AI responses
+
+### Quick Start
+
+```bash
+# 1. Start Ollama first (downloads ~4GB on first run)
+docker compose up -d ollama
+
+# 2. Pull the AI model (one-time, ~4GB download)
+docker compose exec ollama ollama pull llama3.1:8b
+
+# 3. Start all services
+docker compose up -d
+
+# 4. Open the app
+open http://localhost:3000
+```
+
+### Services
+
+| Service | URL | Description |
+|---------|-----|-------------|
+| Frontend | http://localhost:3000 | React web application |
+| Backend | http://localhost:8000 | FastAPI REST API |
+| API Docs | http://localhost:8000/api/docs | Interactive API documentation |
+| Ollama | http://localhost:11434 | Local LLM server |
+
+### Configuration
+
+Copy `.env.docker.example` to `.env.docker` and customize:
+
+```bash
+cp .env.docker.example .env.docker
+# Edit .env.docker with your settings
+docker compose --env-file .env.docker up -d
+```
+
+Key settings:
+- `SECRET_KEY` - JWT secret (MUST change for production)
+- `LLM_MODEL` - AI model (default: `ollama/llama3.1:8b`)
+- `OPENAI_API_KEY` / `ANTHROPIC_API_KEY` - For cloud AI providers
+
+### Data Persistence
+
+Data is stored in Docker volumes:
+- `backend_data` - SQLite database and uploads
+- `ollama_data` - Downloaded AI models
+
+To back up data:
+```bash
+docker compose exec backend cat /app/data/cooking_assistant.db > backup.db
+```
+
+### GPU Support (Optional)
+
+For NVIDIA GPU acceleration, uncomment the GPU section in `docker-compose.yml`:
+
+```yaml
+deploy:
+  resources:
+    reservations:
+      devices:
+        - driver: nvidia
+          count: all
+          capabilities: [gpu]
+```
+
+### Exposing to Testers (Cloudflare Tunnel)
+
+Share your local instance securely:
+
+```bash
+# Install cloudflared
+brew install cloudflared  # or download from cloudflare.com
+
+# Create temporary public URL
+cloudflared tunnel --url http://localhost:3000
+```
+
+This provides an HTTPS URL like `https://random-words.trycloudflare.com`.
+
+### Troubleshooting
+
+**Ollama model not responding:**
+```bash
+# Check if model is downloaded
+docker compose exec ollama ollama list
+
+# Re-pull if needed
+docker compose exec ollama ollama pull llama3.1:8b
+```
+
+**Out of memory:**
+- Try a smaller model: `ollama/mistral:7b` or `ollama/phi:3b`
+- Increase Docker memory limit in Docker Desktop settings
+
+**Backend can't connect to Ollama:**
+```bash
+# Check Ollama is running
+docker compose logs ollama
+
+# Restart services
+docker compose restart backend
+```
+
+---
+
 ## 📌 Roadmap
 
 - ✅ **Phase 0**: Project Initialization (COMPLETE!)

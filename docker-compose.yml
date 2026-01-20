@@ -1,0 +1,97 @@
+# Cooking Assistant - Docker Compose Configuration
+# Usage:
+#   docker compose up -d ollama          # Start Ollama first
+#   docker compose exec ollama ollama pull llama3.1:8b  # Pull model
+#   docker compose up -d                 # Start all services
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: cooking-backend
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=sqlite+aiosqlite:///./data/cooking_assistant.db
+      - DEBUG=False
+      - SECRET_KEY=${SECRET_KEY:-change-me-in-production-make-it-long-and-random}
+      - CORS_ORIGINS=["http://localhost:3000","http://localhost:80","http://frontend:80"]
+      - LLM_MODEL=ollama/llama3.1:8b
+      - OLLAMA_BASE_URL=http://ollama:11434
+      - AI_PROVIDER=ollama
+    volumes:
+      - backend_data:/app/data
+    depends_on:
+      ollama:
+        condition: service_started
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/v1/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    restart: unless-stopped
+    networks:
+      - cooking-network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        - VITE_API_URL=http://localhost:8000
+        - VITE_APP_NAME=Cooking Assistant
+        - VITE_ENABLE_AI_FEATURES=true
+    container_name: cooking-frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      backend:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:80/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 5s
+    restart: unless-stopped
+    networks:
+      - cooking-network
+
+  ollama:
+    image: ollama/ollama:latest
+    container_name: cooking-ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    environment:
+      - OLLAMA_HOST=0.0.0.0
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:11434/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    restart: unless-stopped
+    networks:
+      - cooking-network
+    # Uncomment below if you have an NVIDIA GPU
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - driver: nvidia
+    #           count: all
+    #           capabilities: [gpu]
+
+volumes:
+  backend_data:
+    driver: local
+  ollama_data:
+    driver: local
+
+networks:
+  cooking-network:
+    driver: bridge
