@@ -12,7 +12,7 @@ import logging
 import traceback
 
 from app.config import settings
-from app.api import users, recipes, libraries, sharing
+from app.api import users, recipes, libraries, sharing, chat
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -73,6 +73,7 @@ app.include_router(users.router, prefix="/api/v1")
 app.include_router(recipes.router, prefix="/api/v1")
 app.include_router(libraries.router, prefix="/api/v1")
 app.include_router(sharing.router, prefix="/api/v1")
+app.include_router(chat.router, prefix="/api/v1")
 
 
 @app.on_event("startup")
