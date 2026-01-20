@@ -449,4 +449,32 @@ describe('RecipesPage', () => {
       });
     });
   });
+
+  describe('Chat Integration', () => {
+    it('should render the chat panel', async () => {
+      render(<RecipesPage />);
+
+      await waitFor(() => {
+        expect(screen.getByRole('complementary', { name: /chat assistant/i })).toBeInTheDocument();
+      });
+    });
+
+    it('should display "Recipe List" in chat panel context', async () => {
+      render(<RecipesPage />);
+
+      await waitFor(() => {
+        // The ChatPanel header shows "AI Assistant - Recipe List"
+        expect(screen.getByText(/recipe list/i, { selector: 'span' })).toBeInTheDocument();
+      });
+    });
+
+    it('should have chat input for sending messages', async () => {
+      render(<RecipesPage />);
+
+      await waitFor(() => {
+        // ChatInput uses "Type a message..." as default placeholder
+        expect(screen.getByPlaceholderText(/type a message/i)).toBeInTheDocument();
+      });
+    });
+  });
 });

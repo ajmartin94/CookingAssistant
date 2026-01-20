@@ -50,7 +50,8 @@ describe('RecipeDetailPage', () => {
       render(<RecipeDetailPage />);
 
       await waitFor(() => {
-        expect(screen.getByRole('heading', { name: /test recipe/i })).toBeInTheDocument();
+        // Use level 1 to specifically target the h1 title, not the h2 in chat panel
+        expect(screen.getByRole('heading', { name: /test recipe/i, level: 1 })).toBeInTheDocument();
       });
     });
 
@@ -315,6 +316,34 @@ describe('RecipeDetailPage', () => {
       await user.click(backButton);
 
       expect(mockNavigate).toHaveBeenCalledWith('/recipes');
+    });
+  });
+
+  describe('Chat Integration', () => {
+    it('should render the chat panel', async () => {
+      render(<RecipeDetailPage />);
+
+      await waitFor(() => {
+        expect(screen.getByRole('complementary', { name: /chat assistant/i })).toBeInTheDocument();
+      });
+    });
+
+    it('should display recipe title in chat panel context', async () => {
+      render(<RecipeDetailPage />);
+
+      await waitFor(() => {
+        // The ChatPanel header shows "AI Assistant - {recipe title}"
+        expect(screen.getByText(/test recipe/i, { selector: 'span' })).toBeInTheDocument();
+      });
+    });
+
+    it('should have chat input for sending messages', async () => {
+      render(<RecipeDetailPage />);
+
+      await waitFor(() => {
+        // ChatInput with contextHint shows "Ask about {title}..."
+        expect(screen.getByPlaceholderText(/ask about test recipe/i)).toBeInTheDocument();
+      });
     });
   });
 });

@@ -1,7 +1,7 @@
 /**
  * Recipe Detail Page
  *
- * Displays full details of a single recipe
+ * Displays full details of a single recipe with AI chat panel
  */
 
 import { useState, useEffect } from 'react';
@@ -11,11 +11,21 @@ import { recipeApi } from '../services/recipeApi';
 import type { Recipe } from '../types';
 import { useAuth } from '../contexts/AuthContext';
 import ShareModal from '../components/sharing/ShareModal';
+import { ChatProvider, useChat } from '../contexts/ChatContext';
+import ChatPanel from '../components/chat/ChatPanel';
 
-export default function RecipeDetailPage() {
+function RecipeDetailPageContent() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { user } = useAuth();
+  const {
+    messages,
+    isStreaming,
+    error: chatError,
+    sendMessage,
+    confirmTool,
+    setContext,
+  } = useChat();
 
   const [recipe, setRecipe] = useState<Recipe | null>(null);
   const [loading, setLoading] = useState(true);
@@ -23,7 +33,7 @@ export default function RecipeDetailPage() {
   const [deleting, setDeleting] = useState(false);
   const [showShareModal, setShowShareModal] = useState(false);
 
-  // Fetch recipe
+  // Fetch recipe and update chat context
   useEffect(() => {
     const fetchRecipe = async () => {
       if (!id) {
@@ -37,6 +47,12 @@ export default function RecipeDetailPage() {
         setError(null);
         const data = await recipeApi.getRecipe(id);
         setRecipe(data);
+        // Update chat context with recipe info
+        setContext({
+          page: 'recipe_detail',
+          recipeId: data.id,
+          recipeTitle: data.title,
+        });
       } catch (err: unknown) {
         // Check for 404 errors and show a user-friendly message
         const isNotFound =
@@ -55,7 +71,7 @@ export default function RecipeDetailPage() {
     };
 
     fetchRecipe();
-  }, [id]);
+  }, [id, setContext]);
 
   // Handle delete
   const handleDelete = async () => {
@@ -120,193 +136,222 @@ export default function RecipeDetailPage() {
   const isOwner = user?.id === recipe.ownerId;
 
   return (
-    <div>
-      {/* Header */}
-      <div className="mb-6">
-        <button
-          onClick={() => navigate('/recipes')}
-          className="text-primary-500 hover:text-primary-600 font-medium mb-4 flex items-center gap-1"
-        >
-          <ChevronLeft className="w-5 h-5" />
-          Back to Recipes
-        </button>
-      </div>
+    <div className="flex h-full">
+      {/* Main Content */}
+      <div className="flex-1 overflow-auto">
+        {/* Header */}
+        <div className="mb-6">
+          <button
+            onClick={() => navigate('/recipes')}
+            className="text-primary-500 hover:text-primary-600 font-medium mb-4 flex items-center gap-1"
+          >
+            <ChevronLeft className="w-5 h-5" />
+            Back to Recipes
+          </button>
+        </div>
 
-      {/* Recipe Header */}
-      <div className="bg-white rounded-lg shadow-soft overflow-hidden mb-6">
-        {/* Recipe Image */}
-        {recipe.imageUrl && (
-          <div className="h-96 overflow-hidden">
-            <img src={recipe.imageUrl} alt={recipe.title} className="w-full h-full object-cover" />
-          </div>
-        )}
+        {/* Recipe Header */}
+        <div className="bg-white rounded-lg shadow-soft overflow-hidden mb-6">
+          {/* Recipe Image */}
+          {recipe.imageUrl && (
+            <div className="h-96 overflow-hidden">
+              <img
+                src={recipe.imageUrl}
+                alt={recipe.title}
+                className="w-full h-full object-cover"
+              />
+            </div>
+          )}
 
-        <div className="p-6">
-          {/* Title and Actions */}
-          <div className="flex justify-between items-start mb-4">
-            <div>
-              <h1 className="text-4xl font-bold text-neutral-900 mb-2" data-testid="recipe-title">
-                {recipe.title}
-              </h1>
-              <p className="text-lg text-neutral-600" data-testid="recipe-description">
-                {recipe.description}
-              </p>
+          <div className="p-6">
+            {/* Title and Actions */}
+            <div className="flex justify-between items-start mb-4">
+              <div>
+                <h1 className="text-4xl font-bold text-neutral-900 mb-2" data-testid="recipe-title">
+                  {recipe.title}
+                </h1>
+                <p className="text-lg text-neutral-600" data-testid="recipe-description">
+                  {recipe.description}
+                </p>
+              </div>
+
+              {isOwner && (
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => setShowShareModal(true)}
+                    className="px-4 py-2 border border-primary-500 text-primary-500 rounded-lg font-semibold hover:bg-primary-50 transition"
+                  >
+                    Share
+                  </button>
+                  <button
+                    onClick={() => navigate(`/recipes/${recipe.id}/edit`)}
+                    className="px-4 py-2 bg-primary-500 text-white rounded-lg font-semibold hover:bg-primary-600 transition"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    onClick={handleDelete}
+                    disabled={deleting}
+                    className="px-4 py-2 bg-error-500 text-white rounded-lg font-semibold hover:bg-error-600 transition disabled:opacity-50"
+                  >
+                    {deleting ? 'Deleting...' : 'Delete'}
+                  </button>
+                </div>
+              )}
             </div>
 
-            {isOwner && (
-              <div className="flex gap-2">
-                <button
-                  onClick={() => setShowShareModal(true)}
-                  className="px-4 py-2 border border-primary-500 text-primary-500 rounded-lg font-semibold hover:bg-primary-50 transition"
+            {/* Meta Information */}
+            <div className="flex flex-wrap items-center gap-4 mb-4">
+              <div className="flex items-center gap-2 text-neutral-600">
+                <Clock className="w-5 h-5" />
+                <span>
+                  Prep: <span data-testid="prep-time">{recipe.prepTimeMinutes}</span> min | Cook:{' '}
+                  <span data-testid="cook-time">{recipe.cookTimeMinutes}</span> min | Total:{' '}
+                  <span data-testid="total-time">{recipe.totalTimeMinutes}</span> min
+                </span>
+              </div>
+
+              <div className="flex items-center gap-2 text-neutral-600">
+                <Users className="w-5 h-5" />
+                <span data-testid="servings">{recipe.servings} servings</span>
+              </div>
+            </div>
+
+            {/* Tags */}
+            <div className="flex flex-wrap gap-2">
+              {recipe.cuisineType && (
+                <span className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">
+                  {recipe.cuisineType}
+                </span>
+              )}
+              <span
+                className={`px-3 py-1 rounded-full text-sm font-medium ${getDifficultyColor(
+                  recipe.difficultyLevel
+                )}`}
+              >
+                {recipe.difficultyLevel}
+              </span>
+              {recipe.dietaryTags.map((tag) => (
+                <span
+                  key={tag}
+                  className="px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-sm font-medium"
                 >
-                  Share
-                </button>
-                <button
-                  onClick={() => navigate(`/recipes/${recipe.id}/edit`)}
-                  className="px-4 py-2 bg-primary-500 text-white rounded-lg font-semibold hover:bg-primary-600 transition"
-                >
-                  Edit
-                </button>
-                <button
-                  onClick={handleDelete}
-                  disabled={deleting}
-                  className="px-4 py-2 bg-error-500 text-white rounded-lg font-semibold hover:bg-error-600 transition disabled:opacity-50"
-                >
-                  {deleting ? 'Deleting...' : 'Delete'}
-                </button>
+                  {tag}
+                </span>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        <div className="grid md:grid-cols-3 gap-6">
+          {/* Ingredients */}
+          <div className="md:col-span-1">
+            <div className="bg-white rounded-lg shadow-soft p-6 sticky top-4">
+              <h2 className="text-2xl font-bold text-neutral-900 mb-4">Ingredients</h2>
+              <ul className="space-y-2" data-testid="ingredients-list">
+                {recipe.ingredients.map((ingredient, index) => (
+                  <li key={index} className="flex items-start gap-2">
+                    <span className="text-primary-500 font-bold">•</span>
+                    <span className="text-neutral-700">
+                      <strong>
+                        {ingredient.amount} {ingredient.unit}
+                      </strong>{' '}
+                      {ingredient.name}
+                      {ingredient.notes && (
+                        <span className="text-neutral-500 text-sm"> ({ingredient.notes})</span>
+                      )}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+
+          {/* Instructions */}
+          <div className="md:col-span-2">
+            <div className="bg-white rounded-lg shadow-soft p-6">
+              <h2 className="text-2xl font-bold text-neutral-900 mb-4">Instructions</h2>
+              <ol className="space-y-4" data-testid="instructions-list">
+                {recipe.instructions.map((instruction) => (
+                  <li
+                    key={instruction.stepNumber}
+                    className="flex gap-4 items-start"
+                    data-testid="instruction"
+                  >
+                    <div className="flex-shrink-0 w-8 h-8 bg-primary-500 text-white rounded-full flex items-center justify-center font-bold">
+                      {instruction.stepNumber}
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-neutral-700">{instruction.instruction}</p>
+                      {instruction.durationMinutes && (
+                        <p className="text-sm text-neutral-500 mt-1">
+                          ⏱️ {instruction.durationMinutes} minutes
+                        </p>
+                      )}
+                    </div>
+                  </li>
+                ))}
+              </ol>
+            </div>
+
+            {/* Notes */}
+            {recipe.notes && (
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 mt-6">
+                <h3 className="text-lg font-semibold text-blue-900 mb-2">Notes</h3>
+                <p className="text-blue-800">{recipe.notes}</p>
+              </div>
+            )}
+
+            {/* Source */}
+            {(recipe.sourceName || recipe.sourceUrl) && (
+              <div className="bg-neutral-50 border border-neutral-200 rounded-lg p-6 mt-6">
+                <h3 className="text-lg font-semibold text-neutral-900 mb-2">Source</h3>
+                {recipe.sourceName && <p className="text-neutral-700">{recipe.sourceName}</p>}
+                {recipe.sourceUrl && (
+                  <a
+                    href={recipe.sourceUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-primary-500 hover:text-primary-600 underline"
+                  >
+                    View Original Recipe
+                  </a>
+                )}
               </div>
             )}
           </div>
-
-          {/* Meta Information */}
-          <div className="flex flex-wrap items-center gap-4 mb-4">
-            <div className="flex items-center gap-2 text-neutral-600">
-              <Clock className="w-5 h-5" />
-              <span>
-                Prep: <span data-testid="prep-time">{recipe.prepTimeMinutes}</span> min | Cook:{' '}
-                <span data-testid="cook-time">{recipe.cookTimeMinutes}</span> min | Total:{' '}
-                <span data-testid="total-time">{recipe.totalTimeMinutes}</span> min
-              </span>
-            </div>
-
-            <div className="flex items-center gap-2 text-neutral-600">
-              <Users className="w-5 h-5" />
-              <span data-testid="servings">{recipe.servings} servings</span>
-            </div>
-          </div>
-
-          {/* Tags */}
-          <div className="flex flex-wrap gap-2">
-            {recipe.cuisineType && (
-              <span className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">
-                {recipe.cuisineType}
-              </span>
-            )}
-            <span
-              className={`px-3 py-1 rounded-full text-sm font-medium ${getDifficultyColor(
-                recipe.difficultyLevel
-              )}`}
-            >
-              {recipe.difficultyLevel}
-            </span>
-            {recipe.dietaryTags.map((tag) => (
-              <span
-                key={tag}
-                className="px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-sm font-medium"
-              >
-                {tag}
-              </span>
-            ))}
-          </div>
         </div>
+
+        {/* Share Modal */}
+        <ShareModal
+          isOpen={showShareModal}
+          onClose={() => setShowShareModal(false)}
+          recipeId={recipe.id}
+          itemName={recipe.title}
+        />
       </div>
 
-      <div className="grid md:grid-cols-3 gap-6">
-        {/* Ingredients */}
-        <div className="md:col-span-1">
-          <div className="bg-white rounded-lg shadow-soft p-6 sticky top-4">
-            <h2 className="text-2xl font-bold text-neutral-900 mb-4">Ingredients</h2>
-            <ul className="space-y-2" data-testid="ingredients-list">
-              {recipe.ingredients.map((ingredient, index) => (
-                <li key={index} className="flex items-start gap-2">
-                  <span className="text-primary-500 font-bold">•</span>
-                  <span className="text-neutral-700">
-                    <strong>
-                      {ingredient.amount} {ingredient.unit}
-                    </strong>{' '}
-                    {ingredient.name}
-                    {ingredient.notes && (
-                      <span className="text-neutral-500 text-sm"> ({ingredient.notes})</span>
-                    )}
-                  </span>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </div>
-
-        {/* Instructions */}
-        <div className="md:col-span-2">
-          <div className="bg-white rounded-lg shadow-soft p-6">
-            <h2 className="text-2xl font-bold text-neutral-900 mb-4">Instructions</h2>
-            <ol className="space-y-4" data-testid="instructions-list">
-              {recipe.instructions.map((instruction) => (
-                <li
-                  key={instruction.stepNumber}
-                  className="flex gap-4 items-start"
-                  data-testid="instruction"
-                >
-                  <div className="flex-shrink-0 w-8 h-8 bg-primary-500 text-white rounded-full flex items-center justify-center font-bold">
-                    {instruction.stepNumber}
-                  </div>
-                  <div className="flex-1">
-                    <p className="text-neutral-700">{instruction.instruction}</p>
-                    {instruction.durationMinutes && (
-                      <p className="text-sm text-neutral-500 mt-1">
-                        ⏱️ {instruction.durationMinutes} minutes
-                      </p>
-                    )}
-                  </div>
-                </li>
-              ))}
-            </ol>
-          </div>
-
-          {/* Notes */}
-          {recipe.notes && (
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 mt-6">
-              <h3 className="text-lg font-semibold text-blue-900 mb-2">Notes</h3>
-              <p className="text-blue-800">{recipe.notes}</p>
-            </div>
-          )}
-
-          {/* Source */}
-          {(recipe.sourceName || recipe.sourceUrl) && (
-            <div className="bg-neutral-50 border border-neutral-200 rounded-lg p-6 mt-6">
-              <h3 className="text-lg font-semibold text-neutral-900 mb-2">Source</h3>
-              {recipe.sourceName && <p className="text-neutral-700">{recipe.sourceName}</p>}
-              {recipe.sourceUrl && (
-                <a
-                  href={recipe.sourceUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-primary-500 hover:text-primary-600 underline"
-                >
-                  View Original Recipe
-                </a>
-              )}
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* Share Modal */}
-      <ShareModal
-        isOpen={showShareModal}
-        onClose={() => setShowShareModal(false)}
-        recipeId={recipe.id}
-        itemName={recipe.title}
+      {/* Chat Panel */}
+      <ChatPanel
+        messages={messages}
+        isStreaming={isStreaming}
+        error={chatError ?? undefined}
+        context={{
+          page: 'recipe_detail',
+          recipeId: recipe.id,
+          recipeTitle: recipe.title,
+        }}
+        onSendMessage={sendMessage}
+        onConfirmTool={confirmTool}
       />
     </div>
+  );
+}
+
+export default function RecipeDetailPage() {
+  return (
+    <ChatProvider>
+      <RecipeDetailPageContent />
+    </ChatProvider>
   );
 }

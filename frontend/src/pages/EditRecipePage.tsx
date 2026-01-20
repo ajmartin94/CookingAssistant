@@ -1,7 +1,7 @@
 /**
  * Edit Recipe Page
  *
- * Page for editing existing recipes
+ * Page for editing existing recipes with AI chat panel
  */
 
 import { useState, useEffect } from 'react';
@@ -10,17 +10,27 @@ import { ChevronLeft } from '../components/common/icons';
 import RecipeForm from '../components/recipes/RecipeForm';
 import { recipeApi } from '../services/recipeApi';
 import type { Recipe, RecipeFormData } from '../types';
+import { ChatProvider, useChat } from '../contexts/ChatContext';
+import ChatPanel from '../components/chat/ChatPanel';
 
-export default function EditRecipePage() {
+function EditRecipePageContent() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const {
+    messages,
+    isStreaming,
+    error: chatError,
+    sendMessage,
+    confirmTool,
+    setContext,
+  } = useChat();
 
   const [recipe, setRecipe] = useState<Recipe | null>(null);
   const [loading, setLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Fetch recipe
+  // Fetch recipe and update chat context
   useEffect(() => {
     const fetchRecipe = async () => {
       if (!id) {
@@ -34,6 +44,12 @@ export default function EditRecipePage() {
         setError(null);
         const data = await recipeApi.getRecipe(id);
         setRecipe(data);
+        // Update chat context with recipe info
+        setContext({
+          page: 'recipe_edit',
+          recipeId: data.id,
+          recipeTitle: data.title,
+        });
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to fetch recipe');
       } finally {
@@ -42,7 +58,7 @@ export default function EditRecipePage() {
     };
 
     fetchRecipe();
-  }, [id]);
+  }, [id, setContext]);
 
   // Handle submit
   const handleSubmit = async (data: RecipeFormData) => {
@@ -118,36 +134,61 @@ export default function EditRecipePage() {
   };
 
   return (
-    <div className="max-w-4xl">
-      {/* Header */}
-      <div className="mb-6">
-        <button
-          onClick={handleCancel}
-          className="text-primary-500 hover:text-primary-600 font-medium mb-4 flex items-center gap-1"
-        >
-          <ChevronLeft className="w-5 h-5" />
-          Back to Recipe
-        </button>
-        <h1 className="text-3xl font-display font-bold text-neutral-900">Edit Recipe</h1>
-        <p className="text-neutral-600 mt-2">Update your recipe details</p>
+    <div className="flex h-full">
+      {/* Main Content */}
+      <div className="flex-1 overflow-auto max-w-4xl">
+        {/* Header */}
+        <div className="mb-6">
+          <button
+            onClick={handleCancel}
+            className="text-primary-500 hover:text-primary-600 font-medium mb-4 flex items-center gap-1"
+          >
+            <ChevronLeft className="w-5 h-5" />
+            Back to Recipe
+          </button>
+          <h1 className="text-3xl font-display font-bold text-neutral-900">Edit Recipe</h1>
+          <p className="text-neutral-600 mt-2">Update your recipe details</p>
+        </div>
+
+        {/* Error Message */}
+        {error && (
+          <div className="bg-error-50 border border-error-200 rounded-lg p-4 mb-6">
+            <p className="text-error-700">
+              <strong>Error:</strong> {error}
+            </p>
+          </div>
+        )}
+
+        {/* Recipe Form */}
+        <RecipeForm
+          initialData={initialData}
+          onSubmit={handleSubmit}
+          onCancel={handleCancel}
+          isSubmitting={isSubmitting}
+        />
       </div>
 
-      {/* Error Message */}
-      {error && (
-        <div className="bg-error-50 border border-error-200 rounded-lg p-4 mb-6">
-          <p className="text-error-700">
-            <strong>Error:</strong> {error}
-          </p>
-        </div>
-      )}
-
-      {/* Recipe Form */}
-      <RecipeForm
-        initialData={initialData}
-        onSubmit={handleSubmit}
-        onCancel={handleCancel}
-        isSubmitting={isSubmitting}
+      {/* Chat Panel */}
+      <ChatPanel
+        messages={messages}
+        isStreaming={isStreaming}
+        error={chatError ?? undefined}
+        context={{
+          page: 'recipe_edit',
+          recipeId: recipe.id,
+          recipeTitle: recipe.title,
+        }}
+        onSendMessage={sendMessage}
+        onConfirmTool={confirmTool}
       />
     </div>
+  );
+}
+
+export default function EditRecipePage() {
+  return (
+    <ChatProvider>
+      <EditRecipePageContent />
+    </ChatProvider>
   );
 }

@@ -168,4 +168,32 @@ describe('EditRecipePage', () => {
       vi.mocked(mockParams).id = '1';
     });
   });
+
+  describe('Chat Integration', () => {
+    it('should render the chat panel', async () => {
+      render(<EditRecipePage />);
+
+      await waitFor(() => {
+        expect(screen.getByRole('complementary', { name: /chat assistant/i })).toBeInTheDocument();
+      });
+    });
+
+    it('should display recipe title in chat panel context', async () => {
+      render(<EditRecipePage />);
+
+      await waitFor(() => {
+        // The ChatPanel header shows "AI Assistant - {recipe title}"
+        expect(screen.getByText(/test recipe/i, { selector: 'span' })).toBeInTheDocument();
+      });
+    });
+
+    it('should have chat input for sending messages', async () => {
+      render(<EditRecipePage />);
+
+      await waitFor(() => {
+        // ChatInput with contextHint shows "Ask about {title}..."
+        expect(screen.getByPlaceholderText(/ask about test recipe/i)).toBeInTheDocument();
+      });
+    });
+  });
 });

@@ -99,4 +99,26 @@ describe('CreateRecipePage', () => {
       expect(mockNavigate).toHaveBeenCalledWith('/recipes');
     });
   });
+
+  describe('Chat Integration', () => {
+    it('should render the chat panel', () => {
+      render(<CreateRecipePage />);
+
+      expect(screen.getByRole('complementary', { name: /chat assistant/i })).toBeInTheDocument();
+    });
+
+    it('should display "New Recipe" in chat panel context', () => {
+      render(<CreateRecipePage />);
+
+      // The ChatPanel header shows "AI Assistant - New Recipe" for create page
+      expect(screen.getByText(/new recipe/i, { selector: 'span' })).toBeInTheDocument();
+    });
+
+    it('should have chat input for sending messages', () => {
+      render(<CreateRecipePage />);
+
+      // ChatInput uses "Type a message..." as default placeholder
+      expect(screen.getByPlaceholderText(/type a message/i)).toBeInTheDocument();
+    });
+  });
 });
