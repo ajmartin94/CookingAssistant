@@ -161,10 +161,12 @@ export function ChatProvider({ children, initialContext }: ChatProviderProps) {
           content: msg.content,
         }));
 
+        const token = localStorage.getItem('auth_token');
         const response = await fetch(`${BASE_URL}/api/v1/chat`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
+            ...(token && { Authorization: `Bearer ${token}` }),
           },
           body: JSON.stringify({
             message: content,
@@ -212,10 +214,12 @@ export function ChatProvider({ children, initialContext }: ChatProviderProps) {
 
   const confirmTool = useCallback(async (toolCallId: string, approved: boolean) => {
     try {
+      const token = localStorage.getItem('auth_token');
       const response = await fetch(`${BASE_URL}/api/v1/chat/confirm`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          ...(token && { Authorization: `Bearer ${token}` }),
         },
         body: JSON.stringify({
           toolCallId,
