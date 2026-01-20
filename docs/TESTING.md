@@ -182,11 +182,13 @@ backend/tests/
 │   ├── test_recipe_service.py
 │   ├── test_library_service.py
 │   └── test_share_service.py
-└── integration/             # Integration tests
-    ├── test_users_api.py
-    ├── test_recipes_api.py
-    ├── test_libraries_api.py
-    └── test_sharing_api.py
+├── integration/             # Integration tests
+│   ├── test_users_api.py
+│   ├── test_recipes_api.py
+│   ├── test_libraries_api.py
+│   └── test_sharing_api.py
+└── smoke/                   # LLM smoke tests (requires Ollama)
+    └── test_llm_smoke.py    # Real LLM integration verification
 ```
 
 ### Frontend Test Structure
@@ -281,6 +283,44 @@ pytest -v
 # Run only fast tests (skip slow integration tests)
 pytest -m "not slow"
 ```
+
+### LLM Smoke Tests
+
+LLM smoke tests verify the integration with a real LLM (Ollama). They are excluded from normal CI runs and must be run manually.
+
+**Prerequisites:**
+1. Ollama installed and running locally (`ollama serve`)
+2. Model pulled: `ollama pull llama3.1:8b`
+
+```bash
+# Navigate to backend
+cd backend
+
+# Activate virtual environment
+source venv/bin/activate  # Windows: venv\Scripts\activate
+
+# Run smoke tests (explicitly include smoke marker)
+pytest tests/smoke/ -v -m smoke
+
+# Or include smoke tests with all other tests
+pytest -m ""
+
+# Run only smoke tests that verify tool calling
+pytest tests/smoke/test_llm_smoke.py::TestLLMToolCalling -v -m smoke
+```
+
+**What the smoke tests verify:**
+- Model returns valid response structure
+- Model uses tools (create_recipe) when prompted appropriately
+- Generated recipes have valid schema (title, ingredients, instructions)
+- Streaming responses work correctly
+
+**When to run:**
+- Before releases to verify LLM integration quality
+- After updating the LLM model or provider configuration
+- When debugging AI behavior issues
+
+**Note:** These tests hit a real LLM and can take 10-60 seconds each. They are NOT suitable for TDD or normal CI.
 
 ### Frontend
 
