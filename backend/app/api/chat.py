@@ -16,8 +16,13 @@ from app.schemas.chat import (
     ToolConfirmRequest,
     ToolConfirmResponse,
 )
+from app.schemas.feedback import FeedbackCreate, FeedbackResponse
 from app.services.llm.service import get_llm_service, LLMService, LLMServiceError
 from app.services.tools.executor import ToolExecutor, ToolExecutorError
+from app.services.feedback_service import (
+    create_or_update_feedback,
+    get_feedback_by_message,
+)
 from app.utils.dependencies import CurrentUser
 
 router = APIRouter(prefix="/chat", tags=["chat"])
@@ -341,3 +346,53 @@ async def confirm_tool_call(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=str(e),
         )
+
+
+# =============================================================================
+# Feedback Endpoints
+# =============================================================================
+
+
+@router.post("/feedback", response_model=FeedbackResponse, status_code=status.HTTP_201_CREATED)
+async def submit_feedback(
+    feedback_data: FeedbackCreate,
+    current_user: CurrentUser,
+    db: Annotated[AsyncSession, Depends(get_db)],
+):
+    """
+    Submit feedback (thumbs up/down) for an AI message.
+
+    If feedback already exists for this message, it will be updated.
+    """
+    feedback = await create_or_update_feedback(
+        db=db,
+        user_id=current_user.id,
+        feedback_data=feedback_data,
+    )
+    return feedback
+
+
+@router.get("/feedback/{message_id}", response_model=FeedbackResponse)
+async def get_feedback(
+    message_id: str,
+    current_user: CurrentUser,
+    db: Annotated[AsyncSession, Depends(get_db)],
+):
+    """
+    Get feedback for a specific message.
+
+    Users can only retrieve their own feedback.
+    """
+    feedback = await get_feedback_by_message(
+        db=db,
+        user_id=current_user.id,
+        message_id=message_id,
+    )
+
+    if feedback is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Feedback not found for message: {message_id}",
+        )
+
+    return feedback

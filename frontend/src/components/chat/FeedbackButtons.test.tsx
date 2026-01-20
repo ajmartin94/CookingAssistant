@@ -104,9 +104,7 @@ describe('FeedbackButtons', () => {
       await user.click(thumbsDownButton);
 
       await waitFor(() => {
-        expect(
-          screen.getByPlaceholderText(/what went wrong/i)
-        ).toBeInTheDocument();
+        expect(screen.getByPlaceholderText(/what went wrong/i)).toBeInTheDocument();
       });
     });
 
@@ -117,9 +115,7 @@ describe('FeedbackButtons', () => {
       const thumbsUpButton = screen.getByRole('button', { name: /thumbs up/i });
       await user.click(thumbsUpButton);
 
-      expect(
-        screen.queryByPlaceholderText(/what went wrong/i)
-      ).not.toBeInTheDocument();
+      expect(screen.queryByPlaceholderText(/what went wrong/i)).not.toBeInTheDocument();
     });
 
     it('should submit comment when entered after thumbs down', async () => {

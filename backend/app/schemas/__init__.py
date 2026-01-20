@@ -34,6 +34,10 @@ from app.schemas.share import (
     ShareResponse,
     ShareTokenResponse,
 )
+from app.schemas.feedback import (
+    FeedbackCreate,
+    FeedbackResponse,
+)
 
 __all__ = [
     # User schemas
@@ -62,4 +66,7 @@ __all__ = [
     "ShareCreate",
     "ShareResponse",
     "ShareTokenResponse",
+    # Feedback schemas
+    "FeedbackCreate",
+    "FeedbackResponse",
 ]

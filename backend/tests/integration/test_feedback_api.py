@@ -269,7 +269,7 @@ async def test_get_feedback_unauthenticated(client: AsyncClient):
 
 @pytest.mark.asyncio
 async def test_feedback_isolated_per_user(
-    client: AsyncClient, auth_headers, test_user, db_session
+    client: AsyncClient, auth_headers, test_user, test_db
 ):
     """Test that users can only see their own feedback."""
     # Submit feedback as test_user
@@ -286,7 +286,7 @@ async def test_feedback_isolated_per_user(
     from tests.utils.helpers import create_test_user, generate_auth_headers
 
     other_user = await create_test_user(
-        db_session,
+        test_db,
         username="other_user",
         email="other@example.com",
     )
