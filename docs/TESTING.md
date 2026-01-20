@@ -442,6 +442,101 @@ describe('RecipeCard', () => {
 
 ---
 
+<!-- Per AD-0105 -->
+## LLM Testing Patterns
+
+LLM tests are split into two categories with different purposes:
+
+### Unit Tests (Mocked)
+
+Unit tests for LLM functionality mock the LiteLLM provider to test service logic in isolation.
+
+**Location:** `backend/tests/unit/test_llm_service.py`
+
+**Mocking Pattern:**
+```python
+from unittest.mock import patch, MagicMock
+
+@pytest.mark.asyncio
+async def test_chat_passes_messages_to_litellm():
+    """Test that chat() passes messages to LiteLLM correctly"""
+    with patch("app.services.llm.service.settings") as mock_settings:
+        mock_settings.llm_model = "ollama/llama3.1:8b"
+
+        with patch("app.services.llm.service.acompletion") as mock_acompletion:
+            # Mock streaming response
+            async def mock_stream():
+                yield {"choices": [{"delta": {"content": "Response"}}]}
+
+            mock_acompletion.return_value = mock_stream()
+
+            from app.services.llm.service import LLMService
+            service = LLMService()
+
+            async for _ in service.chat(messages):
+                pass
+
+            # Verify acompletion was called correctly
+            mock_acompletion.assert_called_once()
+```
+
+**Key mocking targets:**
+- `app.services.llm.service.acompletion` - LiteLLM async completion function
+- `app.services.llm.service.settings` - Configuration settings
+
+**What to test with mocks:**
+- Message passing to LiteLLM
+- Streaming vs non-streaming behavior
+- Tool definition handling
+- Error handling (timeouts, rate limits, connection errors)
+- Response parsing
+
+### Smoke Tests (Real LLM)
+
+Smoke tests verify the integration with a real LLM (Ollama). They are slow and require external dependencies.
+
+**Location:** `backend/tests/smoke/test_llm_smoke.py`
+
+**Markers:**
+```python
+pytestmark = [
+    pytest.mark.smoke,        # Excluded from default CI runs
+    pytest.mark.slow,         # Slow test (10-60s each)
+    pytest.mark.integration,  # Integration test category
+]
+```
+
+**What smoke tests verify:**
+- Model returns valid response structure
+- Model uses tools (create_recipe) when prompted appropriately
+- Generated recipes have valid schema (title, ingredients, instructions)
+- Streaming responses work correctly
+
+**When to run smoke tests:**
+- Before releases to verify LLM integration quality
+- After updating the LLM model or provider configuration
+- When debugging AI behavior issues
+
+**NOT suitable for:**
+- TDD (too slow)
+- Normal CI (requires Ollama running)
+- Frequent iteration
+
+### Running LLM Tests
+
+```bash
+# Unit tests only (fast, mocked)
+pytest backend/tests/unit/test_llm_service.py -v
+
+# Smoke tests only (slow, requires Ollama)
+pytest backend/tests/smoke/ -v -m smoke
+
+# All tests including smoke (use sparingly)
+pytest backend/ -m ""
+```
+
+---
+
 ## Best Practices
 
 ### General
