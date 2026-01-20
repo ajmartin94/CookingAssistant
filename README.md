@@ -60,163 +60,39 @@ Every feature supports:
 
 ## 🧑‍💻 Development Setup
 
-### ✅ Project Initialization Complete!
+### Local development
 
-The Project Initialization Phase has been implemented. Both backend and frontend are ready to run.
+1. **Clone repo & install dependencies**
+  ```bash
+  git clone https://github.com/your-username/cooking-assistant.git
+  cd cooking-assistant
+  ```
+   
+2. **Backend (FastAPI + SQLite)**
+  ```bash
+  cd backend
+  pip install -r requirements.txt
+  uvicorn main:app --reload
+  ```
+  API runs at: http://localhost:8000
 
-### Backend Setup (FastAPI + SQLite)
-
-1. **Navigate to backend directory**
-   ```bash
-   cd backend
-   ```
-
-2. **Create virtual environment**
-   ```bash
-   python -m venv venv
-   source venv/bin/activate  # On Windows: venv\Scripts\activate
-   ```
-
-3. **Install dependencies**
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-4. **Configure environment**
-   ```bash
-   cp .env.example .env
-   # Edit .env if needed (optional for development)
-   ```
-
-5. **Run the server**
-   ```bash
-   python -m app.main
-   ```
-
-   API available at: **http://localhost:8000**
-   - API Docs: http://localhost:8000/api/docs
-   - Health Check: http://localhost:8000/api/v1/health
-
-### Frontend Setup (React + Vite)
-
-1. **Navigate to frontend directory**
-   ```bash
-   cd frontend
-   ```
-
-2. **Install dependencies**
-   ```bash
-   npm install
-   ```
-
-3. **Configure environment**
-   ```bash
-   cp .env.example .env
-   # Edit .env if needed (optional for development)
-   ```
-
-4. **Start development server**
-   ```bash
-   npm run dev
-   ```
-
-   App available at: **http://localhost:5173**
-
-### Running Tests
-
-**Backend (147 tests - 100% passing):**
-```bash
-cd backend
-source venv/bin/activate
-pytest                    # Run all tests
-pytest --cov=app         # Run with coverage report
-pytest -v                # Verbose output
-```
-
-Test Coverage:
-- Unit Tests: 86 tests (services at 100% coverage)
-- Integration Tests: 61 tests (API endpoints)
-- Overall Coverage: 78%
-
-**Frontend (205 tests - 98% passing):**
-```bash
-cd frontend
-npm test                 # Run all tests
-npm run test:coverage    # Run with coverage report
-npm run test:ui          # Run with UI
-```
-
-Test Coverage:
-- Component Tests: 151 tests (pages, components, hooks)
-- API Client Tests: 24 tests
-- Context Tests: 30 tests
-- Overall: 98% passing (201/205)
-
-**E2E Tests (87 tests - Playwright):**
-```bash
-npm run test:e2e         # Run all E2E tests (headless)
-npm run test:e2e:ui      # Run with interactive UI (recommended)
-npm run test:e2e:headed  # Run with visible browser
-npm run test:e2e:debug   # Run in debug mode
-```
-
-**Current Test Results:** 17/87 passing (19.5%)
-- ✅ Authentication Tests: 9/13 passing (69%)
-  - Login (5/5) - 100%
-  - Registration (3/5) - 60%
-  - Logout (0/3) - Pending
-- ✅ Validation Tests: 8/18 passing (44%)
-- ❌ Recipe CRUD Tests: 0/54 - In progress
-- ✅ Error Handling: 1/22 passing (5%)
-- ❌ Workflow Tests: 0/3 - In progress
-
-**Test Infrastructure:**
-- Backend: FastAPI with async SQLite, E2E test mode with auto table recreation
-- Frontend: React with proper component testing selectors
-- E2E: Playwright with real backend + frontend servers, cross-browser testing (Chromium, Firefox, WebKit)
-- Page Object Model: Type-safe page abstractions for maintainability
-- CI/CD: Automated testing on push and pull requests
-
-**Total Test Count:** 437+ tests (352 unit/integration + 87 E2E)
-
-For detailed E2E testing documentation, see [docs/E2E_TESTING.md](docs/E2E_TESTING.md)
+3. **Frontend (React + Vite)**
+  ```bash
+  cd frontend
+  npm install
+  npm run dev
+  ```
+  App runs at: http://localhost:3000
 
 ## 📌 Roadmap
 
-- ✅ **Phase 0**: Project Initialization (COMPLETE!)
-  - Backend: FastAPI + SQLAlchemy + Alembic
-  - Frontend: React + TypeScript + Vite + TailwindCSS
-  - CI/CD: GitHub Actions workflows
-  - Development environment and documentation
-
-- ✅ **Phase 1**: Core recipe library (COMPLETE!)
-  - Backend: Database models, schemas, services, REST API endpoints
-  - Frontend: Recipe CRUD UI, search/filter, authentication
-  - Features: User auth, recipe management, libraries, sharing
-  - JWT authentication with bcrypt password hashing
-  - Full CRUD operations with pagination and filtering
-  - **Testing: 166 tests implemented (162 passing)**
-    - Backend: 147 tests with 78% coverage (all services at 100%)
-    - Frontend: 19 authentication tests (15 passing)
-
-- **Phase 2**: AI recipe builder & semantic recipe search - NEXT
+- Phase 1: Core recipe library (save, edit, share)
+- Phase 2: AI recipe builder & semantic recipe search
 - Phase 3: Meal planning + grocery list generator
 - Phase 4: Grocery store optimization & shopping assistant
 - Phase 5: Interactive step-by-step cooking mode
 - Phase 6: Calendar & smart home integrations
 - Phase 7: Mobile app (PWA → Capacitor → React Native)
-
-### Issue Tracking
-
-This project uses [beads](https://github.com/anthropics/beads) for roadmap and issue tracking:
-
-```bash
-bd ready              # Show issues ready to work on
-bd list --status=all  # List all issues (open, closed, etc.)
-bd stats              # Project statistics
-```
-
-See `docs/archive/master_implementation_plan_v1.md` for historical phase details.
 
 ## 🤝 Contributing
 Contributions are welcome!
