@@ -76,7 +76,7 @@ class TestCreateRecipeTool:
             new_callable=AsyncMock,
             return_value=mock_recipe,
         ) as mock_create:
-            result = await create_recipe_handler(
+            _ = await create_recipe_handler(
                 db=mock_db,
                 user=mock_user,
                 title="Full Recipe",
@@ -660,9 +660,10 @@ class TestServiceErrorHandling:
                     instructions=[{"step_number": 1, "instruction": "Step 1"}],
                 )
 
-            assert "database" in str(exc_info.value).lower() or "failed" in str(
-                exc_info.value
-            ).lower()
+            assert (
+                "database" in str(exc_info.value).lower()
+                or "failed" in str(exc_info.value).lower()
+            )
 
     @pytest.mark.asyncio
     async def test_edit_recipe_service_error_propagates(self):
@@ -736,6 +737,4 @@ class TestToolHandlerRegistration:
 
         for name, handler in handlers.items():
             assert callable(handler), f"{name} handler is not callable"
-            assert inspect.iscoroutinefunction(
-                handler
-            ), f"{name} handler is not async"
+            assert inspect.iscoroutinefunction(handler), f"{name} handler is not async"

@@ -353,7 +353,9 @@ async def confirm_tool_call(
 # =============================================================================
 
 
-@router.post("/feedback", response_model=FeedbackResponse, status_code=status.HTTP_201_CREATED)
+@router.post(
+    "/feedback", response_model=FeedbackResponse, status_code=status.HTTP_201_CREATED
+)
 async def submit_feedback(
     feedback_data: FeedbackCreate,
     current_user: CurrentUser,

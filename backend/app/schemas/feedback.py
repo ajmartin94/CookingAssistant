@@ -14,9 +14,13 @@ from app.models.feedback import FeedbackRating
 class FeedbackCreate(BaseModel):
     """Schema for creating feedback."""
 
-    message_id: str = Field(..., min_length=1, max_length=255, description="ID of the message being rated")
+    message_id: str = Field(
+        ..., min_length=1, max_length=255, description="ID of the message being rated"
+    )
     rating: FeedbackRating = Field(..., description="Rating: 'up' or 'down'")
-    comment: Optional[str] = Field(None, max_length=2000, description="Optional feedback comment")
+    comment: Optional[str] = Field(
+        None, max_length=2000, description="Optional feedback comment"
+    )
 
 
 class FeedbackResponse(BaseModel):

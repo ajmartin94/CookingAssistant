@@ -29,11 +29,12 @@ class ChatFeedback(Base):
     id: Mapped[str] = mapped_column(
         String(36), primary_key=True, default=lambda: str(uuid.uuid4())
     )
-    message_id: Mapped[str] = mapped_column(
-        String(255), nullable=False, index=True
-    )
+    message_id: Mapped[str] = mapped_column(String(255), nullable=False, index=True)
     user_id: Mapped[str] = mapped_column(
-        String(36), ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True
+        String(36),
+        ForeignKey("users.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
     )
     rating: Mapped[FeedbackRating] = mapped_column(
         SQLEnum(FeedbackRating), nullable=False
