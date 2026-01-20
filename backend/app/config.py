@@ -45,11 +45,11 @@ class Settings(BaseSettings):
             return [origin.strip() for origin in v.split(",")]
         return v
 
-    # AI Provider Settings
-    ai_provider: str = "openai"  # Options: openai, anthropic, ollama
+    # AI Provider Settings (LiteLLM)
+    llm_model: str = "ollama/llama3.1:8b"  # LiteLLM model format
     openai_api_key: Optional[str] = None
     anthropic_api_key: Optional[str] = None
-    ollama_base_url: str = "http://localhost:11434"
+    ollama_api_base: str = "http://localhost:11434"
 
     # Vector Database Settings (for Phase 2)
     vector_db_enabled: bool = False

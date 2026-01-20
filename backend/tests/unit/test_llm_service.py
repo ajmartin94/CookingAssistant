@@ -339,15 +339,16 @@ async def test_chat_non_streaming_returns_tool_calls():
             # Non-streaming response with tool calls
             mock_message = MagicMock()
             mock_message.content = None
-            mock_message.tool_calls = [
-                MagicMock(
-                    id="call_123",
-                    type="function",
-                    function=MagicMock(
-                        name="create_recipe", arguments='{"title": "Pasta"}'
-                    ),
-                )
-            ]
+            mock_function = MagicMock()
+            mock_function.name = "create_recipe"
+            mock_function.arguments = '{"title": "Pasta"}'
+
+            mock_tool_call = MagicMock()
+            mock_tool_call.id = "call_123"
+            mock_tool_call.type = "function"
+            mock_tool_call.function = mock_function
+
+            mock_message.tool_calls = [mock_tool_call]
 
             mock_choice = MagicMock()
             mock_choice.message = mock_message
