@@ -39,7 +39,7 @@ repos:
         name: Frontend lint (eslint)
         entry: bash -c 'cd frontend && npm run lint'
         language: system
-        types_or: [javascript, jsx, typescript, tsx]
+        types_or: [javascript, jsx, ts, tsx]
         files: ^frontend/
         pass_filenames: false
 
@@ -47,6 +47,6 @@ repos:
         name: Frontend format (prettier)
         entry: bash -c 'cd frontend && npx prettier --check "src/**/*.{ts,tsx,css}"'
         language: system
-        types_or: [javascript, jsx, typescript, tsx, css]
+        types_or: [javascript, jsx, ts, tsx, css]
         files: ^frontend/
         pass_filenames: false
