@@ -114,21 +114,24 @@ describe('ChatPanel', () => {
 
     it('should collapse when toggle button is clicked', async () => {
       const user = userEvent.setup();
-      render(<ChatPanel {...defaultProps} />);
+      const { container } = render(<ChatPanel {...defaultProps} />);
 
       const toggleButton = screen.getByRole('button', { name: /collapse|expand|toggle/i });
       await user.click(toggleButton);
 
       // When collapsed, the message area should not be visible
-      expect(screen.queryByRole('textbox', { name: /message/i })).not.toBeVisible();
+      // Use direct DOM query since visibility-hidden elements aren't in accessibility tree
+      const textarea = container.querySelector('textarea');
+      expect(textarea).not.toBeVisible();
     });
 
     it('should expand when toggle button is clicked while collapsed', async () => {
       const user = userEvent.setup();
-      render(<ChatPanel {...defaultProps} defaultCollapsed={true} />);
+      const { container } = render(<ChatPanel {...defaultProps} defaultCollapsed={true} />);
 
       // Initially collapsed
-      expect(screen.queryByRole('textbox', { name: /message/i })).not.toBeVisible();
+      const textarea = container.querySelector('textarea');
+      expect(textarea).not.toBeVisible();
 
       const toggleButton = screen.getByRole('button', { name: /collapse|expand|toggle/i });
       await user.click(toggleButton);
@@ -138,9 +141,11 @@ describe('ChatPanel', () => {
     });
 
     it('should respect defaultCollapsed prop', () => {
-      render(<ChatPanel {...defaultProps} defaultCollapsed={true} />);
+      const { container } = render(<ChatPanel {...defaultProps} defaultCollapsed={true} />);
 
-      expect(screen.queryByRole('textbox', { name: /message/i })).not.toBeVisible();
+      // Use direct DOM query since visibility-hidden elements aren't in accessibility tree
+      const textarea = container.querySelector('textarea');
+      expect(textarea).not.toBeVisible();
     });
 
     it('should update aria-expanded attribute on toggle', async () => {

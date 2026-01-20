@@ -384,7 +384,8 @@ describe('ChatInput', () => {
       render(<ChatInput {...defaultProps} />);
 
       const sendButton = screen.getByRole('button', { name: /send/i });
-      expect(sendButton).toBeDisabled();
+      // Uses aria-disabled for keyboard accessibility while visually indicating disabled state
+      expect(sendButton).toHaveAttribute('aria-disabled', 'true');
     });
 
     it('should enable send button when input has content', async () => {
@@ -396,6 +397,7 @@ describe('ChatInput', () => {
 
       const sendButton = screen.getByRole('button', { name: /send/i });
       expect(sendButton).not.toBeDisabled();
+      expect(sendButton).toHaveAttribute('aria-disabled', 'false');
     });
 
     it('should disable send button when input only has whitespace', async () => {
@@ -406,7 +408,8 @@ describe('ChatInput', () => {
       await user.type(input, '   ');
 
       const sendButton = screen.getByRole('button', { name: /send/i });
-      expect(sendButton).toBeDisabled();
+      // Uses aria-disabled for keyboard accessibility while visually indicating disabled state
+      expect(sendButton).toHaveAttribute('aria-disabled', 'true');
     });
   });
 });
