@@ -34,10 +34,11 @@ Features and bugs require tests before code. The `/beads` skill includes the RED
 
 See [docs/TESTING.md](docs/TESTING.md#enforcement-policy) for details.
 
+<!-- Per AD-0105 -->
 ### 3. Three Modes
 Every AI feature should support:
 - **Manual**: User has full control
-- **AI Assist**: AI suggests, user approves
+- **AI Assist**: AI suggests, user approves *(implemented via Chat Panel with tool confirmation)*
 - **AI Automation**: End-to-end with minimal input
 
 ### 4. Documentation Changes via ADR

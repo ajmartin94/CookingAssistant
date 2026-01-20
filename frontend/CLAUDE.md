@@ -5,6 +5,7 @@
 
 ---
 
+<!-- Per AD-0105 -->
 ## Project Structure
 
 ```
@@ -14,11 +15,12 @@ frontend/
 │   │   ├── auth/
 │   │   ├── recipes/
 │   │   ├── libraries/
+│   │   ├── chat/            # AI chat components
 │   │   └── common/
 │   ├── pages/               # Page-level components
 │   ├── hooks/               # Custom React hooks
 │   ├── services/            # API client functions
-│   ├── contexts/            # React Context providers
+│   ├── contexts/            # React Context providers (incl. ChatContext)
 │   ├── types/               # TypeScript definitions
 │   ├── utils/               # Helpers
 │   ├── test/                # Test infrastructure
@@ -145,6 +147,97 @@ See [E2E Infrastructure Conventions](../docs/E2E_TESTING.md#infrastructure-conve
 - **User events**: Use `userEvent` from `@testing-library/user-event`
 
 **Pattern reference**: Read existing `.test.tsx` files for conventions.
+
+---
+
+<!-- Per AD-0105 -->
+## Chat Component Conventions
+
+The chat feature uses a context-based architecture for state management with streaming responses.
+
+### ChatProvider / useChat
+
+Wrap components that need chat functionality with `ChatProvider`:
+
+```tsx
+import { ChatProvider } from '../contexts/ChatContext';
+
+function App() {
+  return (
+    <ChatProvider initialContext={{ page: 'recipe_detail', recipeId: '123' }}>
+      <RecipeDetailPage />
+    </ChatProvider>
+  );
+}
+```
+
+Access chat state with the `useChat` hook:
+
+```tsx
+import { useChat } from '../contexts/ChatContext';
+
+function MyComponent() {
+  const { messages, isStreaming, error, sendMessage, pendingToolCall } = useChat();
+  // ...
+}
+```
+
+### Context Types
+
+Page context is injected to give the LLM awareness of where the user is:
+
+```typescript
+type ChatContext = {
+  page: 'recipe_detail' | 'recipe_edit' | 'recipe_create' | 'recipe_list';
+  recipeId?: string;
+  recipeTitle?: string;
+};
+```
+
+### Streaming Response Handling
+
+The chat API returns Server-Sent Events (SSE) for streaming responses:
+
+```typescript
+// SSE event types from backend:
+{ type: 'chunk', content: '...' }   // Text chunk
+{ type: 'done', id: '...' }         // Stream complete
+{ type: 'tool_call', id, name, args } // Tool call (needs confirmation)
+```
+
+ChatProvider handles accumulating chunks and updating message state automatically.
+
+### Tool Call Confirmation (AI Assist Mode)
+
+Tools that modify data require user confirmation before execution:
+
+1. LLM returns a `tool_call` event with pending status
+2. UI shows `ToolConfirmation` component with approve/reject buttons
+3. User action calls `confirmTool(toolCallId, approved)`
+4. Backend executes or cancels the tool
+
+```tsx
+const { pendingToolCall, confirmTool } = useChat();
+
+if (pendingToolCall) {
+  return (
+    <ToolConfirmation
+      toolCall={pendingToolCall}
+      onConfirm={(id) => confirmTool(id, true)}
+      onReject={(id) => confirmTool(id, false)}
+    />
+  );
+}
+```
+
+### Chat Components
+
+| Component | Purpose |
+|-----------|---------|
+| `ChatPanel` | Collapsible panel with message list, input, streaming indicator |
+| `ChatInput` | Text input with send button |
+| `ToolConfirmation` | Approve/reject UI for pending tool calls |
+| `FeedbackButtons` | Thumbs up/down for rating responses |
 
 ---
 
