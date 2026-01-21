@@ -13,6 +13,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { ChevronRight, ChevronLeft, X, RefreshCw, Loader2 } from 'lucide-react';
 import ChatInput from './ChatInput';
+import ToolConfirmation from './ToolConfirmation';
 
 export interface ChatMessage {
   id: string;
@@ -41,6 +42,7 @@ export interface ChatPanelProps {
   error?: string;
   context?: ChatContext;
   defaultCollapsed?: boolean;
+  pendingToolCall?: ToolCall | null;
   onSendMessage: (message: string) => void;
   onConfirmTool?: (toolCallId: string, approved: boolean) => void;
   onRetry?: () => void;
@@ -52,7 +54,9 @@ export default function ChatPanel({
   error,
   context,
   defaultCollapsed = false,
+  pendingToolCall,
   onSendMessage,
+  onConfirmTool,
   onRetry,
 }: ChatPanelProps): React.ReactNode {
   const [isCollapsed, setIsCollapsed] = useState(defaultCollapsed);
@@ -206,12 +210,23 @@ export default function ChatPanel({
           </div>
         )}
 
+        {/* Tool confirmation */}
+        {pendingToolCall && onConfirmTool && (
+          <div className="p-3 border-t border-neutral-200">
+            <ToolConfirmation
+              toolCall={pendingToolCall}
+              onApprove={(id) => onConfirmTool(id, true)}
+              onReject={(id) => onConfirmTool(id, false)}
+            />
+          </div>
+        )}
+
         {/* Input area */}
         <div className="p-3 border-t border-neutral-200">
           <ChatInput
             onSend={onSendMessage}
             isLoading={isStreaming}
-            disabled={isStreaming}
+            disabled={isStreaming || !!pendingToolCall}
             contextHint={context?.recipeTitle}
           />
         </div>

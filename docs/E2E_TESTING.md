@@ -555,6 +555,30 @@ On failure, CI uploads:
 
 ## Best Practices
 
+### 0. NEVER Mock API Responses with `page.route()`
+
+**This is the cardinal rule of E2E testing.** The entire point of E2E tests is to verify the full stack works together.
+
+❌ **WRONG - This defeats the purpose of E2E testing:**
+```typescript
+await page.route('**/api/v1/chat', async (route) => {
+  await route.fulfill({ status: 200, body: JSON.stringify({ mock: 'response' }) });
+});
+```
+
+✅ **CORRECT - Let requests hit the real backend:**
+```typescript
+const responsePromise = page.waitForResponse(
+  resp => resp.url().includes('/api/v1/chat') && resp.status() === 200
+);
+await chatPage.sendMessage('Hello');
+await responsePromise;
+```
+
+**For AI/LLM features:** The backend automatically uses a mock LLM service when `E2E_TESTING=true`. This tests the full stack (frontend → API → service logic → tool execution) while only mocking the external LLM provider. See `backend/app/services/llm/mock_service.py`.
+
+**Why is this so important?** Tests with HTTP-level mocking can pass while the real integration is completely broken. This creates false confidence and allows bugs to ship.
+
 ### 1. Verify API Responses, Not Just URLs
 
 This is the most critical pattern. Tests that only check URL changes can pass when the feature is completely broken.

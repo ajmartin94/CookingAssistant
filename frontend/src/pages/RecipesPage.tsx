@@ -13,7 +13,14 @@ import { ChatProvider, useChat } from '../contexts/ChatContext';
 import ChatPanel from '../components/chat/ChatPanel';
 
 function RecipesPageContent() {
-  const { messages, isStreaming, error: chatError, sendMessage, confirmTool } = useChat();
+  const {
+    messages,
+    isStreaming,
+    error: chatError,
+    pendingToolCall,
+    sendMessage,
+    confirmTool,
+  } = useChat();
 
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [loading, setLoading] = useState(true);
@@ -261,6 +268,7 @@ function RecipesPageContent() {
         context={{
           page: 'recipe_list',
         }}
+        pendingToolCall={pendingToolCall}
         onSendMessage={sendMessage}
         onConfirmTool={confirmTool}
       />

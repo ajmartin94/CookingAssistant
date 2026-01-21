@@ -49,6 +49,32 @@ function getActionDescription(name: string): string {
 /**
  * Recipe preview for create_recipe and edit_recipe tools
  */
+interface Ingredient {
+  name: string;
+  amount: string;
+  unit: string;
+  notes?: string;
+}
+
+interface Instruction {
+  step_number: number;
+  instruction: string;
+  duration_minutes?: number;
+}
+
+function formatIngredient(item: string | Ingredient): string {
+  if (typeof item === 'string') return item;
+  const { name, amount, unit, notes } = item;
+  let result = `${amount} ${unit} ${name}`;
+  if (notes) result += ` (${notes})`;
+  return result;
+}
+
+function formatInstruction(item: string | Instruction): string {
+  if (typeof item === 'string') return item;
+  return item.instruction;
+}
+
 function RecipePreview({
   args,
   isEdit,
@@ -60,12 +86,17 @@ function RecipePreview({
 }) {
   const title = args.title as string | undefined;
   const description = args.description as string | undefined;
-  const ingredients = (args.ingredients as string[]) || [];
-  const instructions = (args.instructions as string[]) || [];
-  const prepTime = args.prep_time as number | undefined;
-  const cookTime = args.cook_time as number | undefined;
+  const rawIngredients = (args.ingredients as (string | Ingredient)[]) || [];
+  const rawInstructions = (args.instructions as (string | Instruction)[]) || [];
+  // Handle both snake_case (API) and camelCase field names
+  const prepTime = (args.prep_time_minutes ?? args.prep_time) as number | undefined;
+  const cookTime = (args.cook_time_minutes ?? args.cook_time) as number | undefined;
   const servings = args.servings as number | undefined;
   const dietaryTags = (args.dietary_tags as string[]) || [];
+
+  // Format ingredients and instructions for display
+  const ingredients = rawIngredients.map(formatIngredient);
+  const instructions = rawInstructions.map(formatInstruction);
 
   // Show only first few items when collapsed
   const visibleIngredients = isExpanded ? ingredients : ingredients.slice(0, 3);

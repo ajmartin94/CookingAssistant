@@ -187,20 +187,34 @@ export function ChatProvider({ children, initialContext }: ChatProviderProps) {
           await processStreamingResponse(response);
         } else {
           // Handle JSON response
+          // Backend uses snake_case (response, tool_calls), frontend uses camelCase
           const data = await response.json();
+          const toolCalls = data.tool_calls?.map(
+            (tc: {
+              id: string;
+              name: string;
+              arguments: Record<string, unknown>;
+              status: string;
+            }) => ({
+              id: tc.id,
+              name: tc.name,
+              args: tc.arguments,
+              status: tc.status,
+            })
+          );
           const assistantMessage: ChatMessage = {
-            id: data.id,
+            id: generateId(),
             role: 'assistant',
-            content: data.content,
+            content: data.response || '',
             timestamp: new Date().toISOString(),
-            toolCalls: data.toolCalls,
+            toolCalls,
           };
           setMessages((prev) => [...prev, assistantMessage]);
 
           // Handle tool calls
-          if (data.toolCalls && data.toolCalls.length > 0) {
-            pendingToolCallsQueue.current = [...data.toolCalls];
-            setPendingToolCall(data.toolCalls[0]);
+          if (toolCalls && toolCalls.length > 0) {
+            pendingToolCallsQueue.current = [...toolCalls];
+            setPendingToolCall(toolCalls[0]);
           }
         }
       } catch (err) {
@@ -222,7 +236,7 @@ export function ChatProvider({ children, initialContext }: ChatProviderProps) {
           ...(token && { Authorization: `Bearer ${token}` }),
         },
         body: JSON.stringify({
-          toolCallId,
+          tool_call_id: toolCallId,
           approved,
         }),
       });

@@ -20,6 +20,7 @@ function EditRecipePageContent() {
     messages,
     isStreaming,
     error: chatError,
+    pendingToolCall,
     sendMessage,
     confirmTool,
     setContext,
@@ -178,6 +179,7 @@ function EditRecipePageContent() {
           recipeId: recipe.id,
           recipeTitle: recipe.title,
         }}
+        pendingToolCall={pendingToolCall}
         onSendMessage={sendMessage}
         onConfirmTool={confirmTool}
       />

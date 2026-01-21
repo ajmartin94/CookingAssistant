@@ -15,7 +15,14 @@ import ChatPanel from '../components/chat/ChatPanel';
 
 function CreateRecipePageContent() {
   const navigate = useNavigate();
-  const { messages, isStreaming, error: chatError, sendMessage, confirmTool } = useChat();
+  const {
+    messages,
+    isStreaming,
+    error: chatError,
+    pendingToolCall,
+    sendMessage,
+    confirmTool,
+  } = useChat();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -76,6 +83,7 @@ function CreateRecipePageContent() {
         context={{
           page: 'recipe_create',
         }}
+        pendingToolCall={pendingToolCall}
         onSendMessage={sendMessage}
         onConfirmTool={confirmTool}
       />

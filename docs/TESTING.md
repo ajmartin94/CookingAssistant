@@ -562,7 +562,34 @@ pytest backend/ -m ""
 
 ### E2E (Critical Patterns)
 
-1. **Verify API responses, not just URLs:**
+**CRITICAL: E2E tests must hit the real backend.** This is the entire point of end-to-end testing.
+
+1. **Never use `page.route()` to mock API responses:**
+```typescript
+// ❌ WRONG: Bypasses the entire backend - defeats the purpose of E2E testing
+await page.route('**/api/v1/chat', async (route) => {
+  await route.fulfill({ status: 200, body: JSON.stringify({ mock: 'response' }) });
+});
+
+// ✅ CORRECT: Let requests hit the real backend
+const responsePromise = page.waitForResponse(
+  resp => resp.url().includes('/api/v1/chat') && resp.status() === 200
+);
+await sendMessage('Hello');
+await responsePromise;
+```
+
+**Where mocking belongs:**
+| Test Type | Mock At | Not At |
+|-----------|---------|--------|
+| E2E (Playwright) | External services (LLM provider) via backend config | HTTP layer (`page.route()`) |
+| Integration (pytest) | External dependencies (LLM) via DI | Database, HTTP endpoints |
+| Unit (pytest/vitest) | Everything except the unit under test | N/A |
+| Component (RTL) | API calls via MSW | DOM, React internals |
+
+**For LLM/AI features in E2E tests:** The backend uses `E2E_TESTING=true` to swap in a mock LLM service that returns deterministic responses. This tests the full stack (frontend → API → service logic) while only mocking the external LLM provider.
+
+2. **Verify API responses, not just URLs:**
 ```typescript
 // ❌ BAD: Passes even when login is broken
 await loginPage.login(username, password);

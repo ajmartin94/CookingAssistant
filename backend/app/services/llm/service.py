@@ -6,6 +6,7 @@ Supports streaming responses and tool calls.
 """
 
 import asyncio
+import os
 from typing import Any, AsyncIterator
 
 from litellm import acompletion
@@ -155,9 +156,18 @@ def get_llm_service() -> LLMService:
     """
     Get or create the LLM service singleton.
 
+    In E2E testing mode (E2E_TESTING=true), returns a mock LLM service
+    that provides deterministic, predictable responses for testing.
+
     Returns:
-        LLMService: The shared LLM service instance.
+        LLMService: The shared LLM service instance (or mock for e2e).
     """
+    # Use mock LLM for e2e testing
+    if os.getenv("E2E_TESTING", "false").lower() == "true":
+        from app.services.llm.mock_service import get_mock_llm_service
+
+        return get_mock_llm_service()  # type: ignore[return-value]
+
     global _llm_service
     if _llm_service is None:
         _llm_service = LLMService()
