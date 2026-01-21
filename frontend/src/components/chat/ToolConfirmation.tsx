@@ -86,13 +86,17 @@ function RecipePreview({
 }) {
   const title = args.title as string | undefined;
   const description = args.description as string | undefined;
-  const rawIngredients = (args.ingredients as (string | Ingredient)[]) || [];
-  const rawInstructions = (args.instructions as (string | Instruction)[]) || [];
+
+  // Safely get arrays - LLM might return non-array types
+  const rawIngredients = Array.isArray(args.ingredients) ? args.ingredients : [];
+  const rawInstructions = Array.isArray(args.instructions) ? args.instructions : [];
+
   // Handle both snake_case (API) and camelCase field names
   const prepTime = (args.prep_time_minutes ?? args.prep_time) as number | undefined;
   const cookTime = (args.cook_time_minutes ?? args.cook_time) as number | undefined;
   const servings = args.servings as number | undefined;
-  const dietaryTags = (args.dietary_tags as string[]) || [];
+  const rawDietaryTags = args.dietary_tags ?? args.dietaryTags;
+  const dietaryTags = Array.isArray(rawDietaryTags) ? rawDietaryTags : [];
 
   // Format ingredients and instructions for display
   const ingredients = rawIngredients.map(formatIngredient);

@@ -150,22 +150,24 @@ export default function ChatPanel({
               How can I help you today?
             </div>
           ) : (
-            messages.map((message) => (
-              <article
-                key={message.id}
-                data-role={message.role}
-                className={`
-                  p-3 rounded-lg text-sm
-                  ${
-                    message.role === 'user'
-                      ? 'bg-primary-50 text-primary-900 ml-4'
-                      : 'bg-neutral-100 text-neutral-800 mr-4'
-                  }
-                `}
-              >
-                {message.content}
-              </article>
-            ))
+            messages
+              .filter((message) => message.content || message.role === 'user')
+              .map((message) => (
+                <article
+                  key={message.id}
+                  data-role={message.role}
+                  className={`
+                    p-3 rounded-lg text-sm
+                    ${
+                      message.role === 'user'
+                        ? 'bg-primary-50 text-primary-900 ml-4'
+                        : 'bg-neutral-100 text-neutral-800 mr-4'
+                    }
+                  `}
+                >
+                  {message.content}
+                </article>
+              ))
           )}
 
           {/* Streaming indicator */}

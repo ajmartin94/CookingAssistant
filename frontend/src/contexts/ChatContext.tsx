@@ -170,7 +170,7 @@ export function ChatProvider({ children, initialContext }: ChatProviderProps) {
           },
           body: JSON.stringify({
             message: content,
-            messages: conversationMessages,
+            conversation_history: conversationMessages,
             context,
           }),
         });
