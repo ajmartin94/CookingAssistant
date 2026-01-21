@@ -467,5 +467,5 @@ After docs complete:
 
 ## Related Documents
 
-- [Testing Strategy Reform](./2026-01-21-testing-strategy-reform.md) - Context on testing problems this addresses
+- [Testing Strategy Reform (Reference)](./2026-01-21-testing-strategy-reform-REFERENCE.md) - Context on testing problems this addresses
 - [Architecture Decision Workflow](../ARCHITECTURE_DECISION_WORKFLOW.md) - Existing docs process (being simplified)
