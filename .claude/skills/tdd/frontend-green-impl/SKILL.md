@@ -120,5 +120,4 @@ cd frontend && npm test
 
 ## References
 
-- See references/vitest-patterns.md for patterns
-- See frontend/CLAUDE.md for conventions
+- See frontend/CLAUDE.md for project-specific vitest patterns and conventions

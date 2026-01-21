@@ -89,3 +89,7 @@ npx playwright test path/to/test.spec.ts --repeat-each=3
 - Change tests to make them pass (that defeats the purpose)
 
 If the test needs to change, go back to e2e-red phase.
+
+## References
+
+- See e2e/CLAUDE.md for project-specific Playwright patterns and fixtures

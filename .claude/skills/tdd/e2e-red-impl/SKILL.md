@@ -80,4 +80,4 @@ If test passes, something is wrong - either:
 ## References
 
 - See references/outcome-verification.md for outcome patterns
-- See references/playwright-patterns.md for Playwright specifics
+- See e2e/CLAUDE.md for project-specific Playwright patterns and fixtures

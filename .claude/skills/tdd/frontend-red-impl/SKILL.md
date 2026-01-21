@@ -79,5 +79,5 @@ cd frontend && npm test -- --run path/to/Component.test.tsx
 
 ## References
 
-- See references/vitest-patterns.md for project patterns
-- See frontend/CLAUDE.md for conventions
+- See references/outcome-verification.md for outcome patterns
+- See frontend/CLAUDE.md for project-specific vitest patterns and conventions

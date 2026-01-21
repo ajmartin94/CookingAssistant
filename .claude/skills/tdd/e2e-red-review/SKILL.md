@@ -35,6 +35,14 @@ Apply each criterion. Fail the review if ANY critical item fails.
 - [ ] **Hardcoded waits**: Uses `waitForTimeout()` instead of proper waits
 - [ ] **Overly specific selectors**: Uses fragile selectors that may break
 
+## Verification Questions
+
+Ask these about each test:
+
+1. "If the feature was broken, would this test fail?"
+2. "Does this test actually query the database/API for the result?"
+3. "Could this test pass with a stub that returns success but does nothing?"
+
 ## Review Process
 
 1. Read each test file
@@ -83,7 +91,14 @@ test('user creates recipe via chat', async ({ page }) => {
 });
 ```
 
-## References
+### FAIL Example (Self-mocking)
 
-- See references/review-criteria.md for detailed criteria
-- See references/outcome-verification.md for outcome patterns
+```typescript
+// Bad: Mocks our own backend
+test('user creates recipe', async ({ page }) => {
+  await page.route('/api/v1/recipes', route => {
+    route.fulfill({ json: { id: '123' } });  // ✗ Testing the mock
+  });
+  // ...
+});
+```

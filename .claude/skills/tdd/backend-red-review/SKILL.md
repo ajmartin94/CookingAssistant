@@ -34,6 +34,14 @@ From orchestrator:
 - [ ] **Fixtures overused**: Too many fixtures hiding test intent
 - [ ] **Assertions unclear**: Multiple assertions without context
 
+## Verification Questions
+
+Ask these about each test:
+
+1. "If the feature was broken, would this test fail?"
+2. "Does this test query `test_db` for the result after the action?"
+3. "Could this test pass if the endpoint returned 200 but didn't save data?"
+
 ## Review Process
 
 1. Read each test file
@@ -92,8 +100,3 @@ async def test_create_recipe(client, auth_headers, mocker):
     response = await client.post("/api/v1/recipes", ...)
     mock_service.assert_called_once()  # ✗ Verifying mock, not outcome
 ```
-
-## References
-
-- See references/review-criteria.md for detailed criteria
-- See references/pytest-patterns.md for pytest specifics

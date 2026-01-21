@@ -98,4 +98,4 @@ Prefer integration tests for outcome verification.
 ## References
 
 - See references/outcome-verification.md for outcome patterns
-- See references/pytest-patterns.md for pytest specifics
+- See backend/CLAUDE.md for project-specific pytest patterns and fixtures

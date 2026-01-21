@@ -1,19 +1,64 @@
-# Playwright Patterns for CookingAssistant
+# E2E Testing Guide
 
-Project-specific patterns for E2E tests in this codebase.
+**Stack:** Playwright
+**Testing:** End-to-end user journeys
+
+---
 
 ## Project Structure
 
 ```
 e2e/
-├── fixtures/auth.fixture.ts    # Authenticated page fixture
-├── pages/*.page.ts             # Page objects
-├── utils/api.ts                # APIHelper for direct API calls
-├── utils/test-data.ts          # Test data generators
-└── tests/{feature}/*.spec.ts   # Test files
+├── fixtures/
+│   └── auth.fixture.ts       # Authenticated page fixture
+├── pages/
+│   └── *.page.ts             # Page objects
+├── utils/
+│   ├── api.ts                # APIHelper for direct API calls
+│   └── test-data.ts          # Test data generators
+├── tests/
+│   └── {feature}/*.spec.ts   # Test files
+├── global-setup.ts           # Setup before all tests
+├── global-teardown.ts        # Cleanup after all tests
+└── reports/                  # Test reports
 ```
 
-## Using the Auth Fixture
+---
+
+## Key Principles
+
+- **Verify outcomes via API** - Don't just check UI, verify DB/API state
+- **Before/after pattern** - Capture state before action, compare after
+- **No mocking backend** - Never use `page.route()` to mock our own API
+- **User-goal names** - Test names describe what user wants, not implementation
+- **Proper waits** - Use `waitForResponse`, `waitForURL`, not `waitForTimeout`
+
+---
+
+## Running Tests
+
+```bash
+# All tests
+cd e2e && npx playwright test
+
+# Specific file
+npx playwright test tests/chat/create-recipe-via-chat.spec.ts
+
+# With UI (debug)
+npx playwright test --debug
+
+# Multiple runs (check flakiness)
+npx playwright test path/to/test.spec.ts --repeat-each=3
+
+# Show report
+npx playwright show-report
+```
+
+---
+
+## Testing Patterns
+
+### Using the Auth Fixture
 
 ```typescript
 import { test, expect } from '../../fixtures/auth.fixture';
@@ -24,7 +69,7 @@ test('authenticated user action', async ({ authenticatedPage, testUser }) => {
 });
 ```
 
-## Using APIHelper for Outcome Verification
+### Using APIHelper for Outcome Verification
 
 ```typescript
 import { test, expect } from '../../fixtures/auth.fixture';
@@ -48,7 +93,7 @@ test('user creates recipe', async ({ authenticatedPage, request }) => {
 });
 ```
 
-## Page Objects
+### Page Objects
 
 Use existing page objects:
 
@@ -67,9 +112,9 @@ test('create recipe', async ({ authenticatedPage }) => {
 });
 ```
 
-## Waiting Patterns
+### Waiting Patterns
 
-### Good: Wait for specific conditions
+#### Good: Wait for specific conditions
 
 ```typescript
 // Wait for navigation
@@ -84,39 +129,14 @@ await page.waitForResponse(resp =>
 await expect(page.getByText('Success')).toBeVisible();
 ```
 
-### Bad: Hardcoded waits
+#### Bad: Hardcoded waits
 
 ```typescript
 // DON'T DO THIS
 await page.waitForTimeout(5000);
 ```
 
-## Test File Location
-
-```
-e2e/tests/{feature}/{story}.spec.ts
-
-Examples:
-- e2e/tests/chat/create-recipe-via-chat.spec.ts
-- e2e/tests/recipes/edit-recipe.spec.ts
-- e2e/tests/libraries/add-recipe-to-library.spec.ts
-```
-
-## Running Tests
-
-```bash
-# All tests
-cd e2e && npx playwright test
-
-# Specific file
-npx playwright test tests/chat/create-recipe-via-chat.spec.ts
-
-# With UI (debug)
-npx playwright test --debug
-
-# Multiple runs (check flakiness)
-npx playwright test path/to/test.spec.ts --repeat-each=3
-```
+---
 
 ## Test Template
 
@@ -148,6 +168,21 @@ test.describe('Feature: User Story Name', () => {
 });
 ```
 
+---
+
+## File Location
+
+```
+e2e/tests/{feature}/{story}.spec.ts
+
+Examples:
+- e2e/tests/chat/create-recipe-via-chat.spec.ts
+- e2e/tests/recipes/edit-recipe.spec.ts
+- e2e/tests/libraries/add-recipe-to-library.spec.ts
+```
+
+---
+
 ## Common Selectors
 
 ```typescript
@@ -163,3 +198,13 @@ page.getByLabel('Recipe Title')
 // Test ID (when needed)
 page.getByTestId('recipe-list')
 ```
+
+---
+
+## Test Enforcement
+
+All PRs must pass `e2e-ci` before merge. This includes:
+- **Smoke tests**: Critical path verification
+- **Full E2E suite**: All feature tests
+
+See [docs/TESTING.md](../docs/TESTING.md#enforcement-policy) for full enforcement policy.

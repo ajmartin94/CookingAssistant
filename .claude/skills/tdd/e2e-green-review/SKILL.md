@@ -34,6 +34,13 @@ From orchestrator:
 - [ ] **Screenshot on fail**: Test captures screenshot if it fails
 - [ ] **Trace enabled**: Trace capture available for debugging
 
+## Verification Questions
+
+1. "Does the test pass 3/3 times?"
+2. "Were any assertions weakened to make it pass?"
+3. "Were any hardcoded waits added?"
+4. "Does the test still verify database/API state?"
+
 ## Review Process
 
 1. **Run the test yourself** (3 times):

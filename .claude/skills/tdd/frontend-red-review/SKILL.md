@@ -33,6 +33,24 @@ From orchestrator:
 - [ ] **Snapshot overuse**: Too many snapshots testing implementation
 - [ ] **Direct state testing**: Checking internal component state
 
+## Verification Questions
+
+Ask these about each test:
+
+1. "Does this test query elements the way a user would find them?"
+2. "Does this test verify something the user can see or interact with?"
+3. "Would this test fail if the feature was broken for the user?"
+
+## Review Process
+
+1. Read each test file
+2. For each test, check:
+   - Does it use `getByRole`, `getByLabelText`, etc.?
+   - Does it verify user-visible outcomes?
+   - Does it use `userEvent` (not `fireEvent`)?
+3. Check for direct state testing (fail if found)
+4. Verify test names describe user goals
+
 ## Output Format
 
 ```
@@ -59,7 +77,7 @@ it('should show success message after form submit', async () => {
 });
 ```
 
-### FAIL Example
+### FAIL Example (Implementation details)
 
 ```tsx
 // Bad: Tests implementation details
@@ -70,7 +88,23 @@ it('should update state on submit', async () => {
 });
 ```
 
-## References
+### FAIL Example (getByTestId overuse)
 
-- See references/review-criteria.md for detailed criteria
-- See references/vitest-patterns.md for patterns
+```tsx
+// Bad: Uses test IDs instead of accessible queries
+it('should show the form', () => {
+  render(<ContactForm />);
+  expect(screen.getByTestId('contact-form')).toBeInTheDocument();  // ✗
+  expect(screen.getByTestId('email-input')).toBeInTheDocument();   // ✗
+});
+```
+
+### FAIL Example (fireEvent)
+
+```tsx
+// Bad: Uses fireEvent instead of userEvent
+it('should submit form', () => {
+  render(<Form />);
+  fireEvent.click(screen.getByRole('button'));  // ✗ Use userEvent
+});
+```

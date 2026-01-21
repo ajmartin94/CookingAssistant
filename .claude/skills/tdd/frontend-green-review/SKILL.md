@@ -34,6 +34,13 @@ From orchestrator:
 - [ ] **Styling**: Basic styling present (not required by tests)
 - [ ] **Error states**: Error handling implemented
 
+## Verification Questions
+
+1. "Do all the RED phase tests now pass?"
+2. "Were any test assertions weakened to make them pass?"
+3. "Does the implementation do more than the tests require?"
+4. "Are there TypeScript errors?"
+
 ## Review Process
 
 1. **Run tests yourself**:
@@ -77,6 +84,7 @@ FEEDBACK:
 - expect(screen.getByText('Exact Message')).toBeInTheDocument();
 + expect(screen.getByText(/message/i)).toBeInTheDocument();  // ✗ Loosened
 ```
+**Action**: Revert test change, fix implementation.
 
 ### Over-implementation
 
@@ -87,6 +95,7 @@ FEEDBACK:
   <Button>OK</Button>
 </Dialog>
 ```
+**Action**: Remove untested code.
 
 ### Type errors
 
@@ -95,7 +104,10 @@ error TS2339: Property 'foo' does not exist on type 'Props'
 ```
 **Action**: Fix type errors before passing review.
 
-## References
+### Hardcoded values
 
-- See references/review-criteria.md for detailed criteria
-- See frontend/CLAUDE.md for conventions
+```tsx
+// Bad: Only works for test data
+return <div>Test Recipe</div>;  // ✗ Hardcoded
+```
+**Action**: Use props/state properly.

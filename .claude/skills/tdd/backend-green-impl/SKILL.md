@@ -124,5 +124,4 @@ cd backend && pytest --tb=short
 
 ## References
 
-- See references/pytest-patterns.md for project patterns
-- See backend/CLAUDE.md for backend conventions
+- See backend/CLAUDE.md for project-specific pytest patterns and conventions

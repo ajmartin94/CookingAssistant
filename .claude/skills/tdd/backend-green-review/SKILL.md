@@ -35,6 +35,13 @@ From orchestrator:
 - [ ] **Documentation**: Complex logic has comments
 - [ ] **Logging**: Appropriate log statements
 
+## Verification Questions
+
+1. "Do all the RED phase tests now pass?"
+2. "Would this implementation work with different valid inputs?"
+3. "Is there a TODO or stub where real logic should be?"
+4. "Were any test assertions weakened?"
+
 ## Review Process
 
 1. **Run tests yourself**:
@@ -108,8 +115,3 @@ async def execute_tool(self, tool_call_id: str):
     return {"status": "approved"}
 ```
 **Action**: Implement or fail the review.
-
-## References
-
-- See references/review-criteria.md for detailed criteria
-- See backend/CLAUDE.md for backend conventions
