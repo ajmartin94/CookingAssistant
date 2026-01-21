@@ -14,18 +14,43 @@ Manage TDD workflow execution. You spawn subagents for work; you don't write cod
 ## Workflow Loop
 
 ```
-1. bd ready → get available tasks
-2. For each task:
-   a. Parse task ID prefix to determine type: e2e-red, backend-green, etc.
-   b. Determine phase: impl or review (based on bead notes)
-   c. Spawn appropriate subagent
-   d. Capture output, write to bead notes
-   e. If impl: run verification, then spawn review
-   f. If review passes: mark phase complete
-   g. If review fails: retry impl (max 3 attempts)
-   h. If max attempts: mark bead blocked
-3. Repeat until bd ready returns empty
+1. bd ready → get all available tasks (no blockers)
+2. For each ready task, determine current phase (from bead notes)
+3. Spawn subagents IN PARALLEL for all ready tasks
+   - Use multiple Task tool calls in a single message
+   - Max 3 concurrent tasks to avoid overwhelming
+4. Wait for all subagents to complete
+5. For each completed task:
+   a. Capture output, write to bead notes
+   b. If impl complete: run verification
+   c. If verification passes: spawn review (can batch reviews too)
+   d. If review passes: close bead
+   e. If review fails: queue for retry (up to 3 attempts)
+   f. If max attempts: mark bead blocked
+6. Repeat from step 1 until bd ready returns empty
 ```
+
+### Parallel Execution Pattern
+
+When `bd ready` returns multiple tasks, spawn them all at once:
+
+```
+# Single message with multiple Task tool calls:
+Task(subagent_type="general-purpose", prompt="...", description="e2e-red for Story A")
+Task(subagent_type="general-purpose", prompt="...", description="backend-red for Story A")
+Task(subagent_type="general-purpose", prompt="...", description="frontend-red for Story B")
+```
+
+This maximizes throughput. Dependencies are enforced by beads - only unblocked tasks appear in `bd ready`.
+
+### Batching Strategy
+
+| Scenario | Approach |
+|----------|----------|
+| 1-3 ready tasks | Run all in parallel |
+| 4+ ready tasks | Run first 3, then next batch |
+| Mixed impl/review | Can run together (different beads) |
+| Same bead impl+review | Sequential (review needs impl output) |
 
 ## Phase Detection
 
@@ -96,9 +121,54 @@ On review failure:
 2. If < 3: spawn impl again with review feedback
 3. If >= 3: `bd update <id> --status=blocked` with note explaining failure
 
+## Handling Parallel Results
+
+When multiple subagents complete:
+
+```
+1. Collect all results
+2. For each result:
+   - Parse STATUS from output
+   - Write to bead notes immediately (don't batch)
+   - Determine next action (verify, review, retry, close)
+3. Group next actions by type:
+   - Verifications can run in parallel (bash commands)
+   - Reviews can spawn in parallel (new batch)
+   - Retries queue for next iteration
+4. Execute grouped actions
+5. Run bd ready for next batch
+```
+
+### Failure Isolation
+
+If one task fails, others continue:
+- Mark failed task for retry or blocked
+- Don't abort the entire batch
+- Report failures at end of iteration
+
 ## Completion
 
 When `bd ready` returns empty:
 1. Check for blocked tasks: `bd blocked`
-2. If any blocked: report to user, stop
+2. If any blocked: report to user, list blocked beads with failure reasons
 3. If none blocked: announce "All tasks complete. Ready for docs review."
+4. Trigger `docs-plan` skill for documentation phase
+
+## Multi-Story Workflows
+
+When multiple stories are poured:
+
+```bash
+# Pour multiple molecules
+bd mol pour outside-in-tdd --var story="Story A" --var e2e_outcome="..."
+bd mol pour outside-in-tdd --var story="Story B" --var e2e_outcome="..."
+
+# bd ready will return tasks from BOTH stories
+# Orchestrator runs them in parallel where dependencies allow
+```
+
+Cross-story dependencies (if needed):
+```bash
+# Story B's e2e-red depends on Story A's e2e-green
+bd dep add <story-b-e2e-red-id> <story-a-e2e-green-id>
+```

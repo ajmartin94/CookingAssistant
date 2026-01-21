@@ -56,12 +56,19 @@ Each phase has an **impl** skill (do the work) and a **review** skill (verify wi
    ```
 
 2. **Run the orchestrator:**
-   The orchestrator uses `bd ready` to find available tasks and spawns subagents for each phase.
+   The orchestrator uses `bd ready` to find available tasks and spawns subagents in parallel (up to 3 concurrent).
 
 3. **Each task goes through:**
    - Impl phase (write tests or code)
    - Review phase (fresh context verification)
    - Retry on failure (max 3 attempts)
+
+4. **Multi-story workflows:**
+   ```bash
+   # Pour multiple stories - they run in parallel where dependencies allow
+   bd mol pour outside-in-tdd --var story="Story A" --var e2e_outcome="..."
+   bd mol pour outside-in-tdd --var story="Story B" --var e2e_outcome="..."
+   ```
 
 ## Key Principles
 
