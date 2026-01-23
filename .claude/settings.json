@@ -1,6 +1,7 @@
 {
   "enabledPlugins": {
     "example-skills@anthropic-agent-skills": true,
-    "superpowers@superpowers-marketplace": true
+    "superpowers@superpowers-marketplace": true,
+    "claude-md-management@claude-plugins-official": true
   }
 }
