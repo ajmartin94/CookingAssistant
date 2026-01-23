@@ -49,16 +49,29 @@ Every AI feature should support:
 
 ## Repository Structure
 
-<!-- Per AD-0103 -->
 ```
 CookingAssistant/
 ├── backend/          # FastAPI (see backend/CLAUDE.md)
 ├── frontend/         # React/TypeScript (see frontend/CLAUDE.md)
-├── e2e/              # End-to-end tests (Playwright)
+├── e2e/              # End-to-end tests (Playwright, see e2e/CLAUDE.md)
 ├── docs/             # Documentation
-│   └── decisions/    # Architecture Decision Records
 ├── .github/          # CI workflows
 └── .claude/          # Skills, plans, and hooks
+```
+
+---
+
+## Quick Start
+
+```bash
+# Backend
+cd backend && python -m venv venv && source venv/bin/activate
+pip install -r requirements.txt
+alembic upgrade head
+uvicorn app.main:app --reload --port 8000
+
+# Frontend (separate terminal)
+cd frontend && npm install && npm run dev
 ```
 
 ---

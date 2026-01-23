@@ -11,16 +11,14 @@
 frontend/
 ├── src/
 │   ├── components/          # Reusable React components
-│   │   ├── auth/
 │   │   ├── recipes/
 │   │   ├── libraries/
+│   │   ├── sharing/
 │   │   └── common/
 │   ├── pages/               # Page-level components
-│   ├── hooks/               # Custom React hooks
 │   ├── services/            # API client functions
 │   ├── contexts/            # React Context providers
 │   ├── types/               # TypeScript definitions
-│   ├── utils/               # Helpers
 │   ├── test/                # Test infrastructure
 │   │   ├── setup.ts
 │   │   ├── test-utils.tsx   # Custom render
