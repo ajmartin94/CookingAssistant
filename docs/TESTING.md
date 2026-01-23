@@ -244,7 +244,7 @@ e2e/
 └── playwright.config.ts
 ```
 
-**For detailed E2E testing documentation, see [E2E_TESTING.md](E2E_TESTING.md)**
+**For detailed E2E testing documentation, see [e2e/CLAUDE.md](../e2e/CLAUDE.md)**
 
 ---
 
@@ -536,7 +536,7 @@ The external service is non-deterministic. Everything around it is not. Test eve
 
 - [Backend Testing Guide](../backend/CLAUDE.md#testing-strategy)
 - [Frontend Testing Guide](../frontend/CLAUDE.md#testing-strategy)
-- [E2E Testing Guide](E2E_TESTING.md)
+- [E2E Testing Guide](../e2e/CLAUDE.md)
 - [pytest documentation](https://docs.pytest.org/)
 - [Vitest documentation](https://vitest.dev/)
 - [React Testing Library](https://testing-library.com/react)

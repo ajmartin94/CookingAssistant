@@ -118,7 +118,7 @@ window.location.href = '/login';
 
 **Why?** Hard navigation conflicts with Playwright's `page.goto()`, causing unpredictable E2E test behavior. The navigation service uses React Router internally.
 
-See [E2E Infrastructure Conventions](../docs/E2E_TESTING.md#infrastructure-conventions) for full context.
+See [E2E Infrastructure Conventions](../e2e/CLAUDE.md#infrastructure-conventions) for full context.
 
 ---
 

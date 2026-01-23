@@ -248,6 +248,91 @@ E2E tests add value when they exercise the full stack together: UI → API → D
 
 ---
 
+## Debugging
+
+```bash
+npx playwright test --debug          # Playwright Inspector (step-by-step)
+npx playwright test --ui             # Interactive UI mode (recommended)
+npx playwright test --headed         # Visible browser
+npx playwright show-report           # View HTML report after run
+npx playwright show-trace trace.zip  # View trace from CI artifacts
+```
+
+In-test debugging:
+```typescript
+await page.pause();  // Opens Inspector at this point
+
+// Console/network logging
+page.on('console', msg => console.log('Browser:', msg.text()));
+page.on('request', req => console.log('>>', req.method(), req.url()));
+page.on('response', res => console.log('<<', res.status(), res.url()));
+```
+
+---
+
+## Infrastructure Conventions
+
+### Port Isolation
+
+| Service | Dev Server | E2E Tests |
+|---------|------------|-----------|
+| Backend | 8000 | 8001 |
+| Frontend | 5173 | 5174 |
+
+If tests fail mysteriously locally but pass in CI, check if dev servers are running on 8000/5173.
+Playwright's `reuseExistingServer` can silently reuse a dev server that lacks `E2E_TESTING=true`.
+
+### Cross-Browser Network Patterns
+
+```typescript
+// Works in all browsers (Chromium, Firefox, WebKit)
+await page.route('**/api/**', route => route.abort('timedout'));
+await page.route('**/api/**', route => route.abort('connectionrefused'));
+
+// DON'T hold requests with setTimeout — WebKit won't trigger client-side timeouts
+```
+
+### SPA Navigation
+
+Use React Router navigation, not `window.location.href`:
+```typescript
+// Works with Playwright
+import { navigationService } from './services/navigationService';
+navigationService.navigate('/login');
+
+// Breaks Playwright (races with page.goto())
+window.location.href = '/login';
+```
+
+### Strict Mode / Duplicate Elements
+
+Playwright fails when locators match multiple elements:
+```typescript
+// Fails if duplicate "New Recipe" buttons exist
+await page.locator('a[href="/recipes/create"]').click();
+
+// Better: use unique data-testid
+await page.locator('[data-testid="sidebar-new-recipe"]').click();
+```
+
+When adding UI elements: check if similar elements exist elsewhere on the page.
+
+---
+
+## Troubleshooting
+
+| Problem | Cause | Fix |
+|---------|-------|-----|
+| "Backend not available after 120000ms" | Dependencies or port conflict | `cd backend && pip install -r requirements.txt`, check port 8001 |
+| "Frontend not available after 120000ms" | Missing node_modules | `cd frontend && npm install`, check port 5174 |
+| "database is locked" | Stale test DB | `rm backend/cooking_assistant_test_e2e.db*` |
+| Tests pass locally, fail in CI | Version mismatch or env vars | Check node/python versions, run with `CI=true` |
+| Tests pass in Chromium, fail in WebKit | Browser quirks | See cross-browser patterns above; increase timeouts |
+| Flaky tests | Race conditions or hard waits | Use `waitForResponse`, auto-waiting assertions, never `waitForTimeout` |
+| Slow execution | Serial + multi-browser | `--workers=4`, `--project=chromium` for dev |
+
+---
+
 ## Test Enforcement
 
 All PRs must pass `e2e-ci` before merge. This includes:

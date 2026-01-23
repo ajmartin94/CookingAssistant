@@ -179,7 +179,7 @@ npm run test:e2e:debug   # Run in debug mode
 
 **Total Test Count:** 437+ tests (352 unit/integration + 87 E2E)
 
-For detailed E2E testing documentation, see [docs/E2E_TESTING.md](docs/E2E_TESTING.md)
+For detailed E2E testing documentation, see [e2e/CLAUDE.md](e2e/CLAUDE.md)
 
 ## 📌 Roadmap
 
