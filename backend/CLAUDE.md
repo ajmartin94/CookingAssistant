@@ -110,7 +110,7 @@ ruff check app/ tests/
 2. Create model in `app/models/` (if DB needed)
 3. Add service function in `app/services/`
 4. Create route in `app/api/v1/`
-5. Write tests: unit for service, integration for API
+5. Write tests: integration tests through the API (unit tests only for pure logic)
 
 **Pattern reference**: Read existing files in `app/services/` and `tests/` for conventions.
 
@@ -266,12 +266,59 @@ tests/
 
 ### Unit vs Integration
 
-| Test Type | Use For | Database |
-|-----------|---------|----------|
-| Unit | Pure logic, validators, utils | Mocked or none |
-| Integration | API endpoints, services with DB | Real test DB |
+| Test Type | Use For | Database | Example |
+|-----------|---------|----------|---------|
+| Unit | Pure functions: parsing, formatting, calculation, validation | None — no dependencies | `test_scale_amount()`, `test_parse_ingredient()` |
+| Integration | Everything else: API endpoints, services, DB operations | Real in-memory DB | `test_create_recipe_api()`, `test_login_returns_token()` |
 
-**Prefer integration tests** for outcome verification - they test the full stack.
+**Integration tests are the default.** Most tests should hit the real DB through the API.
+Unit tests are only for pure functions with meaningful logic — if it needs a DB or mock, it's integration.
+
+**Never mock the database.** Do not mock `AsyncSession`, `test_db`, or any SQLAlchemy objects.
+If your test needs data, use fixtures and the real in-memory DB.
+
+### Testing AI Services
+
+The `app/ai/` layer integrates with external LLMs. Test everything except the actual API call:
+
+```python
+@pytest.mark.asyncio
+async def test_recipe_prompt_includes_user_preferences(test_db, test_user):
+    """Prompt construction includes user's dietary restrictions."""
+    # Setup: user has dietary preferences
+    test_user.dietary_tags = ["vegetarian", "gluten-free"]
+
+    # Build the prompt (don't call the LLM)
+    prompt = build_recipe_prompt(user=test_user, request="dinner ideas")
+
+    assert "vegetarian" in prompt
+    assert "gluten-free" in prompt
+
+@pytest.mark.asyncio
+async def test_parse_ai_recipe_response():
+    """Parsing a well-formed AI response extracts recipe fields."""
+    canned_response = '{"title": "Pasta", "ingredients": [...], "instructions": [...]}'
+
+    result = parse_ai_recipe_response(canned_response)
+
+    assert result.title == "Pasta"
+    assert len(result.ingredients) > 0
+
+@pytest.mark.asyncio
+async def test_ai_client_handles_timeout(client, auth_headers):
+    """AI endpoint returns helpful error when LLM times out."""
+    # Use a stub client that simulates timeout
+    response = await client.post(
+        "/api/v1/ai/generate-recipe",
+        headers=auth_headers,
+        json={"prompt": "quick dinner"},
+    )
+
+    # Even on timeout, user gets a meaningful response
+    assert response.status_code in [200, 503]
+```
+
+The LLM is non-deterministic. Everything around it is not. Test everything around it.
 
 ---
 

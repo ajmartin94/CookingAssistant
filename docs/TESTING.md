@@ -8,36 +8,35 @@ This document describes the testing strategy, infrastructure, and conventions fo
 
 **Tests exist to protect user experiences, not to hit coverage metrics.**
 
-### The Testing Pyramid + Smoke Layer
+### Test Tiers
 
-```
-        ┌─────────────┐
-        │   SMOKE     │  ← Blocks everything if it fails
-        │  (6 tests)  │     "Is the app fundamentally working?"
-        └─────────────┘
-       ┌───────────────┐
-       │     E2E       │  ← User journeys across full stack
-       │  (17 suites)  │     "Can users complete workflows?"
-       └───────────────┘
-      ┌─────────────────┐
-      │  INTEGRATION    │  ← API contracts and data flow
-      │  (backend API)  │     "Do systems communicate correctly?"
-      └─────────────────┘
-     ┌───────────────────┐
-     │      UNIT         │  ← Isolated business logic
-     │  (services/utils) │     "Is the calculation correct?"
-     └───────────────────┘
-```
+| Tier | What It Tests | Mocks? | Question Answered |
+|------|---------------|--------|-------------------|
+| Unit | Pure logic only (parse, calculate, format, validate) | None — no dependencies | "Is the calculation correct?" |
+| Integration (backend) | Service + DB + API together | None — real in-memory DB | "Does the API do what it should?" |
+| Integration (frontend) | Page + hooks + API responses | MSW only (faithful to real API) | "Does the user see the right outcome?" |
+| E2E | Full stack, real browser | None | "Can the user complete the workflow?" |
+| Smoke | App loads, CSS renders, auth works | None | "Is the app fundamentally broken?" |
+
+**Smoke tests run first and block everything else.**
 
 ### Critical Principles
 
-1. **Smoke tests are the gatekeeper**: If the app doesn't load, CSS doesn't render, or login is broken, no other tests run. This saves CI time and immediately surfaces catastrophic failures.
+1. **Smoke tests are the gatekeeper**: If the app doesn't load, CSS doesn't render, or login is broken, no other tests run.
 
-2. **Verify API responses, not just URLs**: A test that only checks `expect(page).toHaveURL(/\/recipes/)` after login can pass even when authentication is completely broken. Always intercept and verify API responses.
+2. **Verify API responses, not just URLs**: Always intercept and verify API responses. A redirect doesn't prove the API worked.
 
-3. **Check computed styles for visual verification**: A test that only checks `expect(button).toBeVisible()` passes even when CSS fails to load. Verify computed styles for critical visual elements.
+3. **Check computed styles for visual verification**: `toBeVisible()` passes even when CSS fails to load. Verify computed styles for critical visual elements.
 
-4. **Test behavior, not implementation**: Tests should verify what users see and experience, not internal state or implementation details.
+4. **Test behavior, not implementation**: Tests verify what users see and experience, not internal state.
+
+5. **No inter-layer mocking**: Backend tests hit the real database. Frontend integration tests use MSW handlers that faithfully mirror real API responses. E2E tests hit real everything. Never mock your own system's layers to avoid testing them.
+
+6. **If it needs a mock, it's not a unit test**: Unit tests are for pure functions only (no DB, no API, no side effects). If you need to mock a dependency, promote the test to integration.
+
+7. **No escape hatches**: If something is hard to test (AI, external APIs), test as far as you can. Test prompt construction, response parsing, error handling, the full path up to the external boundary. Never rationalize skipping tests because "I can't test the whole thing."
+
+8. **MSW is a faithful proxy, not a convenience shortcut**: MSW handlers must return the same shape as the real API. When the backend changes response fields, MSW handlers update in the same PR. Handlers should include realistic error responses (401, 404, 422).
 
 ### Before Writing Any Test
 
@@ -46,7 +45,7 @@ Answer these questions:
 2. How would a user know if this broke?
 3. What does "working" look like from the user's perspective?
 
-See the `/test-planning` skill for the full UX-first test design workflow.
+If you can't answer these, the test isn't protecting anything meaningful.
 
 ---
 
@@ -313,34 +312,30 @@ npm test -- --run
 
 ### Backend Test Patterns
 
-#### Unit Test Example
+#### Unit Test (pure functions only)
 ```python
-@pytest.mark.asyncio
-async def test_create_recipe_with_valid_data(test_db: AsyncSession, test_user):
-    """Test creating a recipe with valid data."""
-    # Arrange
-    recipe_data = RecipeCreate(
-        title="Test Recipe",
-        description="A test recipe",
-        ingredients=[...],
-        instructions=[...],
-        servings=4,
-    )
+def test_parse_ingredient_fraction():
+    """Parsing '1/3 cup flour' extracts amount, unit, and name."""
+    result = parse_ingredient("1/3 cup flour")
 
-    # Act
-    result = await recipe_service.create_recipe(test_db, recipe_data, test_user)
+    assert result.amount == Fraction(1, 3)
+    assert result.unit == "cup"
+    assert result.name == "flour"
 
-    # Assert
-    assert result.id is not None
-    assert result.title == "Test Recipe"
-    assert result.owner_id == test_user.id
+def test_scale_ingredient_amount():
+    """Scaling 2.5 cups by factor 3 gives 7.5 cups."""
+    assert scale_amount(2.5, factor=3) == 7.5
 ```
 
-#### Integration Test Example
+No mocks, no DB, no fixtures. Pure input → output.
+
+#### Integration Test (the default — most tests are this)
 ```python
 @pytest.mark.asyncio
-async def test_create_recipe_api(client: AsyncClient, auth_headers):
-    """Test recipe creation via API."""
+async def test_create_recipe_api(client: AsyncClient, auth_headers, test_db):
+    """User creates a recipe and it persists to the database."""
+    before_count = await test_db.scalar(select(func.count(Recipe.id)))
+
     response = await client.post(
         "/api/v1/recipes",
         headers=auth_headers,
@@ -355,7 +350,13 @@ async def test_create_recipe_api(client: AsyncClient, auth_headers):
     assert response.status_code == 201
     data = response.json()
     assert data["title"] == "New Recipe"
+
+    # Verify it actually persisted
+    after_count = await test_db.scalar(select(func.count(Recipe.id)))
+    assert after_count == before_count + 1
 ```
+
+Real DB, real API, real outcome verification.
 
 ### Frontend Test Patterns
 
@@ -407,23 +408,24 @@ describe('RecipeCard', () => {
 ### General
 1. **Follow AAA Pattern:** Arrange, Act, Assert
 2. **One assertion per concept:** Don't test multiple unrelated things
-3. **Clear test names:** Describe what is being tested and expected outcome
+3. **Clear test names:** Describe what user does and what outcome they see
 4. **Isolate tests:** No shared state between tests
-5. **Mock external dependencies:** Don't call real APIs or databases in unit tests
+5. **Every test answers "what does the user see?":** If it doesn't connect to user experience, question whether it's needed
 
 ### Backend
 1. **Use fixtures for setup:** Leverage pytest fixtures for common setup
 2. **Test both success and failure:** Happy path and error cases
 3. **Test edge cases:** Empty lists, boundary conditions, null values
 4. **Keep tests fast:** Use in-memory database
-5. **Test business logic:** Focus on service layer, not just API endpoints
+5. **Prefer integration tests:** Test through the API with a real DB. Reserve unit tests for pure functions with meaningful logic (parsing, calculation, formatting)
+6. **Never mock the database:** If your test needs data, use test fixtures and the real in-memory DB
 
 ### Frontend
 1. **Test user behavior:** Not implementation details
 2. **Query by role/label/text:** Use accessible queries
 3. **Use custom render:** Always include necessary providers
-4. **Mock API calls:** Use MSW for consistent, testable responses
-5. **Avoid testing internal state:** Test rendered output instead
+4. **Verify user-visible outcomes:** After form submission, check for success messages or navigation — not whether a callback was invoked
+5. **MSW handlers match reality:** Keep MSW response shapes in sync with real backend responses
 
 ### E2E (Critical Patterns)
 
@@ -497,15 +499,12 @@ npm test -- authApi.test.ts --reporter=verbose
 
 ---
 
-## Coverage Goals
+## Coverage
 
-### Targets
-- **Critical paths:** 90%+ (auth, recipe CRUD)
-- **Service layer:** 85%+
-- **API endpoints:** 80%+
-- **UI components:** 75%+
+Coverage metrics are informational, not goals. A test that inflates coverage without
+protecting a user experience is technical debt.
 
-Run coverage reports to measure progress:
+Use coverage reports to find untested paths, not to hit numbers:
 
 ```bash
 # Backend
@@ -514,6 +513,22 @@ pytest --cov=app --cov-report=term-missing
 # Frontend
 npm run test:coverage
 ```
+
+If a function has low coverage, ask: "What user experience breaks if this fails?"
+If the answer is clear, write that test. If you can't articulate one, the function
+may not need its own test — it's already covered by an integration test above it.
+
+### Testing External Services (AI, Third-Party APIs)
+
+When a feature integrates with external services that can't be called in tests:
+
+1. **Test prompt/request construction** — verify the right inputs are sent
+2. **Test response parsing** — use canned responses to verify parsing logic
+3. **Test error handling** — timeouts, malformed responses, rate limits, auth failures
+4. **Test the full integration path up to the boundary** — everything except the actual HTTP call
+5. **Use a stub client in tests** — returns predictable responses, verifies the rest of the system handles them correctly
+
+The external service is non-deterministic. Everything around it is not. Test everything around it.
 
 ---
 
@@ -579,6 +594,6 @@ Local hooks run lint checks only (fast). Full test suite runs in CI.
 If a test is flaky (intermittently fails):
 1. **Do not skip it** — fix the root cause
 2. **Quarantine temporarily** — move to a separate job that doesn't block
-3. **Track in beads** — create an issue with priority
+3. **Track it** — create an issue to investigate and fix
 
 Flaky tests undermine confidence in the entire suite.

@@ -34,10 +34,9 @@ Durable Context is the stable, version-controlled body of knowledge about how th
 
 | Location | Purpose |
 |----------|---------|
-| `docs/` | Project documentation, guides, architecture |
-| `docs/decisions/` | Architecture Decision Records |
-| `AGENTS.md` or `CLAUDE.md` (root) | Agent-specific instructions for the entire repository |
-| `*/AGENTS.md` or `*/CLAUDE.md` (subdirectories) | Agent-specific instructions scoped to that directory |
+| `docs/` | Project documentation, guides |
+| `CLAUDE.md` (root) | Agent-specific instructions for the entire repository |
+| `*/CLAUDE.md` (subdirectories) | Agent-specific instructions scoped to that directory |
 
 ### What Belongs in Durable Context
 
@@ -185,7 +184,7 @@ Task Context aligns with standard Agile artifacts:
 1. **One task, one context**: Each task has its own isolated context
 2. **No pollution**: Completing a task should not leave residue in Durable Context
 3. **Decisions may graduate**: Significant decisions made during a task may trigger the ADR process
-4. **Tools are not prescribed**: The specific tool (GitHub Issues, Jira, Linear, beads, etc.) is an implementation decision
+4. **Tools are not prescribed**: The specific tool (GitHub Issues, Jira, Linear, etc.) is an implementation decision
 
 ---
 

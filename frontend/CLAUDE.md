@@ -237,40 +237,93 @@ await waitFor(() => {
 });
 ```
 
-### Mocking API Calls
+### MSW API Mocking
 
-Use MSW handlers in `test/mocks/`:
+MSW handlers are a **faithful proxy** of the real backend — not a convenience shortcut.
+
+**Rules:**
+- Handlers must return the same response shape as the real API (snake_case fields, same structure)
+- When backend response fields change, update MSW handlers in the same PR
+- Include realistic error responses (401, 404, 422) — not just happy paths
+- Never use `vi.fn()` to mock API calls directly — use MSW
 
 ```tsx
-// test/mocks/handlers.ts
+// test/mocks/handlers.ts — must match real backend responses
 import { http, HttpResponse } from 'msw';
 
 export const handlers = [
   http.get('/api/v1/recipes', () => {
-    return HttpResponse.json([{ id: '1', title: 'Test Recipe' }]);
+    return HttpResponse.json([
+      { id: '1', title: 'Test Recipe', prep_time_minutes: 30, dietary_tags: [] }
+    ]);
+  }),
+  http.post('/api/v1/recipes', async ({ request }) => {
+    const body = await request.json();
+    return HttpResponse.json(
+      { id: '2', ...body, created_at: new Date().toISOString() },
+      { status: 201 }
+    );
   }),
 ];
 ```
 
-### Testing Forms
+### Testing Forms (verify user outcomes, not callbacks)
 
 ```tsx
-it('should submit form with user data', async () => {
+it('should show success after creating recipe', async () => {
   const user = userEvent.setup();
-  const onSubmit = vi.fn();
 
-  render(<MyForm onSubmit={onSubmit} />);
+  render(<CreateRecipePage />);
 
-  await user.type(screen.getByLabelText('Name'), 'John');
-  await user.type(screen.getByLabelText('Email'), 'john@example.com');
-  await user.click(screen.getByRole('button', { name: 'Submit' }));
+  await user.type(screen.getByLabelText('Title'), 'New Recipe');
+  await user.type(screen.getByLabelText('Servings'), '4');
+  await user.click(screen.getByRole('button', { name: 'Create' }));
 
-  expect(onSubmit).toHaveBeenCalledWith({
-    name: 'John',
-    email: 'john@example.com',
+  // Verify what the USER sees — not internal callbacks
+  await waitFor(() => {
+    expect(screen.getByText(/recipe created/i)).toBeInTheDocument();
   });
 });
 ```
+
+**When `vi.fn()` IS appropriate:** Testing that a reusable child component calls its
+parent's callback prop correctly (true component-level isolation). NOT for testing
+form submissions, API interactions, or page-level flows.
+
+### Frontend Integration Tests (page-level)
+
+Beyond component tests, write page-level tests that verify the full render → fetch → display → interact cycle:
+
+```tsx
+describe('RecipesPage', () => {
+  it('should load and display recipes from the API', async () => {
+    render(<RecipesPage />);
+
+    // MSW serves the response — verify it renders
+    await waitFor(() => {
+      expect(screen.getByText('Test Recipe')).toBeInTheDocument();
+    });
+
+    // Verify meaningful data displayed (not just "something rendered")
+    expect(screen.getByText('30 min')).toBeInTheDocument();
+  });
+
+  it('should show empty state when no recipes exist', async () => {
+    // Override handler for this test
+    server.use(
+      http.get('/api/v1/recipes', () => HttpResponse.json([]))
+    );
+
+    render(<RecipesPage />);
+
+    await waitFor(() => {
+      expect(screen.getByText(/no recipes yet/i)).toBeInTheDocument();
+    });
+  });
+});
+```
+
+These tests verify what the user sees after the full data flow — not just that a component renders without crashing.
 
 ### File Naming
 

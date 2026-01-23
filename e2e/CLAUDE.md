@@ -201,6 +201,53 @@ page.getByTestId('recipe-list')
 
 ---
 
+## Testing AI Features (E2E)
+
+AI-powered features (chat, recipe generation, suggestions) are non-deterministic.
+E2E tests verify the full user flow without asserting exact AI output:
+
+```typescript
+test('user creates recipe via AI chat', async ({ authenticatedPage }) => {
+  await authenticatedPage.goto('/chat');
+
+  // User sends a prompt
+  await authenticatedPage.getByRole('textbox', { name: /message/i })
+    .fill('Give me a quick pasta recipe');
+  await authenticatedPage.getByRole('button', { name: /send/i }).click();
+
+  // Verify: response appears (don't assert exact content)
+  const response = authenticatedPage.locator('[data-testid="chat-response"]');
+  await expect(response).toBeVisible({ timeout: 30000 });
+
+  // Verify: response has expected structure (non-empty, contains recipe-like content)
+  const text = await response.textContent();
+  expect(text!.length).toBeGreaterThan(50);
+
+  // Verify: user can act on the response (e.g., save as recipe)
+  await authenticatedPage.getByRole('button', { name: /save/i }).click();
+  await expect(authenticatedPage.getByText(/recipe saved/i)).toBeVisible();
+});
+```
+
+**Principles for AI E2E tests:**
+- Verify the flow works (prompt → response → action), not the content
+- Use generous timeouts — AI responses are slower than DB queries
+- Assert structure (non-empty, has expected elements) not exact text
+- If using a stub AI backend for E2E, it must behave like the real one (latency, streaming, error shapes)
+- Test error states: what does the user see when AI is unavailable?
+
+## E2E Scope
+
+E2E tests verify **user workflows**, not individual API endpoints:
+
+- **DO test**: "User registers, creates a recipe, adds it to a library, shares it"
+- **DON'T test**: "POST /api/v1/recipes returns 201" (that's a backend integration test)
+
+If a scenario can be fully verified through a backend integration test, it doesn't need an E2E test.
+E2E tests add value when they exercise the full stack together: UI → API → DB → UI feedback.
+
+---
+
 ## Test Enforcement
 
 All PRs must pass `e2e-ci` before merge. This includes:
