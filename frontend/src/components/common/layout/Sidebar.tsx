@@ -18,6 +18,7 @@ import {
   ShoppingCart,
   ChefHat,
   Plus,
+  Settings,
 } from 'lucide-react';
 import { useSidebar } from '../../../contexts/SidebarContext';
 import { SidebarSection } from './SidebarSection';
@@ -131,6 +132,14 @@ export function Sidebar({ children }: SidebarProps) {
                   icon={<ChefHat className="w-5 h-5" />}
                   label="Cook Mode"
                   to="/cooking"
+                />
+              </SidebarSection>
+
+              <SidebarSection title="Account">
+                <SidebarItem
+                  icon={<Settings className="w-5 h-5" />}
+                  label="Settings"
+                  to="/settings"
                 />
               </SidebarSection>
             </>

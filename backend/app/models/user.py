@@ -4,9 +4,10 @@ User Model
 Database model for user authentication and profile management.
 """
 
-from sqlalchemy import String, Boolean, DateTime
+from sqlalchemy import String, Boolean, DateTime, Integer, JSON
 from sqlalchemy.orm import relationship, Mapped, mapped_column
 from datetime import datetime
+from typing import Optional
 import uuid
 
 from app.database import Base
@@ -34,6 +35,17 @@ class User(Base):
     )
     updated_at: Mapped[datetime] = mapped_column(
         DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False
+    )
+
+    # Preference fields
+    dietary_restrictions: Mapped[Optional[list]] = mapped_column(
+        JSON, nullable=True, default=None
+    )
+    skill_level: Mapped[Optional[str]] = mapped_column(
+        String(20), nullable=True, default=None
+    )
+    default_servings: Mapped[Optional[int]] = mapped_column(
+        Integer, nullable=True, default=None
     )
 
     # Relationships

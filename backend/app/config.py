@@ -5,7 +5,6 @@ Centralized configuration using Pydantic Settings
 for environment variable management.
 """
 
-from typing import Optional
 from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -45,11 +44,11 @@ class Settings(BaseSettings):
             return [origin.strip() for origin in v.split(",")]
         return v
 
-    # AI Provider Settings
-    ai_provider: str = "openai"  # Options: openai, anthropic, ollama
-    openai_api_key: Optional[str] = None
-    anthropic_api_key: Optional[str] = None
-    ollama_base_url: str = "http://localhost:11434"
+    # LLM Settings
+    llm_model: str = "test"  # Use "test" for deterministic test provider
+    llm_temperature: float = 0.7
+    llm_max_tokens: int = 2000
+    llm_timeout: int = 30
 
     # Vector Database Settings (for Phase 2)
     vector_db_enabled: bool = False

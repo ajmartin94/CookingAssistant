@@ -1,71 +1,76 @@
 import React, { useState } from 'react';
-import type { RecipeFormData, Ingredient, Instruction } from '../../types';
+import type { RecipeFormData, Ingredient } from '../../types';
 
 interface RecipeFormProps {
-  initialData?: RecipeFormData;
+  value: RecipeFormData;
+  onChange: (data: RecipeFormData) => void;
   onSubmit: (data: RecipeFormData) => Promise<void>;
   onCancel: () => void;
+  mode: 'create' | 'edit';
   isSubmitting?: boolean;
 }
 
 const RecipeForm: React.FC<RecipeFormProps> = ({
-  initialData,
+  value,
+  onChange,
   onSubmit,
   onCancel,
+  mode,
   isSubmitting = false,
 }) => {
-  // Form state
-  const [title, setTitle] = useState(initialData?.title || '');
-  const [description, setDescription] = useState(initialData?.description || '');
-  const [prepTimeMinutes, setPrepTimeMinutes] = useState(initialData?.prepTimeMinutes || 0);
-  const [cookTimeMinutes, setCookTimeMinutes] = useState(initialData?.cookTimeMinutes || 0);
-  const [servings, setServings] = useState(initialData?.servings || 4);
-  const [cuisineType, setCuisineType] = useState(initialData?.cuisineType || '');
-  const [difficultyLevel, setDifficultyLevel] = useState<'easy' | 'medium' | 'hard'>(
-    initialData?.difficultyLevel || 'medium'
-  );
-  const [sourceUrl, setSourceUrl] = useState(initialData?.sourceUrl || '');
-  const [sourceName, setSourceName] = useState(initialData?.sourceName || '');
-  const [notes, setNotes] = useState(initialData?.notes || '');
-
-  // Ingredients state
-  const [ingredients, setIngredients] = useState<Ingredient[]>(
-    initialData?.ingredients || [{ name: '', amount: '', unit: '' }]
-  );
-
-  // Instructions state
-  const [instructions, setInstructions] = useState<Instruction[]>(
-    initialData?.instructions || [{ stepNumber: 1, instruction: '' }]
-  );
-
-  // Dietary tags state
-  const [dietaryTags, setDietaryTags] = useState<string[]>(initialData?.dietaryTags || []);
-
-  // Error state
+  // Error state (validation is local)
   const [errors, setErrors] = useState<Record<string, string>>({});
+
+  // Derive all form fields from value prop
+  const {
+    title,
+    description,
+    prepTimeMinutes,
+    cookTimeMinutes,
+    servings,
+    cuisineType,
+    difficultyLevel,
+    sourceUrl,
+    sourceName,
+    notes,
+    ingredients,
+    instructions,
+    dietaryTags,
+  } = value;
+
+  // Helper to update a single field
+  const updateField = <K extends keyof RecipeFormData>(field: K, fieldValue: RecipeFormData[K]) => {
+    onChange({ ...value, [field]: fieldValue });
+  };
 
   // Add ingredient
   const addIngredient = () => {
-    setIngredients([...ingredients, { name: '', amount: '', unit: '' }]);
+    updateField('ingredients', [...ingredients, { name: '', amount: '', unit: '' }]);
   };
 
   // Remove ingredient
   const removeIngredient = (index: number) => {
     if (ingredients.length > 1) {
-      setIngredients(ingredients.filter((_, i) => i !== index));
+      updateField(
+        'ingredients',
+        ingredients.filter((_, i) => i !== index)
+      );
     }
   };
 
   // Update ingredient
-  const updateIngredient = (index: number, field: keyof Ingredient, value: string) => {
+  const updateIngredient = (index: number, field: keyof Ingredient, fieldValue: string) => {
     const updated = [...ingredients];
-    updated[index] = { ...updated[index], [field]: value };
-    setIngredients(updated);
+    updated[index] = { ...updated[index], [field]: fieldValue };
+    updateField('ingredients', updated);
   };
 
   // Add instruction
   const addInstruction = () => {
-    setInstructions([...instructions, { stepNumber: instructions.length + 1, instruction: '' }]);
+    updateField('instructions', [
+      ...instructions,
+      { stepNumber: instructions.length + 1, instruction: '' },
+    ]);
   };
 
   // Remove instruction
@@ -74,23 +79,26 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
       const updated = instructions
         .filter((_, i) => i !== index)
         .map((inst, i) => ({ ...inst, stepNumber: i + 1 }));
-      setInstructions(updated);
+      updateField('instructions', updated);
     }
   };
 
   // Update instruction
-  const updateInstruction = (index: number, value: string) => {
+  const updateInstruction = (index: number, instructionValue: string) => {
     const updated = [...instructions];
-    updated[index] = { ...updated[index], instruction: value };
-    setInstructions(updated);
+    updated[index] = { ...updated[index], instruction: instructionValue };
+    updateField('instructions', updated);
   };
 
   // Toggle dietary tag
   const toggleDietaryTag = (tag: string) => {
     if (dietaryTags.includes(tag)) {
-      setDietaryTags(dietaryTags.filter((t) => t !== tag));
+      updateField(
+        'dietaryTags',
+        dietaryTags.filter((t) => t !== tag)
+      );
     } else {
-      setDietaryTags([...dietaryTags, tag]);
+      updateField('dietaryTags', [...dietaryTags, tag]);
     }
   };
 
@@ -157,9 +165,9 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
       cuisineType: cuisineType.trim(),
       dietaryTags,
       difficultyLevel,
-      sourceUrl: sourceUrl.trim() || undefined,
-      sourceName: sourceName.trim() || undefined,
-      notes: notes.trim() || undefined,
+      sourceUrl: (sourceUrl ?? '').trim() || undefined,
+      sourceName: (sourceName ?? '').trim() || undefined,
+      notes: (notes ?? '').trim() || undefined,
     };
 
     await onSubmit(formData);
@@ -181,7 +189,7 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
               type="text"
               name="title"
               value={title}
-              onChange={(e) => setTitle(e.target.value)}
+              onChange={(e) => updateField('title', e.target.value)}
               className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 ${
                 errors.title ? 'border-error-500' : 'border-neutral-300'
               }`}
@@ -196,7 +204,7 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
             <textarea
               name="description"
               value={description}
-              onChange={(e) => setDescription(e.target.value)}
+              onChange={(e) => updateField('description', e.target.value)}
               rows={3}
               className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 ${
                 errors.description ? 'border-error-500' : 'border-neutral-300'
@@ -218,7 +226,7 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
                 type="number"
                 name="prep_time_minutes"
                 value={prepTimeMinutes}
-                onChange={(e) => setPrepTimeMinutes(parseInt(e.target.value) || 0)}
+                onChange={(e) => updateField('prepTimeMinutes', parseInt(e.target.value) || 0)}
                 min="0"
                 className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 ${
                   errors.prepTimeMinutes ? 'border-error-500' : 'border-neutral-300'
@@ -237,7 +245,7 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
                 type="number"
                 name="cook_time_minutes"
                 value={cookTimeMinutes}
-                onChange={(e) => setCookTimeMinutes(parseInt(e.target.value) || 0)}
+                onChange={(e) => updateField('cookTimeMinutes', parseInt(e.target.value) || 0)}
                 min="0"
                 className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 ${
                   errors.cookTimeMinutes ? 'border-error-500' : 'border-neutral-300'
@@ -254,7 +262,7 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
                 type="number"
                 name="servings"
                 value={servings}
-                onChange={(e) => setServings(parseInt(e.target.value) || 1)}
+                onChange={(e) => updateField('servings', parseInt(e.target.value) || 1)}
                 min="1"
                 className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 ${
                   errors.servings ? 'border-error-500' : 'border-neutral-300'
@@ -273,7 +281,7 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
               <select
                 name="cuisine_type"
                 value={cuisineType}
-                onChange={(e) => setCuisineType(e.target.value)}
+                onChange={(e) => updateField('cuisineType', e.target.value)}
                 className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
               >
                 <option value="">Select cuisine...</option>
@@ -297,7 +305,9 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
               <select
                 name="difficulty_level"
                 value={difficultyLevel}
-                onChange={(e) => setDifficultyLevel(e.target.value as 'easy' | 'medium' | 'hard')}
+                onChange={(e) =>
+                  updateField('difficultyLevel', e.target.value as 'easy' | 'medium' | 'hard')
+                }
                 className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
               >
                 <option value="easy">Easy</option>
@@ -441,8 +451,8 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
             <label className="block text-sm font-medium text-neutral-700 mb-1">Source Name</label>
             <input
               type="text"
-              value={sourceName}
-              onChange={(e) => setSourceName(e.target.value)}
+              value={sourceName ?? ''}
+              onChange={(e) => updateField('sourceName', e.target.value)}
               className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
               placeholder="e.g., Grandma's cookbook, Chef John"
             />
@@ -451,8 +461,8 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
             <label className="block text-sm font-medium text-neutral-700 mb-1">Source URL</label>
             <input
               type="url"
-              value={sourceUrl}
-              onChange={(e) => setSourceUrl(e.target.value)}
+              value={sourceUrl ?? ''}
+              onChange={(e) => updateField('sourceUrl', e.target.value)}
               className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
               placeholder="https://..."
             />
@@ -464,8 +474,8 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
       <div className="bg-white rounded-lg shadow-soft p-6">
         <h2 className="text-xl font-semibold text-neutral-900 mb-4">Additional Notes (Optional)</h2>
         <textarea
-          value={notes}
-          onChange={(e) => setNotes(e.target.value)}
+          value={notes ?? ''}
+          onChange={(e) => updateField('notes', e.target.value)}
           rows={4}
           className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
           placeholder="Any additional notes, tips, or variations..."
@@ -487,7 +497,7 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
           className="px-6 py-2 bg-primary-500 text-white rounded-lg font-semibold hover:bg-primary-600 transition disabled:opacity-50"
           disabled={isSubmitting}
         >
-          {isSubmitting ? 'Saving...' : initialData ? 'Update' : 'Create'}
+          {isSubmitting ? 'Saving...' : mode === 'create' ? 'Create Recipe' : 'Update Recipe'}
         </button>
       </div>
     </form>

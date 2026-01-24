@@ -21,6 +21,12 @@ interface UserUpdateRequest {
   full_name?: string;
 }
 
+interface PreferencesUpdateRequest {
+  dietary_restrictions?: string[];
+  skill_level?: string;
+  default_servings?: number;
+}
+
 type RecipeRequest = Record<string, unknown>;
 type LibraryRequest = Record<string, unknown>;
 
@@ -54,12 +60,43 @@ export const handlers = [
     if (!authHeader) {
       return HttpResponse.json({ detail: 'Not authenticated' }, { status: 401 });
     }
-    return HttpResponse.json(mockUser());
+    const user = mockUser();
+    return HttpResponse.json({
+      id: user.id,
+      username: user.username,
+      email: user.email,
+      full_name: user.fullName,
+      dietary_restrictions: user.dietaryRestrictions,
+      skill_level: user.skillLevel,
+      default_servings: user.defaultServings,
+      created_at: user.createdAt,
+      updated_at: user.updatedAt,
+    });
   }),
 
   http.put(`${BASE_URL}/api/v1/users/me`, async ({ request }) => {
     const body = (await request.json()) as UserUpdateRequest;
     return HttpResponse.json(mockUser({ ...body }));
+  }),
+
+  http.patch(`${BASE_URL}/api/v1/users/me/preferences`, async ({ request }) => {
+    const authHeader = request.headers.get('Authorization');
+    if (!authHeader) {
+      return HttpResponse.json({ detail: 'Not authenticated' }, { status: 401 });
+    }
+    const body = (await request.json()) as PreferencesUpdateRequest;
+    const user = mockUser();
+    return HttpResponse.json({
+      id: user.id,
+      username: user.username,
+      email: user.email,
+      full_name: user.fullName,
+      dietary_restrictions: body.dietary_restrictions ?? user.dietaryRestrictions,
+      skill_level: body.skill_level ?? user.skillLevel,
+      default_servings: body.default_servings ?? user.defaultServings,
+      created_at: user.createdAt,
+      updated_at: new Date().toISOString(),
+    });
   }),
 
   // Recipe endpoints - return snake_case like real backend
@@ -205,5 +242,42 @@ export const handlers = [
 
   http.delete(`${BASE_URL}/api/v1/shares/:id`, async () => {
     return new HttpResponse(null, { status: 204 });
+  }),
+
+  // Chat endpoint
+  http.post(`${BASE_URL}/api/v1/chat`, async ({ request }) => {
+    const body = (await request.json()) as { messages: { role: string; content: string }[] };
+    const lastMessage = body.messages[body.messages.length - 1];
+
+    // Return a proposed recipe for "create" messages
+    if (lastMessage?.content.toLowerCase().includes('create')) {
+      return HttpResponse.json({
+        message: 'Here is a recipe suggestion based on your request.',
+        proposed_recipe: {
+          title: 'AI Suggested Recipe',
+          description: 'A recipe suggested by the AI assistant',
+          ingredients: [
+            { name: 'chicken breast', amount: '2', unit: 'pieces', notes: '' },
+            { name: 'olive oil', amount: '2', unit: 'tbsp', notes: '' },
+          ],
+          instructions: [
+            { step_number: 1, instruction: 'Season the chicken', duration_minutes: 5 },
+            { step_number: 2, instruction: 'Cook in olive oil', duration_minutes: 15 },
+          ],
+          prep_time_minutes: 10,
+          cook_time_minutes: 20,
+          servings: 2,
+          cuisine_type: 'American',
+          dietary_tags: ['high-protein'],
+          difficulty_level: 'easy',
+        },
+      });
+    }
+
+    // Return a text-only response for "hello" or other messages
+    return HttpResponse.json({
+      message: 'Hello! I can help you with your recipe. What would you like to do?',
+      proposed_recipe: null,
+    });
   }),
 ];

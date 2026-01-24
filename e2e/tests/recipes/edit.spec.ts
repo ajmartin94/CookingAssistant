@@ -24,15 +24,16 @@ test.describe('Recipe Edit', () => {
     await recipeDetailPage.goto(recipe.id);
     await recipeDetailPage.editButton.click();
 
-    // Update title and description
+    // Wait for edit form to load existing data before interacting
     editRecipePage = new CreateRecipePage(authenticatedPage);
-    await editRecipePage.titleInput.clear();
-    await editRecipePage.titleInput.fill('Updated Title');
-    await editRecipePage.descriptionInput.clear();
-    await editRecipePage.descriptionInput.fill('Updated description');
+    await editRecipePage.waitForFormLoaded();
 
-    // Save changes
-    await editRecipePage.submit();
+    // Update title and description using controlled input fill with retry
+    await editRecipePage.fillControlledInput(editRecipePage.titleInput, 'Updated Title');
+    await editRecipePage.fillControlledInput(editRecipePage.descriptionInput, 'Updated description');
+
+    // Save changes and wait for API response
+    await editRecipePage.submitAndWaitForResponse();
 
     // Should redirect to detail page
     await expect(authenticatedPage).toHaveURL(`/recipes/${recipe.id}`);
@@ -58,16 +59,14 @@ test.describe('Recipe Edit', () => {
     await recipeDetailPage.editButton.click();
 
     editRecipePage = new CreateRecipePage(authenticatedPage);
+    await editRecipePage.waitForFormLoaded();
 
-    // Update times and servings
-    await editRecipePage.prepTimeInput.clear();
-    await editRecipePage.prepTimeInput.fill('25');
-    await editRecipePage.cookTimeInput.clear();
-    await editRecipePage.cookTimeInput.fill('45');
-    await editRecipePage.servingsInput.clear();
-    await editRecipePage.servingsInput.fill('6');
+    // Update times and servings using controlled input fill with retry
+    await editRecipePage.fillControlledInput(editRecipePage.prepTimeInput, '25');
+    await editRecipePage.fillControlledInput(editRecipePage.cookTimeInput, '45');
+    await editRecipePage.fillControlledInput(editRecipePage.servingsInput, '6');
 
-    await editRecipePage.submit();
+    await editRecipePage.submitAndWaitForResponse();
 
     // Verify changes
     const prepTime = await recipeDetailPage.getPrepTime();
@@ -95,12 +94,13 @@ test.describe('Recipe Edit', () => {
     await recipeDetailPage.editButton.click();
 
     editRecipePage = new CreateRecipePage(authenticatedPage);
+    await editRecipePage.waitForFormLoaded();
 
     // Update cuisine and difficulty
     await editRecipePage.cuisineSelect.selectOption('Japanese');
     await editRecipePage.difficultySelect.selectOption('hard');
 
-    await editRecipePage.submit();
+    await editRecipePage.submitAndWaitForResponse();
 
     // Verify changes
     await expect(authenticatedPage.getByText('Japanese')).toBeVisible();
@@ -123,11 +123,12 @@ test.describe('Recipe Edit', () => {
     await recipeDetailPage.editButton.click();
 
     editRecipePage = new CreateRecipePage(authenticatedPage);
+    await editRecipePage.waitForFormLoaded();
 
     // Add a new ingredient
     await editRecipePage.addIngredient('sugar', '1', 'cup', 'granulated');
 
-    await editRecipePage.submit();
+    await editRecipePage.submitAndWaitForResponse();
 
     // Verify both ingredients are displayed
     await expect(authenticatedPage.getByText('flour')).toBeVisible();
@@ -152,11 +153,12 @@ test.describe('Recipe Edit', () => {
     await recipeDetailPage.editButton.click();
 
     editRecipePage = new CreateRecipePage(authenticatedPage);
+    await editRecipePage.waitForFormLoaded();
 
     // Remove the second ingredient (sugar)
     await editRecipePage.removeIngredient(1);
 
-    await editRecipePage.submit();
+    await editRecipePage.submitAndWaitForResponse();
 
     // Verify sugar is removed but others remain
     await expect(authenticatedPage.getByText('flour')).toBeVisible();
@@ -180,14 +182,14 @@ test.describe('Recipe Edit', () => {
     await recipeDetailPage.editButton.click();
 
     editRecipePage = new CreateRecipePage(authenticatedPage);
+    await editRecipePage.waitForFormLoaded();
 
-    // Modify the ingredient amount
+    // Modify the ingredient amount using controlled input fill with retry
     const ingredientRow = authenticatedPage.locator('.ingredient-row, [data-testid="ingredient-row"]').first();
     const amountInput = ingredientRow.locator('input[name*="amount"]');
-    await amountInput.clear();
-    await amountInput.fill('3');
+    await editRecipePage.fillControlledInput(amountInput, '3');
 
-    await editRecipePage.submit();
+    await editRecipePage.submitAndWaitForResponse();
 
     // Verify change
     await expect(authenticatedPage.getByText('3 cups')).toBeVisible();
@@ -209,11 +211,12 @@ test.describe('Recipe Edit', () => {
     await recipeDetailPage.editButton.click();
 
     editRecipePage = new CreateRecipePage(authenticatedPage);
+    await editRecipePage.waitForFormLoaded();
 
     // Add a new instruction
     await editRecipePage.addInstruction('Bake in oven', 30);
 
-    await editRecipePage.submit();
+    await editRecipePage.submitAndWaitForResponse();
 
     // Verify both instructions are displayed
     await expect(authenticatedPage.getByText('Mix ingredients')).toBeVisible();
@@ -238,11 +241,12 @@ test.describe('Recipe Edit', () => {
     await recipeDetailPage.editButton.click();
 
     editRecipePage = new CreateRecipePage(authenticatedPage);
+    await editRecipePage.waitForFormLoaded();
 
     // Remove the second instruction
     await editRecipePage.removeInstruction(1);
 
-    await editRecipePage.submit();
+    await editRecipePage.submitAndWaitForResponse();
 
     // Verify instruction is removed
     await expect(authenticatedPage.getByText('Preheat oven')).toBeVisible();
@@ -265,9 +269,9 @@ test.describe('Recipe Edit', () => {
     await recipeDetailPage.editButton.click();
 
     editRecipePage = new CreateRecipePage(authenticatedPage);
-    await editRecipePage.titleInput.clear();
-    await editRecipePage.titleInput.fill('Updated After Refresh');
-    await editRecipePage.submit();
+    await editRecipePage.waitForFormLoaded();
+    await editRecipePage.fillControlledInput(editRecipePage.titleInput, 'Updated After Refresh');
+    await editRecipePage.submitAndWaitForResponse();
 
     // Wait for navigation to detail page before refreshing
     await expect(authenticatedPage).toHaveURL(`/recipes/${recipe.id}`);
@@ -293,10 +297,10 @@ test.describe('Recipe Edit', () => {
     await recipeDetailPage.editButton.click();
 
     editRecipePage = new CreateRecipePage(authenticatedPage);
+    await editRecipePage.waitForFormLoaded();
 
-    // Make changes but cancel
-    await editRecipePage.titleInput.clear();
-    await editRecipePage.titleInput.fill('Should Not Be Saved');
+    // Make changes but cancel using controlled input fill with retry
+    await editRecipePage.fillControlledInput(editRecipePage.titleInput, 'Should Not Be Saved');
     await editRecipePage.cancel();
 
     // Should go back to detail page
@@ -318,9 +322,10 @@ test.describe('Recipe Edit', () => {
     await recipeDetailPage.editButton.click();
 
     editRecipePage = new CreateRecipePage(authenticatedPage);
+    await editRecipePage.waitForFormLoaded();
 
-    // Clear required field
-    await editRecipePage.titleInput.clear();
+    // Clear required field using controlled input fill with retry
+    await editRecipePage.fillControlledInput(editRecipePage.titleInput, '');
     await editRecipePage.submit();
 
     // Should stay on edit page with validation error

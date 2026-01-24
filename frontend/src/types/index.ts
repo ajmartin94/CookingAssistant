@@ -8,6 +8,9 @@ export interface User {
   username: string;
   email: string;
   fullName: string;
+  dietaryRestrictions: string[];
+  skillLevel: string;
+  defaultServings: number;
   createdAt: string;
   updatedAt: string;
 }
@@ -104,3 +107,19 @@ export interface RecipeFormData {
   sourceName?: string;
   notes?: string;
 }
+
+export const DEFAULT_RECIPE_FORM_DATA: RecipeFormData = {
+  title: '',
+  description: '',
+  ingredients: [{ name: '', amount: '', unit: '' }],
+  instructions: [{ stepNumber: 1, instruction: '' }],
+  prepTimeMinutes: 0,
+  cookTimeMinutes: 0,
+  servings: 4,
+  cuisineType: '',
+  dietaryTags: [],
+  difficultyLevel: 'easy',
+  sourceUrl: '',
+  sourceName: '',
+  notes: '',
+};

@@ -10,7 +10,15 @@ from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.database import get_db
-from app.schemas.user import UserCreate, UserResponse, UserUpdate, Token
+from app.models.user import User
+from app.schemas.user import (
+    UserCreate,
+    UserResponse,
+    UserUpdate,
+    UserPreferencesUpdate,
+    UserPreferencesResponse,
+    Token,
+)
 from app.services.auth_service import (
     create_user,
     authenticate_user,
@@ -19,6 +27,7 @@ from app.services.auth_service import (
     get_user_by_email,
     get_password_hash,
 )
+from app.services.user_service import update_user_preferences
 from app.utils.dependencies import CurrentUser
 
 router = APIRouter(prefix="/users", tags=["users"])
@@ -131,3 +140,41 @@ async def update_current_user_profile(
     await db.commit()
     await db.refresh(current_user)
     return current_user
+
+
+@router.get("/me/preferences", response_model=UserPreferencesResponse)
+async def get_preferences(current_user: CurrentUser):
+    """
+    Get current user's preferences.
+
+    Returns the user's dietary restrictions, skill level, and default servings.
+    Defaults are provided for unset fields.
+
+    Requires authentication.
+    """
+    return UserPreferencesResponse(
+        dietary_restrictions=current_user.dietary_restrictions or [],
+        skill_level=current_user.skill_level or "beginner",
+        default_servings=current_user.default_servings or 4,
+    )
+
+
+@router.patch("/me/preferences", response_model=UserResponse)
+async def update_preferences(
+    preferences: UserPreferencesUpdate,
+    current_user: CurrentUser,
+    db: Annotated[AsyncSession, Depends(get_db)],
+) -> User:
+    """
+    Update current user's preferences (partial update).
+
+    Only provided fields are updated; omitted fields remain unchanged.
+
+    - **dietary_restrictions**: List of dietary tags (vegetarian, vegan, etc.)
+    - **skill_level**: beginner, intermediate, or advanced
+    - **default_servings**: Number of servings (1-100)
+
+    Requires authentication.
+    """
+    updated_user = await update_user_preferences(db, current_user, preferences)
+    return updated_user
