@@ -72,7 +72,7 @@ export function ChatPanel({ isOpen, onClose, currentRecipe, onApply }: ChatPanel
     <div
       role="complementary"
       aria-label="AI Recipe Chat"
-      className="fixed right-0 top-0 h-full w-96 bg-white shadow-xl border-l border-neutral-200 flex flex-col z-50"
+      className="fixed inset-0 md:right-0 md:left-auto md:w-96 h-full bg-white shadow-xl md:border-l border-neutral-200 flex flex-col z-50"
     >
       {/* Header */}
       <div className="flex items-center justify-between p-4 border-b border-neutral-200">
