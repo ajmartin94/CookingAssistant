@@ -329,6 +329,7 @@ When adding UI elements: check if similar elements exist elsewhere on the page.
 | Tests pass locally, fail in CI | Version mismatch or env vars | Check node/python versions, run with `CI=true` |
 | Tests pass in Chromium, fail in WebKit | Browser quirks | See cross-browser patterns above; increase timeouts |
 | Flaky tests | Race conditions or hard waits | Use `waitForResponse`, auto-waiting assertions, never `waitForTimeout` |
+| Flaky after controlled refactor | Lifted state adds React render cycle | Use double-rAF (`requestAnimationFrame(() => requestAnimationFrame(...))`) instead of `waitForTimeout`; wait for DOM elements to be visible before interacting |
 | Slow execution | Serial + multi-browser | `--workers=4`, `--project=chromium` for dev |
 
 ---

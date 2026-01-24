@@ -18,12 +18,30 @@ the user decides what to do about each failure. You execute their decisions.
 
 ## Process
 
-### 1. Run Full Suite
+### 0. Environment Setup
 
-Run all test layers:
+Activate virtual environments and verify infrastructure before running tests:
 
 ```bash
-cd backend && pytest
+# Backend: activate venv (NEVER claim "pytest unavailable" without checking)
+cd backend && source venv/bin/activate && python -m pytest --version
+
+# Frontend: verify node_modules
+cd frontend && ls node_modules/.bin/vitest
+
+# E2E: start servers if needed for E2E tests
+cd backend && source venv/bin/activate && uvicorn app.main:app --port 8001 &
+cd frontend && npm run dev -- --port 5174 &
+```
+
+If venv or node_modules don't exist, install dependencies first (`pip install -r requirements.txt` / `npm install`).
+
+### 1. Run Full Suite
+
+Run all test layers (with venv activated for backend):
+
+```bash
+cd backend && source venv/bin/activate && python -m pytest
 cd frontend && npm test -- --run
 cd e2e && npx playwright test
 ```

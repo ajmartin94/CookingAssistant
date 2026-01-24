@@ -87,6 +87,9 @@ cd frontend && npm install && npm run dev
 
 Before ending any session:
 
+1. **Graduate learnings**: If the session uncovered conventions, patterns, or pitfalls, update the relevant durable docs (CLAUDE.md files, docs/) directly. Do not leave ad-hoc learning files in the repo. See [Context Management Guide](docs/CONTEXT_MANAGEMENT_GUIDE.md) for graduation criteria.
+2. **Commit changes**:
+
 ```bash
 git status              # Check what changed
 git add <files>         # Stage changes

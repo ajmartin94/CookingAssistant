@@ -93,6 +93,23 @@ ruff check app/ tests/
 - **Foreign keys** for referential integrity
 - **Index** frequently queried columns
 
+### Fresh Database Bootstrap
+
+When migrations exist but the database file doesn't (fresh clone, new environment):
+
+```bash
+# Create tables from current models
+python -c "import asyncio; from app.database import init_db; asyncio.run(init_db())"
+
+# Stamp at migration head (so future migrations apply correctly)
+alembic stamp head
+
+# Verify
+alembic current
+```
+
+Do NOT run `alembic upgrade head` on a non-existent database - create it first, then stamp.
+
 ---
 
 <!-- Per AD-0100 -->
