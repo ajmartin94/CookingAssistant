@@ -191,12 +191,3 @@ Key points:
 
 ---
 
-## Issue Tracking
-
-We use Beads for issue tracking. See [CLAUDE.md](../CLAUDE.md) for workflow.
-
-```bash
-bd ready                              # Find available work
-bd show <id>                          # Review details
-bd update <id> --status=in_progress   # Claim it
-```

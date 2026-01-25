@@ -1,21 +1,27 @@
+import { useState } from 'react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor } from '../../test/test-utils';
 import RecipeForm from './RecipeForm';
 import type { RecipeFormData } from '../../types';
+import { DEFAULT_RECIPE_FORM_DATA } from '../../types';
+
+interface RecipeFormProps {
+  value?: RecipeFormData;
+  onChange?: (data: RecipeFormData) => void;
+  onSubmit?: (data: RecipeFormData) => Promise<void>;
+  onCancel?: () => void;
+  mode?: 'create' | 'edit';
+  isSubmitting?: boolean;
+}
 
 describe('RecipeForm', () => {
-  const mockOnSubmit = vi.fn();
+  const mockOnSubmit = vi.fn().mockResolvedValue(undefined);
   const mockOnCancel = vi.fn();
 
   beforeEach(() => {
     mockOnSubmit.mockClear();
     mockOnCancel.mockClear();
   });
-
-  const defaultProps = {
-    onSubmit: mockOnSubmit,
-    onCancel: mockOnCancel,
-  };
 
   const mockInitialData: RecipeFormData = {
     title: 'Test Recipe',
@@ -34,11 +40,35 @@ describe('RecipeForm', () => {
     cuisineType: 'Italian',
     dietaryTags: ['vegetarian'],
     difficultyLevel: 'medium',
+    sourceUrl: '',
+    sourceName: '',
+    notes: '',
   };
+
+  /**
+   * Controlled wrapper: manages state externally and passes value/onChange
+   * to RecipeForm as props. This tests the controlled component pattern.
+   */
+  function renderRecipeForm(props?: RecipeFormProps) {
+    const Wrapper = () => {
+      const [value, setValue] = useState<RecipeFormData>(props?.value ?? DEFAULT_RECIPE_FORM_DATA);
+      return (
+        <RecipeForm
+          value={value}
+          onChange={setValue}
+          mode={props?.mode ?? 'create'}
+          onSubmit={props?.onSubmit ?? mockOnSubmit}
+          onCancel={props?.onCancel ?? mockOnCancel}
+          isSubmitting={props?.isSubmitting}
+        />
+      );
+    };
+    return render(<Wrapper />);
+  }
 
   describe('Rendering', () => {
     it('should render empty form with default values', () => {
-      render(<RecipeForm {...defaultProps} />);
+      renderRecipeForm();
 
       expect(screen.getByPlaceholderText(/homemade margherita pizza/i)).toHaveValue('');
       expect(screen.getByPlaceholderText(/brief description/i)).toHaveValue('');
@@ -51,11 +81,11 @@ describe('RecipeForm', () => {
       // Two comboboxes: cuisine type and difficulty level
       const comboboxes = screen.getAllByRole('combobox');
       expect(comboboxes[0]).toHaveValue(''); // Cuisine type (empty default)
-      expect(comboboxes[1]).toHaveValue('medium'); // Difficulty level
+      expect(comboboxes[1]).toHaveValue('easy'); // Difficulty level (default is 'easy')
     });
 
-    it('should render form with initial data', () => {
-      render(<RecipeForm {...defaultProps} initialData={mockInitialData} />);
+    it('should render form with provided value data', () => {
+      renderRecipeForm({ value: mockInitialData });
 
       expect(screen.getByPlaceholderText(/homemade margherita pizza/i)).toHaveValue('Test Recipe');
       expect(screen.getByPlaceholderText(/brief description/i)).toHaveValue('A test recipe');
@@ -72,7 +102,7 @@ describe('RecipeForm', () => {
     });
 
     it('should render all form sections', () => {
-      render(<RecipeForm {...defaultProps} />);
+      renderRecipeForm();
 
       expect(screen.getByText('Basic Information')).toBeInTheDocument();
       expect(screen.getByText('Ingredients *')).toBeInTheDocument();
@@ -85,7 +115,7 @@ describe('RecipeForm', () => {
 
   describe('Basic Fields', () => {
     it('should update title field', async () => {
-      const { user } = render(<RecipeForm {...defaultProps} />);
+      const { user } = renderRecipeForm();
       const titleInput = screen.getByPlaceholderText(/homemade margherita pizza/i);
 
       await user.clear(titleInput);
@@ -95,7 +125,7 @@ describe('RecipeForm', () => {
     });
 
     it('should update description field', async () => {
-      const { user } = render(<RecipeForm {...defaultProps} />);
+      const { user } = renderRecipeForm();
       const descInput = screen.getByPlaceholderText(/brief description/i);
 
       await user.clear(descInput);
@@ -105,7 +135,7 @@ describe('RecipeForm', () => {
     });
 
     it('should update prep time', async () => {
-      const { user } = render(<RecipeForm {...defaultProps} />);
+      const { user } = renderRecipeForm();
       const numberInputs = screen.getAllByRole('spinbutton');
       const prepInput = numberInputs[0]; // First spinbutton is prep time
 
@@ -116,7 +146,7 @@ describe('RecipeForm', () => {
     });
 
     it('should update cook time', async () => {
-      const { user } = render(<RecipeForm {...defaultProps} />);
+      const { user } = renderRecipeForm();
       const numberInputs = screen.getAllByRole('spinbutton');
       const cookInput = numberInputs[1]; // Second spinbutton is cook time
 
@@ -127,7 +157,7 @@ describe('RecipeForm', () => {
     });
 
     it('should update servings', async () => {
-      const { user } = render(<RecipeForm {...defaultProps} />);
+      const { user } = renderRecipeForm();
       const numberInputs = screen.getAllByRole('spinbutton');
       const servingsInput = numberInputs[2]; // Third spinbutton is servings
 
@@ -139,7 +169,7 @@ describe('RecipeForm', () => {
     });
 
     it('should update cuisine type', async () => {
-      const { user } = render(<RecipeForm {...defaultProps} />);
+      const { user } = renderRecipeForm();
       const comboboxes = screen.getAllByRole('combobox');
       const cuisineSelect = comboboxes[0]; // First combobox is cuisine type
 
@@ -149,7 +179,7 @@ describe('RecipeForm', () => {
     });
 
     it('should update difficulty level', async () => {
-      const { user } = render(<RecipeForm {...defaultProps} />);
+      const { user } = renderRecipeForm();
       const comboboxes = screen.getAllByRole('combobox');
       const difficultySelect = comboboxes[1]; // Second combobox is difficulty level
 
@@ -161,14 +191,14 @@ describe('RecipeForm', () => {
 
   describe('Ingredients Management', () => {
     it('should render initial ingredient row', () => {
-      render(<RecipeForm {...defaultProps} />);
+      renderRecipeForm();
 
       const ingredientInputs = screen.getAllByPlaceholderText(/ingredient name/i);
       expect(ingredientInputs).toHaveLength(1);
     });
 
     it('should add new ingredient', async () => {
-      const { user } = render(<RecipeForm {...defaultProps} />);
+      const { user } = renderRecipeForm();
 
       await user.click(screen.getByRole('button', { name: /add ingredient/i }));
 
@@ -177,7 +207,7 @@ describe('RecipeForm', () => {
     });
 
     it('should remove ingredient', async () => {
-      const { user } = render(<RecipeForm {...defaultProps} initialData={mockInitialData} />);
+      const { user } = renderRecipeForm({ value: mockInitialData });
 
       const removeButtons = screen.getAllByRole('button', { name: /remove/i });
       // First remove button is for ingredients
@@ -188,7 +218,7 @@ describe('RecipeForm', () => {
     });
 
     it('should not remove last ingredient', () => {
-      render(<RecipeForm {...defaultProps} />);
+      renderRecipeForm();
 
       const removeButtons = screen.getAllByRole('button', { name: /remove/i });
       const firstRemoveButton = removeButtons[0];
@@ -197,7 +227,7 @@ describe('RecipeForm', () => {
     });
 
     it('should update ingredient fields', async () => {
-      const { user } = render(<RecipeForm {...defaultProps} />);
+      const { user } = renderRecipeForm();
 
       const nameInput = screen.getByPlaceholderText(/ingredient name/i);
       const amountInput = screen.getByPlaceholderText(/amount/i);
@@ -215,14 +245,14 @@ describe('RecipeForm', () => {
 
   describe('Instructions Management', () => {
     it('should render initial instruction row', () => {
-      render(<RecipeForm {...defaultProps} />);
+      renderRecipeForm();
 
       const instructionInputs = screen.getAllByPlaceholderText(/step 1 instructions/i);
       expect(instructionInputs).toHaveLength(1);
     });
 
     it('should add new instruction', async () => {
-      const { user } = render(<RecipeForm {...defaultProps} />);
+      const { user } = renderRecipeForm();
 
       await user.click(screen.getByRole('button', { name: /add step/i }));
 
@@ -234,7 +264,7 @@ describe('RecipeForm', () => {
     });
 
     it('should remove instruction', async () => {
-      const { user } = render(<RecipeForm {...defaultProps} initialData={mockInitialData} />);
+      const { user } = renderRecipeForm({ value: mockInitialData });
 
       const removeButtons = screen.getAllByRole('button', { name: /remove/i });
       // Find the remove button for instructions (after ingredients)
@@ -246,7 +276,7 @@ describe('RecipeForm', () => {
     });
 
     it('should not remove last instruction', () => {
-      render(<RecipeForm {...defaultProps} />);
+      renderRecipeForm();
 
       const removeButtons = screen.getAllByRole('button', { name: /remove/i });
       const lastRemoveButton = removeButtons[removeButtons.length - 1];
@@ -255,7 +285,7 @@ describe('RecipeForm', () => {
     });
 
     it('should update instruction text', async () => {
-      const { user } = render(<RecipeForm {...defaultProps} />);
+      const { user } = renderRecipeForm();
 
       const instructionInput = screen.getByPlaceholderText(/step 1 instructions/i);
 
@@ -265,7 +295,7 @@ describe('RecipeForm', () => {
     });
 
     it('should renumber steps when instruction removed', async () => {
-      const { user } = render(<RecipeForm {...defaultProps} initialData={mockInitialData} />);
+      const { user } = renderRecipeForm({ value: mockInitialData });
 
       // Add a third instruction
       await user.click(screen.getByRole('button', { name: /add step/i }));
@@ -289,7 +319,7 @@ describe('RecipeForm', () => {
 
   describe('Dietary Tags', () => {
     it('should toggle dietary tag on', async () => {
-      const { user } = render(<RecipeForm {...defaultProps} />);
+      const { user } = renderRecipeForm();
 
       const veganButton = screen.getByRole('button', { name: /^vegan$/i });
       await user.click(veganButton);
@@ -298,7 +328,7 @@ describe('RecipeForm', () => {
     });
 
     it('should toggle dietary tag off', async () => {
-      const { user } = render(<RecipeForm {...defaultProps} initialData={mockInitialData} />);
+      const { user } = renderRecipeForm({ value: mockInitialData });
 
       const vegetarianButton = screen.getByRole('button', { name: /^vegetarian$/i });
       expect(vegetarianButton).toHaveClass('bg-purple-600');
@@ -310,7 +340,7 @@ describe('RecipeForm', () => {
     });
 
     it('should handle multiple dietary tags', async () => {
-      const { user } = render(<RecipeForm {...defaultProps} />);
+      const { user } = renderRecipeForm();
 
       await user.click(screen.getByRole('button', { name: /^vegan$/i }));
       await user.click(screen.getByRole('button', { name: /^gluten-free$/i }));
@@ -322,7 +352,7 @@ describe('RecipeForm', () => {
 
   describe('Source Information', () => {
     it('should update source name', async () => {
-      const { user } = render(<RecipeForm {...defaultProps} />);
+      const { user } = renderRecipeForm();
 
       const sourceNameInput = screen.getByPlaceholderText(/grandma's cookbook/i);
       await user.type(sourceNameInput, 'Chef John');
@@ -331,7 +361,7 @@ describe('RecipeForm', () => {
     });
 
     it('should update source URL', async () => {
-      const { user } = render(<RecipeForm {...defaultProps} />);
+      const { user } = renderRecipeForm();
 
       const sourceUrlInput = screen.getByPlaceholderText(/https:/);
       await user.type(sourceUrlInput, 'https://example.com');
@@ -342,7 +372,7 @@ describe('RecipeForm', () => {
 
   describe('Notes', () => {
     it('should update notes field', async () => {
-      const { user } = render(<RecipeForm {...defaultProps} />);
+      const { user } = renderRecipeForm();
 
       const notesInput = screen.getByPlaceholderText(/additional notes/i);
       await user.type(notesInput, 'This is a test note');
@@ -353,7 +383,7 @@ describe('RecipeForm', () => {
 
   describe('Validation', () => {
     it('should show error for empty title', async () => {
-      const { user } = render(<RecipeForm {...defaultProps} />);
+      const { user } = renderRecipeForm();
 
       // Fill in required fields except title
       await user.type(screen.getByPlaceholderText(/brief description/i), 'Test description');
@@ -364,7 +394,7 @@ describe('RecipeForm', () => {
       const instructionInput = screen.getByPlaceholderText(/step 1 instructions/i);
       await user.type(instructionInput, 'Mix');
 
-      await user.click(screen.getByRole('button', { name: /^create$/i }));
+      await user.click(screen.getByRole('button', { name: /create recipe/i }));
 
       await waitFor(() => {
         expect(screen.getByText('Title is required')).toBeInTheDocument();
@@ -372,7 +402,7 @@ describe('RecipeForm', () => {
     });
 
     it('should show error for empty description', async () => {
-      const { user } = render(<RecipeForm {...defaultProps} />);
+      const { user } = renderRecipeForm();
 
       // Fill in required fields except description
       await user.type(screen.getByPlaceholderText(/homemade margherita pizza/i), 'Test Recipe');
@@ -383,7 +413,7 @@ describe('RecipeForm', () => {
       const instructionInput = screen.getByPlaceholderText(/step 1 instructions/i);
       await user.type(instructionInput, 'Mix');
 
-      await user.click(screen.getByRole('button', { name: /^create$/i }));
+      await user.click(screen.getByRole('button', { name: /create recipe/i }));
 
       await waitFor(() => {
         expect(screen.getByText('Description is required')).toBeInTheDocument();
@@ -391,14 +421,14 @@ describe('RecipeForm', () => {
     });
 
     it('should show error for no valid ingredients', async () => {
-      const { user } = render(<RecipeForm {...defaultProps} />);
+      const { user } = renderRecipeForm();
 
       await user.type(screen.getByPlaceholderText(/homemade margherita pizza/i), 'Test Recipe');
       await user.type(screen.getByPlaceholderText(/brief description/i), 'Test description');
       const instructionInput = screen.getByPlaceholderText(/step 1 instructions/i);
       await user.type(instructionInput, 'Mix');
 
-      await user.click(screen.getByRole('button', { name: /^create$/i }));
+      await user.click(screen.getByRole('button', { name: /create recipe/i }));
 
       await waitFor(() => {
         expect(screen.getByText('At least one ingredient is required')).toBeInTheDocument();
@@ -406,7 +436,7 @@ describe('RecipeForm', () => {
     });
 
     it('should show error for no valid instructions', async () => {
-      const { user } = render(<RecipeForm {...defaultProps} />);
+      const { user } = renderRecipeForm();
 
       await user.type(screen.getByPlaceholderText(/homemade margherita pizza/i), 'Test Recipe');
       await user.type(screen.getByPlaceholderText(/brief description/i), 'Test description');
@@ -415,7 +445,7 @@ describe('RecipeForm', () => {
       await user.type(ingredientName, 'flour');
       await user.type(ingredientAmount, '2');
 
-      await user.click(screen.getByRole('button', { name: /^create$/i }));
+      await user.click(screen.getByRole('button', { name: /create recipe/i }));
 
       await waitFor(() => {
         expect(screen.getByText('At least one instruction is required')).toBeInTheDocument();
@@ -425,7 +455,7 @@ describe('RecipeForm', () => {
 
   describe('Form Submission', () => {
     it('should call onSubmit with valid data', async () => {
-      const { user } = render(<RecipeForm {...defaultProps} />);
+      const { user } = renderRecipeForm();
 
       // Fill in all required fields
       await user.type(screen.getByPlaceholderText(/homemade margherita pizza/i), 'Test Recipe');
@@ -441,7 +471,7 @@ describe('RecipeForm', () => {
       const instructionInput = screen.getByPlaceholderText(/step 1 instructions/i);
       await user.type(instructionInput, 'Mix all ingredients together');
 
-      await user.click(screen.getByRole('button', { name: /^create$/i }));
+      await user.click(screen.getByRole('button', { name: /create recipe/i }));
 
       await waitFor(() => {
         expect(mockOnSubmit).toHaveBeenCalledWith(
@@ -467,7 +497,7 @@ describe('RecipeForm', () => {
     });
 
     it('should filter out empty ingredients on submit', async () => {
-      const { user } = render(<RecipeForm {...defaultProps} />);
+      const { user } = renderRecipeForm();
 
       await user.type(screen.getByPlaceholderText(/homemade margherita pizza/i), 'Test Recipe');
       await user.type(screen.getByPlaceholderText(/brief description/i), 'Test description');
@@ -484,7 +514,7 @@ describe('RecipeForm', () => {
       const instructionInput = screen.getByPlaceholderText(/step 1 instructions/i);
       await user.type(instructionInput, 'Mix');
 
-      await user.click(screen.getByRole('button', { name: /^create$/i }));
+      await user.click(screen.getByRole('button', { name: /create recipe/i }));
 
       await waitFor(() => {
         expect(mockOnSubmit).toHaveBeenCalledWith(
@@ -500,7 +530,7 @@ describe('RecipeForm', () => {
     });
 
     it('should filter out empty instructions on submit', async () => {
-      const { user } = render(<RecipeForm {...defaultProps} />);
+      const { user } = renderRecipeForm();
 
       await user.type(screen.getByPlaceholderText(/homemade margherita pizza/i), 'Test Recipe');
       await user.type(screen.getByPlaceholderText(/brief description/i), 'Test description');
@@ -517,7 +547,7 @@ describe('RecipeForm', () => {
       // Add empty instruction
       await user.click(screen.getByRole('button', { name: /add step/i }));
 
-      await user.click(screen.getByRole('button', { name: /^create$/i }));
+      await user.click(screen.getByRole('button', { name: /create recipe/i }));
 
       await waitFor(() => {
         expect(mockOnSubmit).toHaveBeenCalledWith(
@@ -533,10 +563,10 @@ describe('RecipeForm', () => {
     });
 
     it('should not submit if validation fails', async () => {
-      const { user } = render(<RecipeForm {...defaultProps} />);
+      const { user } = renderRecipeForm();
 
       // Try to submit without filling required fields
-      await user.click(screen.getByRole('button', { name: /^create$/i }));
+      await user.click(screen.getByRole('button', { name: /create recipe/i }));
 
       await waitFor(() => {
         expect(screen.getByText('Title is required')).toBeInTheDocument();
@@ -545,15 +575,28 @@ describe('RecipeForm', () => {
       expect(mockOnSubmit).not.toHaveBeenCalled();
     });
 
+    it('should show error summary near submit button when validation fails', async () => {
+      const { user } = renderRecipeForm();
+
+      // Try to submit without filling required fields
+      await user.click(screen.getByRole('button', { name: /create recipe/i }));
+
+      // An alert should appear near the form actions indicating errors exist
+      await waitFor(() => {
+        expect(screen.getByRole('alert')).toBeInTheDocument();
+        expect(screen.getByRole('alert')).toHaveTextContent(/fix.*error/i);
+      });
+    });
+
     it('should disable submit button while submitting', () => {
-      render(<RecipeForm {...defaultProps} isSubmitting={true} />);
+      renderRecipeForm({ isSubmitting: true });
 
       const submitButton = screen.getByRole('button', { name: /saving/i });
       expect(submitButton).toBeDisabled();
     });
 
     it('should show "Saving..." text while submitting', () => {
-      render(<RecipeForm {...defaultProps} isSubmitting={true} />);
+      renderRecipeForm({ isSubmitting: true });
 
       expect(screen.getByRole('button', { name: /saving/i })).toBeInTheDocument();
     });
@@ -561,7 +604,7 @@ describe('RecipeForm', () => {
 
   describe('Cancel', () => {
     it('should call onCancel when cancel button clicked', async () => {
-      const { user } = render(<RecipeForm {...defaultProps} />);
+      const { user } = renderRecipeForm();
 
       await user.click(screen.getByRole('button', { name: /cancel/i }));
 
@@ -569,7 +612,7 @@ describe('RecipeForm', () => {
     });
 
     it('should disable cancel button while submitting', () => {
-      render(<RecipeForm {...defaultProps} isSubmitting={true} />);
+      renderRecipeForm({ isSubmitting: true });
 
       const cancelButton = screen.getByRole('button', { name: /cancel/i });
       expect(cancelButton).toBeDisabled();

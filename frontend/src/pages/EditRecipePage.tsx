@@ -8,6 +8,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ChevronLeft } from '../components/common/icons';
 import RecipeForm from '../components/recipes/RecipeForm';
+import { ChatPanel } from '../components/chat/ChatPanel';
 import { recipeApi } from '../services/recipeApi';
 import type { Recipe, RecipeFormData } from '../types';
 
@@ -19,6 +20,8 @@ export default function EditRecipePage() {
   const [loading, setLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [formData, setFormData] = useState<RecipeFormData | null>(null);
+  const [isChatOpen, setIsChatOpen] = useState(false);
 
   // Fetch recipe
   useEffect(() => {
@@ -34,6 +37,23 @@ export default function EditRecipePage() {
         setError(null);
         const data = await recipeApi.getRecipe(id);
         setRecipe(data);
+
+        // Convert Recipe to RecipeFormData
+        setFormData({
+          title: data.title,
+          description: data.description,
+          ingredients: data.ingredients,
+          instructions: data.instructions,
+          prepTimeMinutes: data.prepTimeMinutes,
+          cookTimeMinutes: data.cookTimeMinutes,
+          servings: data.servings,
+          cuisineType: data.cuisineType,
+          dietaryTags: data.dietaryTags,
+          difficultyLevel: data.difficultyLevel,
+          sourceUrl: data.sourceUrl ?? '',
+          sourceName: data.sourceName ?? '',
+          notes: data.notes ?? '',
+        });
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to fetch recipe');
       } finally {
@@ -70,6 +90,10 @@ export default function EditRecipePage() {
     }
   };
 
+  const handleApplyRecipe = (recipe: RecipeFormData) => {
+    setFormData(recipe);
+  };
+
   // Loading state
   if (loading) {
     return (
@@ -96,26 +120,9 @@ export default function EditRecipePage() {
     );
   }
 
-  if (!recipe) {
+  if (!recipe || !formData) {
     return null;
   }
-
-  // Convert Recipe to RecipeFormData
-  const initialData: RecipeFormData = {
-    title: recipe.title,
-    description: recipe.description,
-    ingredients: recipe.ingredients,
-    instructions: recipe.instructions,
-    prepTimeMinutes: recipe.prepTimeMinutes,
-    cookTimeMinutes: recipe.cookTimeMinutes,
-    servings: recipe.servings,
-    cuisineType: recipe.cuisineType,
-    dietaryTags: recipe.dietaryTags,
-    difficultyLevel: recipe.difficultyLevel,
-    sourceUrl: recipe.sourceUrl,
-    sourceName: recipe.sourceName,
-    notes: recipe.notes,
-  };
 
   return (
     <div className="max-w-4xl">
@@ -141,12 +148,33 @@ export default function EditRecipePage() {
         </div>
       )}
 
+      {/* AI Chat Toggle */}
+      <div className="mb-4">
+        <button
+          onClick={() => setIsChatOpen(!isChatOpen)}
+          className="px-4 py-2 bg-primary-100 text-primary-700 rounded-lg font-medium hover:bg-primary-200 transition"
+        >
+          AI Chat
+        </button>
+      </div>
+
       {/* Recipe Form */}
       <RecipeForm
-        initialData={initialData}
+        value={formData}
+        onChange={setFormData}
+        mode="edit"
         onSubmit={handleSubmit}
         onCancel={handleCancel}
         isSubmitting={isSubmitting}
+      />
+
+      {/* Chat Panel */}
+      <ChatPanel
+        isOpen={isChatOpen}
+        onClose={() => setIsChatOpen(false)}
+        currentRecipe={formData}
+        onApply={handleApplyRecipe}
+        recipeId={id}
       />
     </div>
   );

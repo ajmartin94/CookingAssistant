@@ -100,7 +100,7 @@ const transformFormToBackend = (data: RecipeFormData) => ({
 const transformRecipe = (backend: BackendRecipe): Recipe => ({
   id: backend.id,
   title: backend.title,
-  description: backend.description,
+  description: backend.description || '',
   ingredients: backend.ingredients.map(
     (ing): Ingredient => ({
       name: ing.name,
@@ -116,12 +116,12 @@ const transformRecipe = (backend: BackendRecipe): Recipe => ({
       durationMinutes: inst.duration_minutes,
     })
   ),
-  prepTimeMinutes: backend.prep_time_minutes,
-  cookTimeMinutes: backend.cook_time_minutes,
-  totalTimeMinutes: backend.total_time_minutes,
+  prepTimeMinutes: backend.prep_time_minutes || 0,
+  cookTimeMinutes: backend.cook_time_minutes || 0,
+  totalTimeMinutes: backend.total_time_minutes || 0,
   servings: backend.servings,
-  cuisineType: backend.cuisine_type,
-  dietaryTags: backend.dietary_tags,
+  cuisineType: backend.cuisine_type || '',
+  dietaryTags: backend.dietary_tags || [],
   difficultyLevel: backend.difficulty_level,
   sourceUrl: backend.source_url,
   sourceName: backend.source_name,

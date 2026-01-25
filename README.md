@@ -179,7 +179,7 @@ npm run test:e2e:debug   # Run in debug mode
 
 **Total Test Count:** 437+ tests (352 unit/integration + 87 E2E)
 
-For detailed E2E testing documentation, see [docs/E2E_TESTING.md](docs/E2E_TESTING.md)
+For detailed E2E testing documentation, see [e2e/CLAUDE.md](e2e/CLAUDE.md)
 
 ## 📌 Roadmap
 
@@ -205,16 +205,6 @@ For detailed E2E testing documentation, see [docs/E2E_TESTING.md](docs/E2E_TESTI
 - Phase 5: Interactive step-by-step cooking mode
 - Phase 6: Calendar & smart home integrations
 - Phase 7: Mobile app (PWA → Capacitor → React Native)
-
-### Issue Tracking
-
-This project uses [beads](https://github.com/anthropics/beads) for roadmap and issue tracking:
-
-```bash
-bd ready              # Show issues ready to work on
-bd list --status=all  # List all issues (open, closed, etc.)
-bd stats              # Project statistics
-```
 
 See `docs/archive/master_implementation_plan_v1.md` for historical phase details.
 

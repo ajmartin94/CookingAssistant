@@ -1,0 +1,193 @@
+/**
+ * Settings Page
+ *
+ * Allows users to manage their cooking preferences:
+ * dietary restrictions, skill level, and default servings.
+ */
+
+import { useState, useEffect, useCallback } from 'react';
+import { getCurrentUser, updatePreferences } from '../services/authApi';
+
+const DIETARY_OPTIONS = [
+  'vegetarian',
+  'vegan',
+  'gluten-free',
+  'dairy-free',
+  'keto',
+  'paleo',
+  'low-carb',
+  'nut-free',
+  'soy-free',
+] as const;
+
+const SKILL_LEVELS = ['beginner', 'intermediate', 'advanced'] as const;
+
+export default function SettingsPage() {
+  const [dietaryRestrictions, setDietaryRestrictions] = useState<string[]>([]);
+  const [skillLevel, setSkillLevel] = useState<string>('beginner');
+  const [servingsValue, setServingsValue] = useState<string>('4');
+  const [loading, setLoading] = useState(true);
+  const [validationError, setValidationError] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  // Load current preferences on mount
+  useEffect(() => {
+    const loadPreferences = async () => {
+      try {
+        const user = await getCurrentUser();
+        setDietaryRestrictions(user.dietaryRestrictions || []);
+        setSkillLevel(user.skillLevel || 'beginner');
+        setServingsValue(String(user.defaultServings || 4));
+      } catch {
+        // If loading fails, keep defaults
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadPreferences();
+  }, []);
+
+  const handleDietaryChange = useCallback((option: string) => {
+    setDietaryRestrictions((prev) =>
+      prev.includes(option) ? prev.filter((d) => d !== option) : [...prev, option]
+    );
+  }, []);
+
+  const handleServingsChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const rawValue = e.target.value;
+    setServingsValue(rawValue);
+    // Clear validation error when user enters a valid value
+    const numValue = parseInt(rawValue, 10);
+    if (!isNaN(numValue) && numValue >= 1 && numValue <= 100) {
+      setValidationError(null);
+    }
+  }, []);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    // Validate servings
+    const servingsNum = parseInt(servingsValue, 10);
+    if (isNaN(servingsNum) || servingsNum < 1 || servingsNum > 100) {
+      setValidationError('Servings must be between 1 and 100');
+      return;
+    }
+
+    setValidationError(null);
+    setSuccessMessage(null);
+    setErrorMessage(null);
+
+    try {
+      await updatePreferences({
+        dietaryRestrictions,
+        skillLevel,
+        defaultServings: servingsNum,
+      });
+      setSuccessMessage('Preferences saved successfully');
+
+      // Auto-dismiss success message
+      setTimeout(() => {
+        setSuccessMessage(null);
+      }, 3000);
+    } catch {
+      setErrorMessage('Failed to save preferences');
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center py-12">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500"></div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="max-w-2xl mx-auto">
+      <h1 className="text-3xl font-display font-bold text-neutral-900 mb-6">Settings</h1>
+
+      <form
+        onSubmit={handleSubmit}
+        noValidate
+        className="bg-white rounded-lg shadow-soft p-6 space-y-8"
+      >
+        {/* Dietary Restrictions */}
+        <fieldset>
+          <legend className="text-lg font-semibold text-neutral-900 mb-3">
+            Dietary Restrictions
+          </legend>
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+            {DIETARY_OPTIONS.map((option) => (
+              <label key={option} className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={dietaryRestrictions.includes(option)}
+                  onChange={() => handleDietaryChange(option)}
+                  className="w-4 h-4 rounded border-neutral-300 text-primary-500 focus:ring-primary-500"
+                />
+                <span className="text-sm text-neutral-700 capitalize">{option}</span>
+              </label>
+            ))}
+          </div>
+        </fieldset>
+
+        {/* Skill Level */}
+        <div>
+          <label htmlFor="skillLevel" className="block text-lg font-semibold text-neutral-900 mb-3">
+            Skill Level
+          </label>
+          <select
+            id="skillLevel"
+            value={skillLevel}
+            onChange={(e) => setSkillLevel(e.target.value)}
+            aria-label="Skill Level"
+            className="w-48 px-3 py-2 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white"
+          >
+            {SKILL_LEVELS.map((level) => (
+              <option key={level} value={level}>
+                {level.charAt(0).toUpperCase() + level.slice(1)}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {/* Default Servings */}
+        <div>
+          <label
+            htmlFor="defaultServings"
+            className="block text-lg font-semibold text-neutral-900 mb-3"
+          >
+            Default Servings
+          </label>
+          <input
+            id="defaultServings"
+            type="number"
+            min={1}
+            max={100}
+            value={servingsValue}
+            onChange={handleServingsChange}
+            aria-label="Default Servings"
+            className="w-24 px-3 py-2 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+          />
+          {validationError && <p className="mt-2 text-sm text-error-600">{validationError}</p>}
+        </div>
+
+        {/* Feedback Messages */}
+        {successMessage && <p className="text-sm text-success-600 font-medium">{successMessage}</p>}
+        {errorMessage && <p className="text-sm text-error-600 font-medium">{errorMessage}</p>}
+
+        {/* Save Button */}
+        <div>
+          <button
+            type="submit"
+            className="px-6 py-2 bg-primary-500 text-white rounded-lg font-semibold hover:bg-primary-600 transition"
+          >
+            Save Preferences
+          </button>
+        </div>
+      </form>
+    </div>
+  );
+}

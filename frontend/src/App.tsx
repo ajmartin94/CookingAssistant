@@ -20,6 +20,7 @@ import EditRecipePage from './pages/EditRecipePage';
 import LibrariesPage from './pages/LibrariesPage';
 import LibraryDetailPage from './pages/LibraryDetailPage';
 import SharedRecipePage from './pages/SharedRecipePage';
+import SettingsPage from './pages/SettingsPage';
 
 function App() {
   return (
@@ -45,6 +46,7 @@ function App() {
               <Route path="/planning" element={<ComingSoonPage title="Meal Planning" />} />
               <Route path="/shopping" element={<ComingSoonPage title="Shopping List" />} />
               <Route path="/cooking" element={<ComingSoonPage title="Cooking Mode" />} />
+              <Route path="/settings" element={<SettingsPage />} />
             </Route>
           </Routes>
         </Router>

@@ -30,6 +30,36 @@ interface UpdateProfileData {
   password?: string;
 }
 
+interface UpdatePreferencesData {
+  dietaryRestrictions: string[];
+  skillLevel: string;
+  defaultServings: number;
+}
+
+interface BackendUser {
+  id: string;
+  username: string;
+  email: string;
+  full_name: string;
+  dietary_restrictions: string[] | null;
+  skill_level: string | null;
+  default_servings: number | null;
+  created_at: string;
+  updated_at: string;
+}
+
+const transformUser = (backend: BackendUser): User => ({
+  id: backend.id,
+  username: backend.username,
+  email: backend.email,
+  fullName: backend.full_name,
+  dietaryRestrictions: backend.dietary_restrictions || [],
+  skillLevel: backend.skill_level || 'beginner',
+  defaultServings: backend.default_servings || 4,
+  createdAt: backend.created_at,
+  updatedAt: backend.updated_at,
+});
+
 /**
  * Register a new user
  */
@@ -60,8 +90,8 @@ export const login = async (data: LoginData): Promise<LoginResponse> => {
  * Get current user profile
  */
 export const getCurrentUser = async (): Promise<User> => {
-  const response = await apiClient.get('/api/v1/users/me');
-  return response.data;
+  const response = await apiClient.get<BackendUser>('/api/v1/users/me');
+  return transformUser(response.data);
 };
 
 /**
@@ -70,6 +100,18 @@ export const getCurrentUser = async (): Promise<User> => {
 export const updateProfile = async (data: UpdateProfileData): Promise<User> => {
   const response = await apiClient.put('/api/v1/users/me', data);
   return response.data;
+};
+
+/**
+ * Update current user preferences
+ */
+export const updatePreferences = async (data: UpdatePreferencesData): Promise<User> => {
+  const response = await apiClient.patch<BackendUser>('/api/v1/users/me/preferences', {
+    dietary_restrictions: data.dietaryRestrictions,
+    skill_level: data.skillLevel,
+    default_servings: data.defaultServings,
+  });
+  return transformUser(response.data);
 };
 
 /**

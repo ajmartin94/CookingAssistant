@@ -12,19 +12,23 @@
 
 ---
 
-## Development Principles
+## Development Workflow
 
-### 1. Beads-First
-All work MUST be tracked in beads. Use the `/beads` skill for workflow guidance.
+### Feature Pipeline
 
-```bash
-bd ready                              # Find available work
-bd show <id>                          # Review details
-bd update <id> --status=in_progress   # Claim it
+```
+/brainstorm → /plan → /tdd → /migrate → /code-review → PR
 ```
 
-### 2. TDD-Enforced
-Features and bugs require tests before code. The `/beads` skill includes the RED-GREEN-REVIEW workflow.
+1. **`/brainstorm`** — Collaborative Q&A to explore the idea, produces `brainstorm.md`
+2. **`/plan`** — Structure the brainstorm into TDD-ready plan with acceptance criteria
+3. **`/tdd`** — Execute the plan through outside-in TDD (impl/review sub-agents)
+4. **`/migrate`** — Interactive cleanup of broken tests + DB migrations
+5. **`/code-review`** — Verify implementation matches plan + code standards
+
+### TDD-Enforced
+
+Features and bugs require tests before code. Outside-in: E2E → Backend → Frontend.
 
 <!-- Per AD-0101 -->
 **Enforcement**: GitHub branch protection blocks PR merges unless all CI checks pass:
@@ -34,35 +38,40 @@ Features and bugs require tests before code. The `/beads` skill includes the RED
 
 See [docs/TESTING.md](docs/TESTING.md#enforcement-policy) for details.
 
-### 3. Three Modes
+### Three Modes
 Every AI feature should support:
 - **Manual**: User has full control
 - **AI Assist**: AI suggests, user approves
 - **AI Automation**: End-to-end with minimal input
 
-### 4. Documentation Changes via ADR
-Documentation changes flow through the Architecture Decision Workflow. See [docs/ARCHITECTURE_DECISION_WORKFLOW.md](docs/ARCHITECTURE_DECISION_WORKFLOW.md).
-
-Key points:
-- **Step 1**: Gather evidence → Gate 1 (docs change needed?)
-- **Step 2**: Draft AD → Gate 2 (approve decision?)
-- **Step 3**: Propagate → Gate 3 (changes correct?)
 
 ---
 
 ## Repository Structure
 
-<!-- Per AD-0103 -->
 ```
 CookingAssistant/
 ├── backend/          # FastAPI (see backend/CLAUDE.md)
 ├── frontend/         # React/TypeScript (see frontend/CLAUDE.md)
-├── e2e/              # End-to-end tests (Playwright)
+├── e2e/              # End-to-end tests (Playwright, see e2e/CLAUDE.md)
 ├── docs/             # Documentation
-│   └── decisions/    # Architecture Decision Records
 ├── .github/          # CI workflows
-├── .beads/           # Issue tracking
-└── .claude/          # Skills and hooks
+└── .claude/          # Skills, plans, and hooks
+```
+
+---
+
+## Quick Start
+
+```bash
+# Backend
+cd backend && python -m venv venv && source venv/bin/activate
+pip install -r requirements.txt
+alembic upgrade head
+uvicorn app.main:app --reload --port 8000
+
+# Frontend (separate terminal)
+cd frontend && npm install && npm run dev
 ```
 
 ---
@@ -78,11 +87,11 @@ CookingAssistant/
 
 Before ending any session:
 
+1. **Graduate learnings**: If the session uncovered conventions, patterns, or pitfalls, update the relevant durable docs (CLAUDE.md files, docs/) directly. Do not leave ad-hoc learning files in the repo. See [Context Management Guide](docs/CONTEXT_MANAGEMENT_GUIDE.md) for graduation criteria.
+2. **Commit changes**:
+
 ```bash
 git status              # Check what changed
 git add <files>         # Stage changes
-bd sync --from-main     # Pull beads updates
 git commit -m "..."     # Commit with conventional message
 ```
-
-**Rule**: Every `bd close` must be followed immediately by a `git commit`.

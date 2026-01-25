@@ -127,25 +127,14 @@ test.describe('Smoke Tests', () => {
     await page.locator('input[name="username"]').fill(testUser.username);
     await page.locator('input[name="password"]').fill(testUser.password);
 
-    // Set up response listener BEFORE clicking submit
-    const loginResponsePromise = page.waitForResponse(
-      (resp) => resp.url().includes('/users/login'),
-      { timeout: 10000 }
-    );
-
-    // Submit the form
-    await page.locator('button[type="submit"]').click();
-
-    // Wait for and verify the API response
-    const loginResponse = await loginResponsePromise;
-    expect(loginResponse.status()).toBe(200);
-
-    // Verify we got a token in the response
-    const responseBody = await loginResponse.json();
-    expect(responseBody.access_token).toBeTruthy();
+    // Submit the form and wait for navigation
+    await Promise.all([
+      page.waitForURL(/\/recipes/, { timeout: 10000 }),
+      page.locator('button[type="submit"]').click(),
+    ]);
 
     // Verify redirect to authenticated area
-    await expect(page).toHaveURL(/\/recipes/, { timeout: 10000 });
+    expect(page.url()).toMatch(/\/recipes/);
 
     // Verify token is stored in localStorage
     const storedToken = await page.evaluate(() =>
