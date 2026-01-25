@@ -12,12 +12,16 @@ The script should:
 
 import pytest
 import os
+from pathlib import Path
 from unittest.mock import patch
 from sqlalchemy import select, func
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.user import User
 from app.models.recipe import Recipe
+
+# Compute backend directory dynamically for CLI tests
+BACKEND_DIR = Path(__file__).parent.parent.parent
 
 
 class TestSeedScript:
@@ -255,7 +259,7 @@ class TestSeedCLI:
             [sys.executable, "-m", "scripts.seed", "--help"],
             capture_output=True,
             text=True,
-            cwd="/mnt/c/Users/marti/Documents/Code Projects/CookingAssistant/CookingAssistant/backend",
+            cwd=str(BACKEND_DIR),
         )
 
         # Should not error (exit code 0 for help)
@@ -273,7 +277,7 @@ class TestSeedCLI:
             [sys.executable, "-m", "scripts.seed", "--reset"],
             capture_output=True,
             text=True,
-            cwd="/mnt/c/Users/marti/Documents/Code Projects/CookingAssistant/CookingAssistant/backend",
+            cwd=str(BACKEND_DIR),
             env={},  # No env vars
         )
 
