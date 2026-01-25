@@ -15,7 +15,7 @@ backend/
 │   ├── database.py          # DB connection/session
 │   ├── models/              # SQLAlchemy ORM models
 │   ├── schemas/             # Pydantic request/response
-│   ├── api/v1/              # Route handlers
+│   ├── api/                 # Route handlers
 │   ├── services/            # Business logic
 │   ├── ai/                  # AI integration (prompts, client)
 │   └── utils/               # Helpers
@@ -126,8 +126,9 @@ Do NOT run `alembic upgrade head` on a non-existent database - create it first, 
 1. Define Pydantic schema in `app/schemas/`
 2. Create model in `app/models/` (if DB needed)
 3. Add service function in `app/services/`
-4. Create route in `app/api/v1/`
-5. Write tests: integration tests through the API (unit tests only for pure logic)
+4. Create route in `app/api/`
+5. **Export router in `app/api/__init__.py`** — add to imports and `__all__`
+6. Write tests: integration tests through the API (unit tests only for pure logic)
 
 **Pattern reference**: Read existing files in `app/services/` and `tests/` for conventions.
 
@@ -279,6 +280,20 @@ tests/
 │   └── test_{resource}_api.py    # test_recipes_api.py
 └── unit/
     └── test_{service}_service.py # test_recipe_service.py
+```
+
+### Avoid Hardcoded Paths
+
+Never use absolute paths in tests — they break on other machines and CI:
+
+```python
+from pathlib import Path
+
+# Compute paths relative to test file location
+BACKEND_DIR = Path(__file__).parent.parent.parent
+
+# Use in subprocess calls
+subprocess.run([sys.executable, "-m", "scripts.seed"], cwd=str(BACKEND_DIR))
 ```
 
 ### Unit vs Integration

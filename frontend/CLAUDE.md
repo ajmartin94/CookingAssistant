@@ -88,6 +88,8 @@ npm run lint
 - **Co-located tests**: `Component.test.tsx` next to `Component.tsx`
 - **Custom hooks**: Extract stateful logic to `hooks/`
 - **API calls**: Use `services/` functions, not inline fetch
+- **Global UI elements**: Components that should appear on ALL pages (including unauthenticated routes like `/login`) belong in `App.tsx`, not inside layouts
+- **Class components**: Acceptable only for Error Boundaries (React has no hooks API for `componentDidCatch`)
 
 ---
 
@@ -333,6 +335,32 @@ src/services/recipeApi.test.ts              # Service test
 ```
 
 **Pattern reference**: Read existing `.test.tsx` files for conventions.
+
+### TypeScript Assertions in Mock Tests
+
+When accessing properties from mocked function calls or captured request bodies, TypeScript may need explicit type assertions:
+
+```typescript
+// Mocked function context (e.g., Sentry)
+const sentryCall = vi.mocked(Sentry.captureException).mock.calls[0];
+const context = sentryCall[1] as { extra?: { componentStack?: string } };
+
+// Captured request body (after null check, use non-null assertion)
+expect(capturedBody).not.toBeNull();
+expect(capturedBody!.message).toBe('expected');
+```
+
+### Accessible Names Must Be Unique
+
+Choose unique accessible names that won't conflict with other UI elements. E2E tests use regex patterns like `/send/i` to find buttons — if multiple elements match, tests fail with "strict mode violation."
+
+```tsx
+// BAD: "Send Feedback" matches /send/i along with chat's "Send" button
+<button aria-label="Send Feedback">Feedback</button>
+
+// GOOD: "Give Feedback" is unique
+<button aria-label="Give Feedback">Feedback</button>
+```
 
 ---
 
