@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, afterEach, beforeAll, afterAll } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, waitFor } from '../../test/test-utils';
 import userEvent from '@testing-library/user-event';
 import { ChatPanel } from './ChatPanel';
@@ -30,17 +30,20 @@ const defaultProps = {
  * 5. Input disabled during API call
  */
 describe('ChatPanel', () => {
-  beforeAll(() => {
-    server.listen();
-    sessionStorage.clear(); // Clear any stale data from previous test files
+  // Note: server.listen() and server.close() are handled by global test setup
+  beforeEach(() => {
+    // Clear ALL sessionStorage to ensure complete isolation between tests
+    sessionStorage.clear();
+    // Also clear any cached state that might persist
+    window.sessionStorage.clear();
+    mockOnApply.mockClear();
+    mockOnClose.mockClear();
   });
   afterEach(() => {
     server.resetHandlers();
-    mockOnApply.mockClear();
-    mockOnClose.mockClear();
+    // Double-clear to handle any state set during test
     sessionStorage.clear();
   });
-  afterAll(() => server.close());
 
   it('renders with input and send button', () => {
     render(<ChatPanel {...defaultProps} />);
@@ -69,9 +72,9 @@ describe('ChatPanel', () => {
     await user.type(input, 'hello');
     await user.click(screen.getByRole('button', { name: /send/i }));
 
-    await waitFor(() => {
-      expect(screen.getByText(/hello! i can help you with your recipe/i)).toBeInTheDocument();
-    });
+    // Use findByText (async) instead of waitFor + getByText
+    const responseMessage = await screen.findByText(/hello! i can help you with your recipe/i);
+    expect(responseMessage).toBeInTheDocument();
   });
 
   it('Apply button calls onApply with proposed recipe', async () => {
