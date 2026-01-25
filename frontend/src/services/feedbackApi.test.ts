@@ -62,8 +62,8 @@ describe('feedbackApi', () => {
 
       expect(capturedBody).not.toBeNull();
       // API uses snake_case per project conventions
-      expect(capturedBody?.message).toBe('Great app!');
-      expect(capturedBody?.page_url).toBe('http://localhost:3000/settings');
+      expect(capturedBody!.message).toBe('Great app!');
+      expect(capturedBody!.page_url).toBe('http://localhost:3000/settings');
     });
 
     it('should include auth token if user is logged in', async () => {

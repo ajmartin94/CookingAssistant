@@ -188,7 +188,8 @@ describe('ErrorBoundary', () => {
       const sentryCall = vi.mocked(Sentry.captureException).mock.calls[0];
       expect(sentryCall[0]).toBe(testError);
       expect(sentryCall[1]).toHaveProperty('extra.componentStack');
-      expect(typeof sentryCall[1]?.extra?.componentStack).toBe('string');
+      const context = sentryCall[1] as { extra?: { componentStack?: string } };
+      expect(typeof context?.extra?.componentStack).toBe('string');
     });
 
     it('should report error only once per error occurrence', () => {
