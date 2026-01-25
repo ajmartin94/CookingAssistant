@@ -75,7 +75,10 @@ describe('EditRecipePage - Chat Integration', () => {
 
   it('after Apply, next chat message includes the updated recipe state', async () => {
     // Track the chat API requests to verify the recipe state is sent
-    let lastChatRequest: { current_recipe?: Record<string, unknown> } | null = null;
+    let lastChatRequest: {
+      messages: { role: string; content: string }[];
+      current_recipe?: Record<string, unknown>;
+    } | null = null;
 
     server.use(
       http.post(`${BASE_URL}/api/v1/chat`, async ({ request }) => {
