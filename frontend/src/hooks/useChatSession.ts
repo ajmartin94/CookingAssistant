@@ -28,8 +28,12 @@ interface UseChatSessionReturn {
 /**
  * Hook for managing chat session state with page-specific persistence.
  * @param pageKey - Unique key for the page (e.g., 'create' or recipe ID for edit pages)
+ * @param recipeId - Optional recipe ID for edit pages (sent to backend for ownership verification)
  */
-export function useChatSession(pageKey: string = 'create'): UseChatSessionReturn {
+export function useChatSession(
+  pageKey: string = 'create',
+  recipeId?: string
+): UseChatSessionReturn {
   const storageKey = `${STORAGE_KEY_PREFIX}_${pageKey}`;
 
   const [messages, setMessages] = useState<ChatSessionMessage[]>(() => {
@@ -69,7 +73,7 @@ export function useChatSession(pageKey: string = 'create'): UseChatSessionReturn
           { role: 'user' as const, content: text },
         ];
 
-        const response = await chatApi.sendChatMessage(apiMessages, currentRecipe);
+        const response = await chatApi.sendChatMessage(apiMessages, currentRecipe, recipeId);
 
         const assistantMessage: ChatSessionMessage = {
           role: 'assistant',

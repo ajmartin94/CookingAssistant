@@ -38,6 +38,41 @@ describe('EditRecipePage - Chat Integration', () => {
     expect(screen.getByRole('button', { name: /ai chat/i })).toBeInTheDocument();
   });
 
+  it('chat on edit page sends recipe_id with requests', async () => {
+    let capturedRecipeId: string | undefined;
+
+    server.use(
+      http.post(`${BASE_URL}/api/v1/chat`, async ({ request }) => {
+        const body = (await request.json()) as { recipe_id?: string };
+        capturedRecipeId = body.recipe_id;
+        return HttpResponse.json({
+          message: 'Got it!',
+          proposed_recipe: null,
+        });
+      })
+    );
+
+    const user = userEvent.setup();
+    render(<EditRecipePage />);
+
+    await waitFor(() => {
+      expect(screen.getByRole('heading', { name: /edit recipe/i })).toBeInTheDocument();
+    });
+
+    await user.click(screen.getByRole('button', { name: /ai chat/i }));
+
+    const input = screen.getByRole('textbox', { name: /message/i });
+    await user.type(input, 'hello');
+    await user.click(screen.getByRole('button', { name: /send/i }));
+
+    await waitFor(() => {
+      expect(screen.getByText(/got it/i)).toBeInTheDocument();
+    });
+
+    // Verify recipe_id was sent (matches useParams mock returning id: '1')
+    expect(capturedRecipeId).toBe('1');
+  });
+
   it('after Apply, next chat message includes the updated recipe state', async () => {
     // Track the chat API requests to verify the recipe state is sent
     let lastChatRequest: { current_recipe?: Record<string, unknown> } | null = null;

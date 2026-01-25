@@ -50,6 +50,7 @@ export interface ChatMessage {
 export interface ChatRequest {
   messages: ChatMessage[];
   current_recipe: BackendRecipeFormData;
+  recipe_id?: string;
 }
 
 export interface ChatResponse {
@@ -114,11 +115,13 @@ const transformProposedRecipe = (backend: Partial<BackendRecipeFormData>): Recip
  */
 export const sendChatMessage = async (
   messages: ChatMessage[],
-  currentRecipe: RecipeFormData
+  currentRecipe: RecipeFormData,
+  recipeId?: string
 ): Promise<ChatResponse> => {
   const requestBody: ChatRequest = {
     messages,
     current_recipe: transformRecipeToBackend(currentRecipe),
+    recipe_id: recipeId,
   };
 
   const response = await apiClient.post<BackendChatResponse>('/api/v1/chat', requestBody);

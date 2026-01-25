@@ -26,7 +26,7 @@ export function ChatPanel({ isOpen, onClose, currentRecipe, onApply, recipeId }:
   // Use recipeId as the page key for edit pages, 'create' for create page
   const pageKey = recipeId ?? 'create';
   const { messages, isLoading, error, currentProposal, sendMessage, applyChanges, rejectChanges } =
-    useChatSession(pageKey);
+    useChatSession(pageKey, recipeId);
 
   // Focus input when panel opens
   useEffect(() => {
