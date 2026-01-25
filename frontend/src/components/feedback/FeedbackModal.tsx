@@ -1,0 +1,188 @@
+/**
+ * FeedbackModal Component
+ *
+ * Modal dialog for submitting user feedback with form validation,
+ * loading states, and success/error toast notifications.
+ */
+
+import { useState, useEffect, useCallback, useRef, type FormEvent, type ChangeEvent } from 'react';
+import { submitFeedback } from '../../services/feedbackApi';
+
+export interface FeedbackModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+}
+
+const MIN_MESSAGE_LENGTH = 10;
+
+export function FeedbackModal({ isOpen, onClose }: FeedbackModalProps) {
+  const [message, setMessage] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [toast, setToast] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+  const [showValidationError, setShowValidationError] = useState(false);
+  const closeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const isValid = message.length >= MIN_MESSAGE_LENGTH;
+
+  // Clear state and cancel pending timeouts when modal opens/closes
+  useEffect(() => {
+    if (!isOpen) {
+      setMessage('');
+      setToast(null);
+      setShowValidationError(false);
+      if (closeTimeoutRef.current) {
+        clearTimeout(closeTimeoutRef.current);
+        closeTimeoutRef.current = null;
+      }
+    }
+  }, [isOpen]);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (closeTimeoutRef.current) {
+        clearTimeout(closeTimeoutRef.current);
+      }
+    };
+  }, []);
+
+  // Handle Escape key
+  const handleKeyDown = useCallback(
+    (event: KeyboardEvent) => {
+      if (event.key === 'Escape' && !isSubmitting) {
+        onClose();
+      }
+    },
+    [isSubmitting, onClose]
+  );
+
+  useEffect(() => {
+    if (isOpen) {
+      document.addEventListener('keydown', handleKeyDown);
+      return () => {
+        document.removeEventListener('keydown', handleKeyDown);
+      };
+    }
+  }, [isOpen, handleKeyDown]);
+
+  const handleSubmit = async (event: FormEvent) => {
+    event.preventDefault();
+
+    if (!isValid) {
+      setShowValidationError(true);
+      return;
+    }
+
+    if (isSubmitting) {
+      return;
+    }
+
+    setShowValidationError(false);
+
+    setIsSubmitting(true);
+    setToast(null);
+
+    try {
+      await submitFeedback({
+        message,
+        pageUrl: window.location.href,
+      });
+
+      setToast({ type: 'success', text: 'Thanks for your feedback!' });
+      // Close modal after delay to show success message
+      closeTimeoutRef.current = setTimeout(() => {
+        onClose();
+      }, 1500);
+    } catch {
+      setToast({ type: 'error', text: 'Could not submit feedback. Please try again.' });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleMessageChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
+    setMessage(event.target.value);
+  };
+
+  if (!isOpen) {
+    return null;
+  }
+
+  return (
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-label="Feedback"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
+    >
+      <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-md mx-4">
+        <h2 className="text-lg font-semibold mb-4">Send Feedback</h2>
+
+        <form onSubmit={handleSubmit}>
+          <div className="mb-4">
+            <label
+              htmlFor="feedback-message"
+              className="block text-sm font-medium text-gray-700 mb-2"
+            >
+              Feedback Message
+            </label>
+            <textarea
+              id="feedback-message"
+              value={message}
+              onChange={handleMessageChange}
+              placeholder="Tell us what you think..."
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              rows={4}
+              disabled={isSubmitting}
+            />
+            <p className="text-xs text-gray-500 mt-1">
+              {message.length} / {MIN_MESSAGE_LENGTH} characters minimum
+            </p>
+            {showValidationError && !isValid && (
+              <p className="text-xs text-red-600 mt-1">
+                Please enter at least {MIN_MESSAGE_LENGTH} characters of feedback.
+              </p>
+            )}
+          </div>
+
+          {/* Toast notification */}
+          {toast && (
+            <div
+              className={`mb-4 p-3 rounded-md text-sm ${
+                toast.type === 'success' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+              }`}
+            >
+              {toast.text}
+            </div>
+          )}
+
+          <div className="flex justify-end gap-3">
+            <button
+              type="button"
+              onClick={onClose}
+              disabled={isSubmitting}
+              className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 disabled:opacity-50"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              disabled={!isValid || isSubmitting}
+              className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+            >
+              {isSubmitting && (
+                <span
+                  role="status"
+                  className="inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"
+                />
+              )}
+              Submit
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}
+
+export default FeedbackModal;

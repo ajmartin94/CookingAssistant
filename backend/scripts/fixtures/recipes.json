@@ -1,0 +1,613 @@
+[
+  {
+    "title": "Classic Spaghetti Carbonara",
+    "description": "A creamy Italian pasta dish made with eggs, cheese, pancetta, and black pepper. Simple yet incredibly flavorful.",
+    "cuisine_type": "Italian",
+    "difficulty_level": "medium",
+    "prep_time_minutes": 15,
+    "cook_time_minutes": 20,
+    "total_time_minutes": 35,
+    "servings": 4,
+    "dietary_tags": [],
+    "ingredients": [
+      {"name": "spaghetti", "amount": "400", "unit": "g"},
+      {"name": "pancetta", "amount": "200", "unit": "g"},
+      {"name": "eggs", "amount": "4", "unit": "large"},
+      {"name": "Pecorino Romano cheese", "amount": "100", "unit": "g"},
+      {"name": "Parmesan cheese", "amount": "50", "unit": "g"},
+      {"name": "black pepper", "amount": "2", "unit": "tsp"},
+      {"name": "salt", "amount": "1", "unit": "tbsp"}
+    ],
+    "instructions": [
+      {"step_number": 1, "instruction": "Bring a large pot of salted water to boil and cook spaghetti according to package directions.", "duration_minutes": 10},
+      {"step_number": 2, "instruction": "While pasta cooks, cut pancetta into small cubes and cook in a large skillet over medium heat until crispy.", "duration_minutes": 8},
+      {"step_number": 3, "instruction": "In a bowl, whisk together eggs, grated cheeses, and black pepper.", "duration_minutes": 2},
+      {"step_number": 4, "instruction": "Reserve 1 cup pasta water, then drain pasta and add to the skillet with pancetta (heat off).", "duration_minutes": 2},
+      {"step_number": 5, "instruction": "Quickly pour egg mixture over hot pasta, tossing constantly. Add pasta water as needed for creaminess.", "duration_minutes": 3}
+    ]
+  },
+  {
+    "title": "Thai Green Curry",
+    "description": "A fragrant and spicy Thai curry with coconut milk, vegetables, and your choice of protein.",
+    "cuisine_type": "Thai",
+    "difficulty_level": "medium",
+    "prep_time_minutes": 20,
+    "cook_time_minutes": 25,
+    "total_time_minutes": 45,
+    "servings": 4,
+    "dietary_tags": ["gluten-free"],
+    "ingredients": [
+      {"name": "green curry paste", "amount": "3", "unit": "tbsp"},
+      {"name": "coconut milk", "amount": "400", "unit": "ml"},
+      {"name": "chicken thighs", "amount": "500", "unit": "g"},
+      {"name": "Thai eggplant", "amount": "150", "unit": "g"},
+      {"name": "bamboo shoots", "amount": "100", "unit": "g"},
+      {"name": "Thai basil", "amount": "1", "unit": "cup"},
+      {"name": "fish sauce", "amount": "2", "unit": "tbsp"},
+      {"name": "palm sugar", "amount": "1", "unit": "tbsp"},
+      {"name": "kaffir lime leaves", "amount": "4", "unit": "leaves"}
+    ],
+    "instructions": [
+      {"step_number": 1, "instruction": "Heat a wok over high heat. Add thick coconut cream from the top of the can and fry curry paste until fragrant.", "duration_minutes": 3},
+      {"step_number": 2, "instruction": "Add sliced chicken and stir-fry until nearly cooked through.", "duration_minutes": 5},
+      {"step_number": 3, "instruction": "Pour in remaining coconut milk and bring to a simmer.", "duration_minutes": 3},
+      {"step_number": 4, "instruction": "Add eggplant, bamboo shoots, and kaffir lime leaves. Cook until vegetables are tender.", "duration_minutes": 10},
+      {"step_number": 5, "instruction": "Season with fish sauce and palm sugar. Finish with fresh Thai basil.", "duration_minutes": 2}
+    ]
+  },
+  {
+    "title": "Vegetarian Buddha Bowl",
+    "description": "A nourishing bowl packed with roasted vegetables, quinoa, chickpeas, and tahini dressing.",
+    "cuisine_type": "American",
+    "difficulty_level": "easy",
+    "prep_time_minutes": 15,
+    "cook_time_minutes": 30,
+    "total_time_minutes": 45,
+    "servings": 2,
+    "dietary_tags": ["vegetarian", "vegan", "gluten-free"],
+    "ingredients": [
+      {"name": "quinoa", "amount": "1", "unit": "cup"},
+      {"name": "chickpeas", "amount": "400", "unit": "g"},
+      {"name": "sweet potato", "amount": "1", "unit": "large"},
+      {"name": "broccoli", "amount": "2", "unit": "cups"},
+      {"name": "avocado", "amount": "1", "unit": "whole"},
+      {"name": "tahini", "amount": "3", "unit": "tbsp"},
+      {"name": "lemon juice", "amount": "2", "unit": "tbsp"},
+      {"name": "garlic", "amount": "1", "unit": "clove"},
+      {"name": "olive oil", "amount": "2", "unit": "tbsp"}
+    ],
+    "instructions": [
+      {"step_number": 1, "instruction": "Preheat oven to 400°F (200°C). Cube sweet potato and toss with olive oil, salt, and pepper.", "duration_minutes": 5},
+      {"step_number": 2, "instruction": "Roast sweet potato and drained chickpeas on a baking sheet for 25 minutes.", "duration_minutes": 25},
+      {"step_number": 3, "instruction": "Cook quinoa according to package directions.", "duration_minutes": 15},
+      {"step_number": 4, "instruction": "Steam broccoli until bright green and tender-crisp.", "duration_minutes": 5},
+      {"step_number": 5, "instruction": "Make dressing by whisking tahini, lemon juice, garlic, and water until smooth.", "duration_minutes": 3},
+      {"step_number": 6, "instruction": "Assemble bowls with quinoa, roasted vegetables, chickpeas, sliced avocado, and drizzle with tahini dressing.", "duration_minutes": 3}
+    ]
+  },
+  {
+    "title": "Japanese Chicken Katsu",
+    "description": "Crispy breaded chicken cutlets served with tonkatsu sauce and shredded cabbage.",
+    "cuisine_type": "Japanese",
+    "difficulty_level": "medium",
+    "prep_time_minutes": 20,
+    "cook_time_minutes": 15,
+    "total_time_minutes": 35,
+    "servings": 4,
+    "dietary_tags": ["dairy-free"],
+    "ingredients": [
+      {"name": "chicken breast", "amount": "4", "unit": "pieces"},
+      {"name": "panko breadcrumbs", "amount": "2", "unit": "cups"},
+      {"name": "all-purpose flour", "amount": "0.5", "unit": "cup"},
+      {"name": "eggs", "amount": "2", "unit": "large"},
+      {"name": "vegetable oil", "amount": "1", "unit": "cup"},
+      {"name": "tonkatsu sauce", "amount": "0.5", "unit": "cup"},
+      {"name": "cabbage", "amount": "0.25", "unit": "head"},
+      {"name": "salt", "amount": "1", "unit": "tsp"},
+      {"name": "black pepper", "amount": "0.5", "unit": "tsp"}
+    ],
+    "instructions": [
+      {"step_number": 1, "instruction": "Pound chicken breasts to even thickness (about 1/2 inch). Season with salt and pepper.", "duration_minutes": 5},
+      {"step_number": 2, "instruction": "Set up breading station: flour, beaten eggs, and panko in separate shallow dishes.", "duration_minutes": 3},
+      {"step_number": 3, "instruction": "Coat each chicken piece in flour, then egg, then panko, pressing to adhere.", "duration_minutes": 7},
+      {"step_number": 4, "instruction": "Heat oil in a large skillet to 350°F (175°C). Fry chicken 4-5 minutes per side until golden and cooked through.", "duration_minutes": 10},
+      {"step_number": 5, "instruction": "Drain on paper towels, slice, and serve with shredded cabbage and tonkatsu sauce.", "duration_minutes": 3}
+    ]
+  },
+  {
+    "title": "Mexican Street Tacos",
+    "description": "Authentic street-style tacos with marinated carne asada, fresh cilantro, and onions on corn tortillas.",
+    "cuisine_type": "Mexican",
+    "difficulty_level": "easy",
+    "prep_time_minutes": 30,
+    "cook_time_minutes": 15,
+    "total_time_minutes": 45,
+    "servings": 6,
+    "dietary_tags": ["gluten-free", "dairy-free"],
+    "ingredients": [
+      {"name": "flank steak", "amount": "700", "unit": "g"},
+      {"name": "corn tortillas", "amount": "12", "unit": "small"},
+      {"name": "white onion", "amount": "1", "unit": "medium"},
+      {"name": "fresh cilantro", "amount": "1", "unit": "bunch"},
+      {"name": "lime", "amount": "3", "unit": "whole"},
+      {"name": "garlic", "amount": "4", "unit": "cloves"},
+      {"name": "cumin", "amount": "1", "unit": "tsp"},
+      {"name": "chili powder", "amount": "1", "unit": "tsp"},
+      {"name": "salsa verde", "amount": "0.5", "unit": "cup"}
+    ],
+    "instructions": [
+      {"step_number": 1, "instruction": "Marinate steak with lime juice, minced garlic, cumin, chili powder, and salt for at least 30 minutes.", "duration_minutes": 30},
+      {"step_number": 2, "instruction": "Grill or pan-sear steak over high heat, 4-5 minutes per side for medium.", "duration_minutes": 10},
+      {"step_number": 3, "instruction": "Let steak rest 5 minutes, then slice thinly against the grain.", "duration_minutes": 7},
+      {"step_number": 4, "instruction": "Warm tortillas on a dry skillet or directly over gas flame.", "duration_minutes": 3},
+      {"step_number": 5, "instruction": "Assemble tacos with sliced steak, diced onion, chopped cilantro, and a squeeze of lime.", "duration_minutes": 5}
+    ]
+  },
+  {
+    "title": "Indian Butter Chicken",
+    "description": "Tender chicken in a rich, creamy tomato sauce with aromatic spices. A beloved Indian classic.",
+    "cuisine_type": "Indian",
+    "difficulty_level": "medium",
+    "prep_time_minutes": 30,
+    "cook_time_minutes": 30,
+    "total_time_minutes": 60,
+    "servings": 6,
+    "dietary_tags": ["gluten-free"],
+    "ingredients": [
+      {"name": "chicken thighs", "amount": "800", "unit": "g"},
+      {"name": "plain yogurt", "amount": "1", "unit": "cup"},
+      {"name": "garam masala", "amount": "2", "unit": "tbsp"},
+      {"name": "tomato puree", "amount": "400", "unit": "g"},
+      {"name": "heavy cream", "amount": "200", "unit": "ml"},
+      {"name": "butter", "amount": "100", "unit": "g"},
+      {"name": "ginger", "amount": "2", "unit": "inches"},
+      {"name": "garlic", "amount": "6", "unit": "cloves"},
+      {"name": "kashmiri chili powder", "amount": "1", "unit": "tbsp"},
+      {"name": "fenugreek leaves", "amount": "2", "unit": "tbsp"}
+    ],
+    "instructions": [
+      {"step_number": 1, "instruction": "Marinate chicken in yogurt, half the garam masala, and salt for at least 2 hours (or overnight).", "duration_minutes": 10},
+      {"step_number": 2, "instruction": "Grill or broil marinated chicken until charred and cooked through. Set aside.", "duration_minutes": 12},
+      {"step_number": 3, "instruction": "Melt butter in a large pan. Sauté ginger-garlic paste until fragrant.", "duration_minutes": 3},
+      {"step_number": 4, "instruction": "Add tomato puree and spices. Simmer for 15 minutes until sauce thickens.", "duration_minutes": 15},
+      {"step_number": 5, "instruction": "Stir in cream and fenugreek leaves. Add chicken pieces and simmer 5 more minutes.", "duration_minutes": 5}
+    ]
+  },
+  {
+    "title": "Greek Moussaka",
+    "description": "A layered casserole of eggplant, spiced meat sauce, and creamy bechamel. Perfect comfort food.",
+    "cuisine_type": "Greek",
+    "difficulty_level": "hard",
+    "prep_time_minutes": 45,
+    "cook_time_minutes": 60,
+    "total_time_minutes": 105,
+    "servings": 8,
+    "dietary_tags": [],
+    "ingredients": [
+      {"name": "eggplant", "amount": "3", "unit": "large"},
+      {"name": "ground lamb", "amount": "500", "unit": "g"},
+      {"name": "onion", "amount": "2", "unit": "medium"},
+      {"name": "canned tomatoes", "amount": "400", "unit": "g"},
+      {"name": "cinnamon", "amount": "1", "unit": "tsp"},
+      {"name": "butter", "amount": "60", "unit": "g"},
+      {"name": "all-purpose flour", "amount": "60", "unit": "g"},
+      {"name": "milk", "amount": "600", "unit": "ml"},
+      {"name": "egg yolks", "amount": "2", "unit": "large"},
+      {"name": "nutmeg", "amount": "0.25", "unit": "tsp"}
+    ],
+    "instructions": [
+      {"step_number": 1, "instruction": "Slice eggplants, salt them, and let drain for 30 minutes. Rinse and pat dry.", "duration_minutes": 35},
+      {"step_number": 2, "instruction": "Brush eggplant slices with oil and grill or bake until golden.", "duration_minutes": 15},
+      {"step_number": 3, "instruction": "Brown lamb with onions, add tomatoes and cinnamon. Simmer 20 minutes.", "duration_minutes": 25},
+      {"step_number": 4, "instruction": "Make bechamel: melt butter, whisk in flour, gradually add milk. Cook until thick. Stir in egg yolks and nutmeg.", "duration_minutes": 15},
+      {"step_number": 5, "instruction": "Layer eggplant, meat sauce, more eggplant, then bechamel in a baking dish.", "duration_minutes": 10},
+      {"step_number": 6, "instruction": "Bake at 350°F (180°C) for 45 minutes until golden and bubbling.", "duration_minutes": 45}
+    ]
+  },
+  {
+    "title": "Vietnamese Pho",
+    "description": "A deeply aromatic beef noodle soup with star anise, cinnamon, and fresh herbs.",
+    "cuisine_type": "Vietnamese",
+    "difficulty_level": "hard",
+    "prep_time_minutes": 30,
+    "cook_time_minutes": 180,
+    "total_time_minutes": 210,
+    "servings": 6,
+    "dietary_tags": ["dairy-free"],
+    "ingredients": [
+      {"name": "beef bones", "amount": "2", "unit": "kg"},
+      {"name": "beef brisket", "amount": "500", "unit": "g"},
+      {"name": "rice noodles", "amount": "400", "unit": "g"},
+      {"name": "onion", "amount": "2", "unit": "large"},
+      {"name": "ginger", "amount": "4", "unit": "inches"},
+      {"name": "star anise", "amount": "5", "unit": "whole"},
+      {"name": "cinnamon stick", "amount": "1", "unit": "whole"},
+      {"name": "fish sauce", "amount": "3", "unit": "tbsp"},
+      {"name": "bean sprouts", "amount": "200", "unit": "g"},
+      {"name": "Thai basil", "amount": "1", "unit": "bunch"},
+      {"name": "lime", "amount": "2", "unit": "whole"},
+      {"name": "hoisin sauce", "amount": "2", "unit": "tbsp"}
+    ],
+    "instructions": [
+      {"step_number": 1, "instruction": "Parboil beef bones for 10 minutes. Drain and rinse to remove impurities.", "duration_minutes": 15},
+      {"step_number": 2, "instruction": "Char onion and ginger under broiler until blackened in spots.", "duration_minutes": 10},
+      {"step_number": 3, "instruction": "Add bones, brisket, charred aromatics, star anise, and cinnamon to pot. Cover with water and simmer 3 hours.", "duration_minutes": 180},
+      {"step_number": 4, "instruction": "Remove brisket when tender (about 2 hours), slice thinly. Strain broth and season with fish sauce.", "duration_minutes": 10},
+      {"step_number": 5, "instruction": "Cook rice noodles according to package. Divide into bowls with sliced brisket.", "duration_minutes": 5},
+      {"step_number": 6, "instruction": "Ladle hot broth over noodles. Serve with bean sprouts, basil, lime, and sauces.", "duration_minutes": 5}
+    ]
+  },
+  {
+    "title": "Moroccan Lamb Tagine",
+    "description": "Slow-cooked lamb with apricots, almonds, and warm spices in a traditional Moroccan style.",
+    "cuisine_type": "Moroccan",
+    "difficulty_level": "medium",
+    "prep_time_minutes": 25,
+    "cook_time_minutes": 120,
+    "total_time_minutes": 145,
+    "servings": 6,
+    "dietary_tags": ["gluten-free", "dairy-free"],
+    "ingredients": [
+      {"name": "lamb shoulder", "amount": "1", "unit": "kg"},
+      {"name": "dried apricots", "amount": "150", "unit": "g"},
+      {"name": "almonds", "amount": "100", "unit": "g"},
+      {"name": "onion", "amount": "2", "unit": "large"},
+      {"name": "honey", "amount": "3", "unit": "tbsp"},
+      {"name": "ras el hanout", "amount": "2", "unit": "tbsp"},
+      {"name": "cinnamon stick", "amount": "1", "unit": "whole"},
+      {"name": "saffron", "amount": "1", "unit": "pinch"},
+      {"name": "chicken stock", "amount": "500", "unit": "ml"},
+      {"name": "fresh cilantro", "amount": "0.5", "unit": "cup"}
+    ],
+    "instructions": [
+      {"step_number": 1, "instruction": "Cut lamb into large chunks. Season with ras el hanout, salt, and pepper.", "duration_minutes": 10},
+      {"step_number": 2, "instruction": "Brown lamb in batches in a tagine or Dutch oven. Set aside.", "duration_minutes": 15},
+      {"step_number": 3, "instruction": "Sauté sliced onions until soft. Add saffron bloomed in warm water.", "duration_minutes": 8},
+      {"step_number": 4, "instruction": "Return lamb to pot with stock and cinnamon. Cover and simmer 1.5 hours.", "duration_minutes": 90},
+      {"step_number": 5, "instruction": "Add apricots and honey. Cook 30 more minutes until lamb is tender.", "duration_minutes": 30},
+      {"step_number": 6, "instruction": "Toast almonds and scatter over tagine. Garnish with fresh cilantro.", "duration_minutes": 5}
+    ]
+  },
+  {
+    "title": "Korean Bibimbap",
+    "description": "A colorful rice bowl topped with vegetables, meat, and a fried egg, served with gochujang sauce.",
+    "cuisine_type": "Korean",
+    "difficulty_level": "medium",
+    "prep_time_minutes": 40,
+    "cook_time_minutes": 20,
+    "total_time_minutes": 60,
+    "servings": 4,
+    "dietary_tags": [],
+    "ingredients": [
+      {"name": "short-grain rice", "amount": "2", "unit": "cups"},
+      {"name": "beef sirloin", "amount": "200", "unit": "g"},
+      {"name": "spinach", "amount": "200", "unit": "g"},
+      {"name": "carrots", "amount": "2", "unit": "medium"},
+      {"name": "zucchini", "amount": "1", "unit": "medium"},
+      {"name": "bean sprouts", "amount": "150", "unit": "g"},
+      {"name": "shiitake mushrooms", "amount": "100", "unit": "g"},
+      {"name": "eggs", "amount": "4", "unit": "large"},
+      {"name": "gochujang", "amount": "4", "unit": "tbsp"},
+      {"name": "sesame oil", "amount": "3", "unit": "tbsp"},
+      {"name": "soy sauce", "amount": "2", "unit": "tbsp"}
+    ],
+    "instructions": [
+      {"step_number": 1, "instruction": "Cook rice according to package directions.", "duration_minutes": 20},
+      {"step_number": 2, "instruction": "Slice beef thinly and marinate in soy sauce, sesame oil, and garlic.", "duration_minutes": 5},
+      {"step_number": 3, "instruction": "Blanch spinach and bean sprouts separately. Season each with sesame oil and salt.", "duration_minutes": 8},
+      {"step_number": 4, "instruction": "Julienne carrots and zucchini. Sauté each separately until just tender.", "duration_minutes": 10},
+      {"step_number": 5, "instruction": "Sauté mushrooms and marinated beef until cooked.", "duration_minutes": 5},
+      {"step_number": 6, "instruction": "Fry eggs sunny-side up. Assemble bowls with rice, arranged vegetables, beef, and egg. Serve with gochujang.", "duration_minutes": 5}
+    ]
+  },
+  {
+    "title": "French Onion Soup",
+    "description": "Rich beef broth with caramelized onions, topped with crusty bread and melted Gruyere cheese.",
+    "cuisine_type": "French",
+    "difficulty_level": "medium",
+    "prep_time_minutes": 15,
+    "cook_time_minutes": 75,
+    "total_time_minutes": 90,
+    "servings": 4,
+    "dietary_tags": [],
+    "ingredients": [
+      {"name": "yellow onions", "amount": "6", "unit": "large"},
+      {"name": "butter", "amount": "60", "unit": "g"},
+      {"name": "beef broth", "amount": "1.5", "unit": "L"},
+      {"name": "dry white wine", "amount": "200", "unit": "ml"},
+      {"name": "fresh thyme", "amount": "4", "unit": "sprigs"},
+      {"name": "bay leaf", "amount": "1", "unit": "whole"},
+      {"name": "baguette", "amount": "1", "unit": "whole"},
+      {"name": "Gruyere cheese", "amount": "200", "unit": "g"}
+    ],
+    "instructions": [
+      {"step_number": 1, "instruction": "Slice onions thinly. Melt butter in a large pot over medium heat.", "duration_minutes": 10},
+      {"step_number": 2, "instruction": "Cook onions slowly, stirring occasionally, until deeply caramelized (45-60 minutes).", "duration_minutes": 55},
+      {"step_number": 3, "instruction": "Add wine and scrape up any browned bits. Cook until wine evaporates.", "duration_minutes": 5},
+      {"step_number": 4, "instruction": "Add broth, thyme, and bay leaf. Simmer 20 minutes.", "duration_minutes": 20},
+      {"step_number": 5, "instruction": "Slice and toast baguette rounds. Ladle soup into oven-safe bowls.", "duration_minutes": 5},
+      {"step_number": 6, "instruction": "Top each bowl with bread and grated Gruyere. Broil until cheese is bubbly and golden.", "duration_minutes": 5}
+    ]
+  },
+  {
+    "title": "Shakshuka",
+    "description": "Eggs poached in a spiced tomato and pepper sauce. A beloved Middle Eastern breakfast dish.",
+    "cuisine_type": "Middle Eastern",
+    "difficulty_level": "easy",
+    "prep_time_minutes": 10,
+    "cook_time_minutes": 25,
+    "total_time_minutes": 35,
+    "servings": 4,
+    "dietary_tags": ["vegetarian", "gluten-free"],
+    "ingredients": [
+      {"name": "canned tomatoes", "amount": "800", "unit": "g"},
+      {"name": "red bell pepper", "amount": "2", "unit": "medium"},
+      {"name": "onion", "amount": "1", "unit": "large"},
+      {"name": "garlic", "amount": "4", "unit": "cloves"},
+      {"name": "eggs", "amount": "6", "unit": "large"},
+      {"name": "cumin", "amount": "2", "unit": "tsp"},
+      {"name": "paprika", "amount": "1", "unit": "tsp"},
+      {"name": "cayenne pepper", "amount": "0.5", "unit": "tsp"},
+      {"name": "olive oil", "amount": "3", "unit": "tbsp"},
+      {"name": "fresh parsley", "amount": "0.25", "unit": "cup"},
+      {"name": "feta cheese", "amount": "100", "unit": "g"}
+    ],
+    "instructions": [
+      {"step_number": 1, "instruction": "Heat olive oil in a large skillet. Sauté diced onion and peppers until soft.", "duration_minutes": 8},
+      {"step_number": 2, "instruction": "Add minced garlic and spices. Cook until fragrant, about 1 minute.", "duration_minutes": 2},
+      {"step_number": 3, "instruction": "Pour in tomatoes and simmer until sauce thickens slightly.", "duration_minutes": 10},
+      {"step_number": 4, "instruction": "Make 6 wells in the sauce and crack an egg into each.", "duration_minutes": 2},
+      {"step_number": 5, "instruction": "Cover and cook until egg whites are set but yolks are still runny.", "duration_minutes": 8},
+      {"step_number": 6, "instruction": "Crumble feta over top and garnish with parsley. Serve with crusty bread.", "duration_minutes": 2}
+    ]
+  },
+  {
+    "title": "Pad Thai",
+    "description": "Thailand's most famous noodle dish with a perfect balance of sweet, sour, and savory flavors.",
+    "cuisine_type": "Thai",
+    "difficulty_level": "medium",
+    "prep_time_minutes": 25,
+    "cook_time_minutes": 15,
+    "total_time_minutes": 40,
+    "servings": 4,
+    "dietary_tags": ["gluten-free"],
+    "ingredients": [
+      {"name": "rice noodles", "amount": "250", "unit": "g"},
+      {"name": "shrimp", "amount": "300", "unit": "g"},
+      {"name": "eggs", "amount": "2", "unit": "large"},
+      {"name": "firm tofu", "amount": "150", "unit": "g"},
+      {"name": "bean sprouts", "amount": "200", "unit": "g"},
+      {"name": "garlic chives", "amount": "1", "unit": "bunch"},
+      {"name": "tamarind paste", "amount": "3", "unit": "tbsp"},
+      {"name": "fish sauce", "amount": "3", "unit": "tbsp"},
+      {"name": "palm sugar", "amount": "2", "unit": "tbsp"},
+      {"name": "roasted peanuts", "amount": "0.5", "unit": "cup"},
+      {"name": "lime", "amount": "2", "unit": "whole"}
+    ],
+    "instructions": [
+      {"step_number": 1, "instruction": "Soak rice noodles in warm water for 30 minutes until pliable. Drain.", "duration_minutes": 30},
+      {"step_number": 2, "instruction": "Mix tamarind paste, fish sauce, and palm sugar to make the sauce.", "duration_minutes": 3},
+      {"step_number": 3, "instruction": "Heat wok over high heat. Fry cubed tofu until golden. Set aside.", "duration_minutes": 5},
+      {"step_number": 4, "instruction": "Stir-fry shrimp until pink. Push aside, scramble eggs in the same wok.", "duration_minutes": 3},
+      {"step_number": 5, "instruction": "Add noodles and sauce. Toss until noodles are coated and slightly charred.", "duration_minutes": 4},
+      {"step_number": 6, "instruction": "Add bean sprouts and chives. Serve with peanuts and lime wedges.", "duration_minutes": 3}
+    ]
+  },
+  {
+    "title": "Classic Beef Stroganoff",
+    "description": "Tender beef strips in a creamy mushroom sauce, served over egg noodles.",
+    "cuisine_type": "Russian",
+    "difficulty_level": "medium",
+    "prep_time_minutes": 20,
+    "cook_time_minutes": 25,
+    "total_time_minutes": 45,
+    "servings": 4,
+    "dietary_tags": [],
+    "ingredients": [
+      {"name": "beef tenderloin", "amount": "600", "unit": "g"},
+      {"name": "cremini mushrooms", "amount": "300", "unit": "g"},
+      {"name": "onion", "amount": "1", "unit": "large"},
+      {"name": "beef broth", "amount": "250", "unit": "ml"},
+      {"name": "sour cream", "amount": "200", "unit": "ml"},
+      {"name": "Dijon mustard", "amount": "1", "unit": "tbsp"},
+      {"name": "butter", "amount": "45", "unit": "g"},
+      {"name": "all-purpose flour", "amount": "2", "unit": "tbsp"},
+      {"name": "egg noodles", "amount": "350", "unit": "g"},
+      {"name": "fresh parsley", "amount": "2", "unit": "tbsp"}
+    ],
+    "instructions": [
+      {"step_number": 1, "instruction": "Slice beef into thin strips. Season with salt and pepper.", "duration_minutes": 5},
+      {"step_number": 2, "instruction": "Sear beef in batches over high heat until browned. Set aside.", "duration_minutes": 6},
+      {"step_number": 3, "instruction": "Sauté sliced mushrooms and diced onion in butter until golden.", "duration_minutes": 8},
+      {"step_number": 4, "instruction": "Sprinkle flour over vegetables, stir, then add broth. Simmer until thickened.", "duration_minutes": 5},
+      {"step_number": 5, "instruction": "Reduce heat, stir in sour cream and mustard. Return beef to pan.", "duration_minutes": 3},
+      {"step_number": 6, "instruction": "Cook egg noodles. Serve stroganoff over noodles, garnished with parsley.", "duration_minutes": 10}
+    ]
+  },
+  {
+    "title": "Spinach and Ricotta Stuffed Shells",
+    "description": "Jumbo pasta shells filled with creamy ricotta and spinach, baked in marinara sauce.",
+    "cuisine_type": "Italian",
+    "difficulty_level": "easy",
+    "prep_time_minutes": 25,
+    "cook_time_minutes": 35,
+    "total_time_minutes": 60,
+    "servings": 6,
+    "dietary_tags": ["vegetarian"],
+    "ingredients": [
+      {"name": "jumbo pasta shells", "amount": "24", "unit": "shells"},
+      {"name": "ricotta cheese", "amount": "450", "unit": "g"},
+      {"name": "frozen spinach", "amount": "300", "unit": "g"},
+      {"name": "mozzarella cheese", "amount": "200", "unit": "g"},
+      {"name": "Parmesan cheese", "amount": "50", "unit": "g"},
+      {"name": "egg", "amount": "1", "unit": "large"},
+      {"name": "marinara sauce", "amount": "700", "unit": "ml"},
+      {"name": "garlic", "amount": "2", "unit": "cloves"},
+      {"name": "Italian seasoning", "amount": "1", "unit": "tsp"},
+      {"name": "fresh basil", "amount": "0.25", "unit": "cup"}
+    ],
+    "instructions": [
+      {"step_number": 1, "instruction": "Cook pasta shells according to package. Drain and cool.", "duration_minutes": 12},
+      {"step_number": 2, "instruction": "Thaw and squeeze dry the spinach. Chop finely.", "duration_minutes": 5},
+      {"step_number": 3, "instruction": "Mix ricotta, spinach, half the mozzarella, Parmesan, egg, garlic, and seasoning.", "duration_minutes": 5},
+      {"step_number": 4, "instruction": "Spread half the marinara in a 9x13 baking dish.", "duration_minutes": 2},
+      {"step_number": 5, "instruction": "Fill each shell with ricotta mixture and arrange in dish. Top with remaining sauce and mozzarella.", "duration_minutes": 10},
+      {"step_number": 6, "instruction": "Cover and bake at 375°F (190°C) for 25 minutes. Uncover and bake 10 more minutes. Top with basil.", "duration_minutes": 35}
+    ]
+  },
+  {
+    "title": "Chicken Tikka Masala",
+    "description": "Grilled marinated chicken in a creamy, spiced tomato sauce. Britain's favorite curry.",
+    "cuisine_type": "Indian",
+    "difficulty_level": "medium",
+    "prep_time_minutes": 30,
+    "cook_time_minutes": 30,
+    "total_time_minutes": 60,
+    "servings": 6,
+    "dietary_tags": ["gluten-free"],
+    "ingredients": [
+      {"name": "chicken breast", "amount": "800", "unit": "g"},
+      {"name": "plain yogurt", "amount": "200", "unit": "g"},
+      {"name": "garam masala", "amount": "2", "unit": "tbsp"},
+      {"name": "turmeric", "amount": "1", "unit": "tsp"},
+      {"name": "canned tomatoes", "amount": "400", "unit": "g"},
+      {"name": "heavy cream", "amount": "200", "unit": "ml"},
+      {"name": "onion", "amount": "2", "unit": "medium"},
+      {"name": "ginger", "amount": "2", "unit": "inches"},
+      {"name": "garlic", "amount": "4", "unit": "cloves"},
+      {"name": "butter", "amount": "45", "unit": "g"},
+      {"name": "fresh cilantro", "amount": "0.25", "unit": "cup"}
+    ],
+    "instructions": [
+      {"step_number": 1, "instruction": "Cut chicken into chunks. Marinate in yogurt, half the garam masala, and turmeric for 30 minutes.", "duration_minutes": 35},
+      {"step_number": 2, "instruction": "Thread chicken onto skewers and grill or broil until charred and cooked through.", "duration_minutes": 12},
+      {"step_number": 3, "instruction": "Sauté diced onion in butter until soft. Add ginger-garlic paste and remaining spices.", "duration_minutes": 8},
+      {"step_number": 4, "instruction": "Add tomatoes and simmer 15 minutes until sauce thickens.", "duration_minutes": 15},
+      {"step_number": 5, "instruction": "Stir in cream and grilled chicken pieces. Simmer 5 minutes.", "duration_minutes": 5},
+      {"step_number": 6, "instruction": "Garnish with cilantro and serve with basmati rice or naan.", "duration_minutes": 2}
+    ]
+  },
+  {
+    "title": "Mushroom Risotto",
+    "description": "Creamy Italian rice dish with earthy mushrooms, white wine, and Parmesan cheese.",
+    "cuisine_type": "Italian",
+    "difficulty_level": "medium",
+    "prep_time_minutes": 15,
+    "cook_time_minutes": 35,
+    "total_time_minutes": 50,
+    "servings": 4,
+    "dietary_tags": ["vegetarian", "gluten-free"],
+    "ingredients": [
+      {"name": "arborio rice", "amount": "300", "unit": "g"},
+      {"name": "mixed mushrooms", "amount": "400", "unit": "g"},
+      {"name": "vegetable broth", "amount": "1", "unit": "L"},
+      {"name": "dry white wine", "amount": "150", "unit": "ml"},
+      {"name": "shallots", "amount": "2", "unit": "medium"},
+      {"name": "butter", "amount": "60", "unit": "g"},
+      {"name": "Parmesan cheese", "amount": "80", "unit": "g"},
+      {"name": "garlic", "amount": "2", "unit": "cloves"},
+      {"name": "fresh thyme", "amount": "4", "unit": "sprigs"},
+      {"name": "olive oil", "amount": "2", "unit": "tbsp"}
+    ],
+    "instructions": [
+      {"step_number": 1, "instruction": "Heat broth and keep warm. Sauté mushrooms in olive oil until golden. Set aside.", "duration_minutes": 8},
+      {"step_number": 2, "instruction": "Melt half the butter. Sauté minced shallots and garlic until soft.", "duration_minutes": 4},
+      {"step_number": 3, "instruction": "Add rice and toast for 2 minutes. Pour in wine and stir until absorbed.", "duration_minutes": 4},
+      {"step_number": 4, "instruction": "Add broth one ladle at a time, stirring constantly, allowing each addition to absorb before adding more.", "duration_minutes": 20},
+      {"step_number": 5, "instruction": "When rice is al dente, stir in mushrooms, remaining butter, and Parmesan.", "duration_minutes": 3},
+      {"step_number": 6, "instruction": "Season with salt and pepper. Serve immediately with extra Parmesan and thyme.", "duration_minutes": 2}
+    ]
+  },
+  {
+    "title": "Fish Tacos with Mango Salsa",
+    "description": "Crispy battered fish in soft tortillas topped with fresh mango salsa and creamy sauce.",
+    "cuisine_type": "Mexican",
+    "difficulty_level": "easy",
+    "prep_time_minutes": 25,
+    "cook_time_minutes": 15,
+    "total_time_minutes": 40,
+    "servings": 4,
+    "dietary_tags": [],
+    "ingredients": [
+      {"name": "white fish fillets", "amount": "500", "unit": "g"},
+      {"name": "flour tortillas", "amount": "8", "unit": "small"},
+      {"name": "mango", "amount": "1", "unit": "large"},
+      {"name": "red onion", "amount": "0.5", "unit": "medium"},
+      {"name": "jalapeno", "amount": "1", "unit": "whole"},
+      {"name": "cilantro", "amount": "0.5", "unit": "cup"},
+      {"name": "lime", "amount": "2", "unit": "whole"},
+      {"name": "sour cream", "amount": "100", "unit": "ml"},
+      {"name": "chipotle in adobo", "amount": "1", "unit": "tbsp"},
+      {"name": "all-purpose flour", "amount": "1", "unit": "cup"},
+      {"name": "beer", "amount": "200", "unit": "ml"}
+    ],
+    "instructions": [
+      {"step_number": 1, "instruction": "Make mango salsa: dice mango, red onion, and jalapeno. Mix with chopped cilantro and lime juice.", "duration_minutes": 10},
+      {"step_number": 2, "instruction": "Make chipotle crema: blend sour cream with chipotle and lime juice.", "duration_minutes": 3},
+      {"step_number": 3, "instruction": "Cut fish into strips. Make batter by whisking flour, beer, and salt.", "duration_minutes": 5},
+      {"step_number": 4, "instruction": "Dip fish in batter and fry in 375°F (190°C) oil until golden and crispy.", "duration_minutes": 8},
+      {"step_number": 5, "instruction": "Warm tortillas on a dry skillet.", "duration_minutes": 2},
+      {"step_number": 6, "instruction": "Assemble tacos with fish, mango salsa, chipotle crema, and extra cilantro.", "duration_minutes": 3}
+    ]
+  },
+  {
+    "title": "Lemon Herb Roasted Chicken",
+    "description": "A perfectly roasted whole chicken with crispy skin, infused with lemon and fresh herbs.",
+    "cuisine_type": "American",
+    "difficulty_level": "easy",
+    "prep_time_minutes": 20,
+    "cook_time_minutes": 75,
+    "total_time_minutes": 95,
+    "servings": 6,
+    "dietary_tags": ["gluten-free", "dairy-free"],
+    "ingredients": [
+      {"name": "whole chicken", "amount": "1.8", "unit": "kg"},
+      {"name": "lemon", "amount": "2", "unit": "whole"},
+      {"name": "garlic", "amount": "1", "unit": "head"},
+      {"name": "fresh rosemary", "amount": "4", "unit": "sprigs"},
+      {"name": "fresh thyme", "amount": "6", "unit": "sprigs"},
+      {"name": "olive oil", "amount": "60", "unit": "ml"},
+      {"name": "butter", "amount": "60", "unit": "g"},
+      {"name": "onion", "amount": "1", "unit": "large"},
+      {"name": "carrots", "amount": "3", "unit": "medium"}
+    ],
+    "instructions": [
+      {"step_number": 1, "instruction": "Remove chicken from fridge 30 minutes before cooking. Preheat oven to 425°F (220°C).", "duration_minutes": 30},
+      {"step_number": 2, "instruction": "Pat chicken dry. Rub with softened butter under and over the skin.", "duration_minutes": 5},
+      {"step_number": 3, "instruction": "Stuff cavity with halved lemon, garlic head, and half the herbs.", "duration_minutes": 5},
+      {"step_number": 4, "instruction": "Place chicken on quartered onion and carrots in roasting pan. Drizzle with olive oil.", "duration_minutes": 5},
+      {"step_number": 5, "instruction": "Roast for 1 hour 15 minutes until juices run clear and internal temp reaches 165°F (74°C).", "duration_minutes": 75},
+      {"step_number": 6, "instruction": "Rest 10 minutes before carving. Serve with pan vegetables and juices.", "duration_minutes": 10}
+    ]
+  },
+  {
+    "title": "Classic Chocolate Chip Cookies",
+    "description": "Perfectly chewy chocolate chip cookies with crispy edges and gooey centers. A timeless American classic.",
+    "cuisine_type": "American",
+    "difficulty_level": "easy",
+    "prep_time_minutes": 15,
+    "cook_time_minutes": 12,
+    "total_time_minutes": 27,
+    "servings": 24,
+    "dietary_tags": ["vegetarian"],
+    "ingredients": [
+      {"name": "all-purpose flour", "amount": "2.25", "unit": "cups"},
+      {"name": "butter", "amount": "1", "unit": "cup"},
+      {"name": "granulated sugar", "amount": "0.75", "unit": "cup"},
+      {"name": "brown sugar", "amount": "0.75", "unit": "cup"},
+      {"name": "eggs", "amount": "2", "unit": "large"},
+      {"name": "vanilla extract", "amount": "1", "unit": "tsp"},
+      {"name": "baking soda", "amount": "1", "unit": "tsp"},
+      {"name": "salt", "amount": "1", "unit": "tsp"},
+      {"name": "chocolate chips", "amount": "2", "unit": "cups"}
+    ],
+    "instructions": [
+      {"step_number": 1, "instruction": "Preheat oven to 375°F (190°C). Line baking sheets with parchment paper.", "duration_minutes": 2},
+      {"step_number": 2, "instruction": "Cream softened butter with both sugars until light and fluffy.", "duration_minutes": 3},
+      {"step_number": 3, "instruction": "Beat in eggs one at a time, then add vanilla extract.", "duration_minutes": 2},
+      {"step_number": 4, "instruction": "Whisk together flour, baking soda, and salt. Gradually add to wet ingredients.", "duration_minutes": 3},
+      {"step_number": 5, "instruction": "Fold in chocolate chips. Drop rounded tablespoons onto prepared baking sheets.", "duration_minutes": 5},
+      {"step_number": 6, "instruction": "Bake 9-12 minutes until golden brown but still soft in center. Cool on pan 5 minutes.", "duration_minutes": 12}
+    ]
+  }
+]

@@ -30,6 +30,11 @@ interface PreferencesUpdateRequest {
 type RecipeRequest = Record<string, unknown>;
 type LibraryRequest = Record<string, unknown>;
 
+interface FeedbackRequest {
+  message: string;
+  page_url: string;
+}
+
 export const handlers = [
   // Auth endpoints
   http.post(`${BASE_URL}/api/v1/users/register`, async ({ request }) => {
@@ -242,6 +247,16 @@ export const handlers = [
 
   http.delete(`${BASE_URL}/api/v1/shares/:id`, async () => {
     return new HttpResponse(null, { status: 204 });
+  }),
+
+  // Feedback endpoint
+  http.post(`${BASE_URL}/api/v1/feedback`, async ({ request }) => {
+    const body = (await request.json()) as FeedbackRequest;
+    return HttpResponse.json({
+      id: 'feedback-123',
+      message: body.message,
+      created_at: new Date().toISOString(),
+    });
   }),
 
   // Chat endpoint

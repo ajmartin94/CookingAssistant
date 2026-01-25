@@ -17,6 +17,7 @@
     "test:coverage": "vitest --coverage"
   },
   "dependencies": {
+    "@sentry/react": "^8.49.0",
     "@tailwindcss/vite": "^4.1.18",
     "axios": "^1.13.2",
     "lucide-react": "^0.562.0",
