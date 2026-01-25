@@ -1,0 +1,65 @@
+# Git
+.git
+.gitignore
+
+# Documentation
+*.md
+!README.md
+docs/
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Node.js
+frontend/node_modules/
+frontend/.npm
+frontend/.cache
+frontend/coverage/
+
+# Python
+backend/venv/
+backend/.venv/
+backend/__pycache__/
+backend/**/__pycache__/
+backend/*.pyc
+backend/.pytest_cache/
+backend/.mypy_cache/
+backend/.ruff_cache/
+backend/.coverage
+backend/htmlcov/
+*.egg-info/
+
+# Test artifacts
+e2e/test-results/
+e2e/playwright-report/
+e2e/.cache/
+
+# Environment files
+.env
+.env.local
+.env.*.local
+backend/.env
+frontend/.env
+
+# Database files (local development only)
+*.db
+*.sqlite
+*.sqlite3
+
+# Build artifacts (we build in Docker)
+frontend/dist/
+
+# Claude plans and sessions
+.claude/
+
+# Logs
+*.log
+logs/

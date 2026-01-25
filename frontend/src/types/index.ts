@@ -123,3 +123,12 @@ export const DEFAULT_RECIPE_FORM_DATA: RecipeFormData = {
   sourceName: '',
   notes: '',
 };
+
+// Feedback Types
+export interface Feedback {
+  id: string;
+  message: string;
+  pageUrl: string;
+  userId?: string;
+  createdAt: string;
+}

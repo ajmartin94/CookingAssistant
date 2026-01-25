@@ -5,14 +5,29 @@ Main application entry point with CORS configuration,
 API versioning, and health check endpoints.
 """
 
+import os
+from pathlib import Path
+
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, FileResponse
+from fastapi.staticfiles import StaticFiles
 import logging
 import traceback
 
 from app.config import settings
-from app.api import users, recipes, libraries, sharing, chat
+from app.api import users, recipes, libraries, sharing, chat, feedback
+
+# Initialize Sentry if DSN is configured
+if settings.sentry_dsn:
+    import sentry_sdk
+
+    sentry_sdk.init(
+        dsn=settings.sentry_dsn,
+        release=settings.app_version,
+        traces_sample_rate=1.0,
+        profiles_sample_rate=1.0,
+    )
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -49,10 +64,17 @@ async def global_exception_handler(request: Request, exc: Exception):
     )
 
 
-# Root endpoint
+# Determine frontend dist path (relative to backend when running in Docker)
+FRONTEND_DIST_PATH = Path(__file__).parent.parent.parent / "frontend" / "dist"
+
+
+# Root endpoint - serves frontend in production, API info in development
 @app.get("/")
 async def root():
-    """Root endpoint with API information"""
+    """Root endpoint - serves frontend index.html or API info"""
+    index_path = FRONTEND_DIST_PATH / "index.html"
+    if index_path.exists():
+        return FileResponse(index_path)
     return {
         "message": "Welcome to Cooking Assistant API",
         "version": "1.0.0",
@@ -74,6 +96,39 @@ app.include_router(recipes.router, prefix="/api/v1")
 app.include_router(libraries.router, prefix="/api/v1")
 app.include_router(sharing.router, prefix="/api/v1")
 app.include_router(chat.router, prefix="/api/v1")
+app.include_router(feedback.router, prefix="/api/v1")
+
+
+# Mount static files for frontend assets (JS, CSS, images)
+# This must be after API routes to avoid conflicts
+if FRONTEND_DIST_PATH.exists():
+    app.mount(
+        "/assets",
+        StaticFiles(directory=FRONTEND_DIST_PATH / "assets"),
+        name="assets",
+    )
+
+
+# Catch-all route for client-side routing (React Router)
+# Must be defined after all other routes
+@app.get("/{full_path:path}")
+async def serve_spa(full_path: str):
+    """Serve static files or index.html for client-side routing (SPA catch-all)"""
+    # Don't serve frontend for API routes
+    if full_path.startswith("api/"):
+        return JSONResponse(status_code=404, content={"detail": "Not Found"})
+
+    # Check if the requested file exists in dist (e.g., vite.svg, favicon.ico)
+    static_file = FRONTEND_DIST_PATH / full_path
+    if static_file.exists() and static_file.is_file():
+        return FileResponse(static_file)
+
+    # For all other routes, serve index.html for client-side routing
+    index_path = FRONTEND_DIST_PATH / "index.html"
+    if index_path.exists():
+        return FileResponse(index_path)
+
+    return JSONResponse(status_code=404, content={"detail": "Not Found"})
 
 
 @app.on_event("startup")
@@ -84,12 +139,18 @@ async def startup_event():
     logger.info("Starting Cooking Assistant API...")
 
     # Import all models to register them with Base.metadata
-    from app.models import User, Recipe, RecipeLibrary, RecipeShare  # noqa: F401
+    from app.models import (
+        User,
+        Recipe,
+        RecipeLibrary,
+        RecipeShare,
+        Feedback,
+    )  # noqa: F401
     from app.database import init_db, engine, Base
 
     # Log imported models to ensure they're registered
     logger.info(
-        f"Imported models: {User.__tablename__}, {Recipe.__tablename__}, {RecipeLibrary.__tablename__}, {RecipeShare.__tablename__}"
+        f"Imported models: {User.__tablename__}, {Recipe.__tablename__}, {RecipeLibrary.__tablename__}, {RecipeShare.__tablename__}, {Feedback.__tablename__}"
     )
 
     # For E2E testing, drop and recreate all tables to ensure clean state

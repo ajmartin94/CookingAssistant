@@ -36,6 +36,9 @@ mypy==1.8.0
 # AI/LLM
 litellm>=1.30.0
 
+# Monitoring & Error Tracking
+sentry-sdk[fastapi]>=1.40.0
+
 # Background Tasks (for Phase 3+)
 # celery==5.3.6
 # redis==5.0.1

@@ -62,6 +62,13 @@ class Settings(BaseSettings):
     rate_limit_enabled: bool = True
     rate_limit_per_minute: int = 60
 
+    # Monitoring & Error Tracking
+    sentry_dsn: str = ""
+
+    # Seed Data Settings (optional, for development/demo)
+    seed_user_email: str | None = None
+    seed_user_password: str | None = None
+
     model_config = SettingsConfigDict(
         env_file=".env", env_file_encoding="utf-8", case_sensitive=False, extra="ignore"
     )
