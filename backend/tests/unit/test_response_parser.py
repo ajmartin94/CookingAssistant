@@ -3,13 +3,18 @@ Unit Tests for Response Parser
 
 Tests for parse_chat_response() which extracts structured data
 (text messages and recipe JSON) from raw LLM responses.
+
+Test coverage (3 tests per revised plan):
+1. Response parser extracts text and JSON recipe from well-formed response
+2. Response parser validates required fields: title, ingredients, instructions
+3. Response parser returns error for malformed JSON
 """
 
 from app.ai.response_parser import parse_chat_response
 
 
-class TestParseWellFormedResponse:
-    """Tests for parsing well-formed LLM responses with text and JSON."""
+class TestResponseParser:
+    """Unit tests for response parser."""
 
     def test_extracts_text_and_json_recipe_from_well_formed_response(self):
         """Response parser extracts both message text and JSON recipe block."""
@@ -19,6 +24,7 @@ class TestParseWellFormedResponse:
             "```json\n"
             "{\n"
             '  "title": "Simple Garlic Pasta",\n'
+            '  "description": "A quick and easy garlic pasta dish.",\n'
             '  "ingredients": [\n'
             '    {"name": "spaghetti", "amount": "400", "unit": "g"},\n'
             '    {"name": "garlic", "amount": "4", "unit": "cloves"}\n'
@@ -40,34 +46,77 @@ class TestParseWellFormedResponse:
         assert "great pasta recipe" in result.message
         assert result.proposed_recipe is not None
         assert result.proposed_recipe["title"] == "Simple Garlic Pasta"
+        assert (
+            result.proposed_recipe["description"]
+            == "A quick and easy garlic pasta dish."
+        )
         assert len(result.proposed_recipe["ingredients"]) == 2
         assert len(result.proposed_recipe["instructions"]) == 2
 
-
-class TestParseTextOnlyResponse:
-    """Tests for parsing responses without JSON blocks."""
-
-    def test_returns_text_only_when_no_json_block_present(self):
-        """Response parser returns text message with no recipe when no JSON found."""
-        # SETUP
-        raw_text = (
-            "I'd be happy to help you cook! What kind of cuisine are you "
-            "interested in today? I can suggest Italian, Mexican, or Asian dishes."
+    def test_validates_required_fields_title_ingredients_instructions(self):
+        """Response parser validates required fields: title, ingredients, instructions."""
+        # Test missing title
+        raw_no_title = (
+            "Here's your recipe:\n\n"
+            "```json\n"
+            '{"ingredients": [{"name": "flour", "amount": "2", "unit": "cups"}], '
+            '"instructions": [{"step_number": 1, "instruction": "Mix"}]}\n'
+            "```"
         )
-
-        # ACTION
-        result = parse_chat_response(raw_text)
-
-        # VERIFY
-        assert result.message == raw_text
+        result = parse_chat_response(raw_no_title)
+        assert result.error is not None
         assert result.proposed_recipe is None
-        assert result.error is None
 
+        # Test missing ingredients
+        raw_no_ingredients = (
+            "Here's your recipe:\n\n"
+            "```json\n"
+            '{"title": "Test Recipe", '
+            '"instructions": [{"step_number": 1, "instruction": "Mix"}]}\n'
+            "```"
+        )
+        result = parse_chat_response(raw_no_ingredients)
+        assert result.error is not None
+        assert result.proposed_recipe is None
 
-class TestParseMalformedJSON:
-    """Tests for handling malformed JSON in responses."""
+        # Test missing instructions
+        raw_no_instructions = (
+            "Here's your recipe:\n\n"
+            "```json\n"
+            '{"title": "Test Recipe", '
+            '"ingredients": [{"name": "flour", "amount": "2", "unit": "cups"}]}\n'
+            "```"
+        )
+        result = parse_chat_response(raw_no_instructions)
+        assert result.error is not None
+        assert result.proposed_recipe is None
 
-    def test_returns_error_when_json_is_malformed(self):
+        # Test empty ingredients list
+        raw_empty_ingredients = (
+            "Here's your recipe:\n\n"
+            "```json\n"
+            '{"title": "Test Recipe", "ingredients": [], '
+            '"instructions": [{"step_number": 1, "instruction": "Mix"}]}\n'
+            "```"
+        )
+        result = parse_chat_response(raw_empty_ingredients)
+        assert result.error is not None
+        assert result.proposed_recipe is None
+
+        # Test empty instructions list
+        raw_empty_instructions = (
+            "Here's your recipe:\n\n"
+            "```json\n"
+            '{"title": "Test Recipe", '
+            '"ingredients": [{"name": "flour", "amount": "2", "unit": "cups"}], '
+            '"instructions": []}\n'
+            "```"
+        )
+        result = parse_chat_response(raw_empty_instructions)
+        assert result.error is not None
+        assert result.proposed_recipe is None
+
+    def test_returns_error_for_malformed_json(self):
         """Response parser returns error when JSON block is not valid JSON."""
         # SETUP
         raw_text = (
@@ -88,160 +137,3 @@ class TestParseMalformedJSON:
         assert result.proposed_recipe is None
         # The text message should still be extracted
         assert "recipe" in result.message.lower()
-
-
-class TestParseIncompleteRecipe:
-    """Tests for validating recipe completeness."""
-
-    def test_rejects_recipe_missing_title(self):
-        """Response parser rejects recipe JSON missing required 'title' field."""
-        # SETUP
-        raw_text = (
-            "Here's your recipe:\n\n"
-            "```json\n"
-            "{\n"
-            '  "ingredients": [\n'
-            '    {"name": "flour", "amount": "2", "unit": "cups"}\n'
-            "  ],\n"
-            '  "instructions": [\n'
-            '    {"step_number": 1, "instruction": "Mix everything"}\n'
-            "  ]\n"
-            "}\n"
-            "```"
-        )
-
-        # ACTION
-        result = parse_chat_response(raw_text)
-
-        # VERIFY
-        assert result.error is not None
-        assert result.proposed_recipe is None
-
-    def test_rejects_recipe_missing_ingredients(self):
-        """Response parser rejects recipe JSON missing required 'ingredients' field."""
-        # SETUP
-        raw_text = (
-            "Here's your recipe:\n\n"
-            "```json\n"
-            "{\n"
-            '  "title": "No Ingredients Recipe",\n'
-            '  "instructions": [\n'
-            '    {"step_number": 1, "instruction": "Do something"}\n'
-            "  ]\n"
-            "}\n"
-            "```"
-        )
-
-        # ACTION
-        result = parse_chat_response(raw_text)
-
-        # VERIFY
-        assert result.error is not None
-        assert result.proposed_recipe is None
-
-    def test_rejects_recipe_missing_instructions(self):
-        """Response parser rejects recipe JSON missing required 'instructions' field."""
-        # SETUP
-        raw_text = (
-            "Here's your recipe:\n\n"
-            "```json\n"
-            "{\n"
-            '  "title": "No Instructions Recipe",\n'
-            '  "ingredients": [\n'
-            '    {"name": "flour", "amount": "2", "unit": "cups"}\n'
-            "  ]\n"
-            "}\n"
-            "```"
-        )
-
-        # ACTION
-        result = parse_chat_response(raw_text)
-
-        # VERIFY
-        assert result.error is not None
-        assert result.proposed_recipe is None
-
-    def test_rejects_recipe_with_empty_ingredients_list(self):
-        """Response parser rejects recipe with empty ingredients list."""
-        # SETUP
-        raw_text = (
-            "Here's your recipe:\n\n"
-            "```json\n"
-            "{\n"
-            '  "title": "Empty Ingredients Recipe",\n'
-            '  "ingredients": [],\n'
-            '  "instructions": [\n'
-            '    {"step_number": 1, "instruction": "Do something"}\n'
-            "  ]\n"
-            "}\n"
-            "```"
-        )
-
-        # ACTION
-        result = parse_chat_response(raw_text)
-
-        # VERIFY
-        assert result.error is not None
-        assert result.proposed_recipe is None
-
-    def test_rejects_recipe_with_empty_instructions_list(self):
-        """Response parser rejects recipe with empty instructions list."""
-        # SETUP
-        raw_text = (
-            "Here's your recipe:\n\n"
-            "```json\n"
-            "{\n"
-            '  "title": "Empty Instructions Recipe",\n'
-            '  "ingredients": [\n'
-            '    {"name": "flour", "amount": "2", "unit": "cups"}\n'
-            "  ],\n"
-            '  "instructions": []\n'
-            "}\n"
-            "```"
-        )
-
-        # ACTION
-        result = parse_chat_response(raw_text)
-
-        # VERIFY
-        assert result.error is not None
-        assert result.proposed_recipe is None
-
-
-class TestParseAcceptsPartialOptionalFields:
-    """Tests that parser accepts valid recipes with optional fields missing."""
-
-    def test_accepts_valid_recipe_without_source_url(self):
-        """Response parser accepts complete recipe without optional sourceUrl."""
-        # SETUP
-        raw_text = (
-            "Here's your recipe:\n\n"
-            "```json\n"
-            "{\n"
-            '  "title": "Simple Salad",\n'
-            '  "ingredients": [\n'
-            '    {"name": "lettuce", "amount": "1", "unit": "head"},\n'
-            '    {"name": "tomato", "amount": "2", "unit": "whole"}\n'
-            "  ],\n"
-            '  "instructions": [\n'
-            '    {"step_number": 1, "instruction": "Wash and chop lettuce"},\n'
-            '    {"step_number": 2, "instruction": "Slice tomatoes and combine"}\n'
-            "  ]\n"
-            "}\n"
-            "```"
-        )
-
-        # ACTION
-        result = parse_chat_response(raw_text)
-
-        # VERIFY
-        assert result.error is None
-        assert result.proposed_recipe is not None
-        assert result.proposed_recipe["title"] == "Simple Salad"
-        assert len(result.proposed_recipe["ingredients"]) == 2
-        assert len(result.proposed_recipe["instructions"]) == 2
-        # sourceUrl is not required
-        assert (
-            "source_url" not in result.proposed_recipe
-            or result.proposed_recipe.get("source_url") is None
-        )

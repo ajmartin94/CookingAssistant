@@ -90,6 +90,7 @@ export default defineConfig({
         SECRET_KEY: 'test-secret-key-for-e2e-testing-only',
         CORS_ORIGINS: `["http://localhost:${E2E_FRONTEND_PORT}"]`,
         E2E_TESTING: 'true',
+        LLM_MODEL: 'test',  // Use test provider for deterministic AI responses
       },
     },
     {

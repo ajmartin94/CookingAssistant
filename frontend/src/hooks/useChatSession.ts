@@ -9,7 +9,7 @@ import { chatApi, type ChatMessage } from '../services/chatApi';
 import type { RecipeFormData } from '../types';
 
 const MAX_MESSAGES = 50;
-const STORAGE_KEY = 'chat_history';
+const STORAGE_KEY_PREFIX = 'chat_history';
 
 export interface ChatSessionMessage extends ChatMessage {
   proposedRecipe?: RecipeFormData | null;
@@ -25,10 +25,16 @@ interface UseChatSessionReturn {
   rejectChanges: () => void;
 }
 
-export function useChatSession(): UseChatSessionReturn {
+/**
+ * Hook for managing chat session state with page-specific persistence.
+ * @param pageKey - Unique key for the page (e.g., 'create' or recipe ID for edit pages)
+ */
+export function useChatSession(pageKey: string = 'create'): UseChatSessionReturn {
+  const storageKey = `${STORAGE_KEY_PREFIX}_${pageKey}`;
+
   const [messages, setMessages] = useState<ChatSessionMessage[]>(() => {
     try {
-      const stored = sessionStorage.getItem(STORAGE_KEY);
+      const stored = sessionStorage.getItem(storageKey);
       if (stored) {
         return JSON.parse(stored) as ChatSessionMessage[];
       }
@@ -45,8 +51,8 @@ export function useChatSession(): UseChatSessionReturn {
   // Persist messages to sessionStorage whenever they change
   useEffect(() => {
     const toStore = messages.slice(-MAX_MESSAGES);
-    sessionStorage.setItem(STORAGE_KEY, JSON.stringify(toStore));
-  }, [messages]);
+    sessionStorage.setItem(storageKey, JSON.stringify(toStore));
+  }, [messages, storageKey]);
 
   const sendMessage = useCallback(
     async (text: string, currentRecipe: RecipeFormData) => {

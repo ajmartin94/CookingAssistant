@@ -56,6 +56,7 @@ def build_system_prompt(
         "When suggesting a recipe, respond with descriptive text and optionally "
         "include a ```json block containing the complete recipe with the following structure:\n"
         '- "title" (string): The recipe name\n'
+        '- "description" (string): A brief description of the recipe\n'
         '- "ingredients" (list): Each with "name", "amount", and "unit"\n'
         '- "instructions" (list): Each with "step_number" and "instruction"\n'
         '- Optional fields: "cuisine_type", "difficulty_level", "prep_time_minutes", '

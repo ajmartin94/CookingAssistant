@@ -575,6 +575,19 @@ describe('RecipeForm', () => {
       expect(mockOnSubmit).not.toHaveBeenCalled();
     });
 
+    it('should show error summary near submit button when validation fails', async () => {
+      const { user } = renderRecipeForm();
+
+      // Try to submit without filling required fields
+      await user.click(screen.getByRole('button', { name: /create recipe/i }));
+
+      // An alert should appear near the form actions indicating errors exist
+      await waitFor(() => {
+        expect(screen.getByRole('alert')).toBeInTheDocument();
+        expect(screen.getByRole('alert')).toHaveTextContent(/fix.*error/i);
+      });
+    });
+
     it('should disable submit button while submitting', () => {
       renderRecipeForm({ isSubmitting: true });
 

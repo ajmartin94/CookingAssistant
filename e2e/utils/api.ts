@@ -266,6 +266,20 @@ export class APIHelper {
     }
   }
 
+  // User API methods
+  async getCurrentUser(token: string) {
+    const response = await this.request.get(`${this.baseURL}/api/v1/users/me`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
+    if (!response.ok()) {
+      const text = await response.text();
+      throw new Error(`Failed to get current user: ${text}`);
+    }
+
+    return response.json();
+  }
+
   // User Preferences API methods
   async getUserPreferences(token: string) {
     const response = await this.request.get(`${this.baseURL}/api/v1/users/me/preferences`, {

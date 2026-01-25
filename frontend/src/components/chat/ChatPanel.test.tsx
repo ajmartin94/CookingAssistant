@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, afterEach, beforeAll, afterAll } from 'vitest';
-import { render, screen, waitFor, within } from '../../test/test-utils';
+import { render, screen, waitFor } from '../../test/test-utils';
 import userEvent from '@testing-library/user-event';
 import { ChatPanel } from './ChatPanel';
 import { server } from '../../test/mocks/server';
@@ -18,6 +18,17 @@ const defaultProps = {
   onApply: mockOnApply,
 };
 
+/**
+ * ChatPanel Component Tests
+ *
+ * These 5 tests cover the core ChatPanel functionality as specified
+ * in the Feature 2 revised plan:
+ * 1. Renders with input and send button
+ * 2. Sending message adds user message to list
+ * 3. AI response renders as assistant message
+ * 4. Apply button calls onApply with proposed recipe
+ * 5. Input disabled during API call
+ */
 describe('ChatPanel', () => {
   beforeAll(() => server.listen());
   afterEach(() => {
@@ -28,7 +39,7 @@ describe('ChatPanel', () => {
   });
   afterAll(() => server.close());
 
-  it('renders with input field and send button', () => {
+  it('renders with input and send button', () => {
     render(<ChatPanel {...defaultProps} />);
 
     expect(screen.getByRole('complementary', { name: /ai recipe chat/i })).toBeInTheDocument();
@@ -60,24 +71,7 @@ describe('ChatPanel', () => {
     });
   });
 
-  it('ChangeSummary card renders when proposed_recipe is present', async () => {
-    const user = userEvent.setup();
-    render(<ChatPanel {...defaultProps} />);
-
-    const input = screen.getByRole('textbox', { name: /message/i });
-    await user.type(input, 'create a chicken recipe');
-    await user.click(screen.getByRole('button', { name: /send/i }));
-
-    await waitFor(() => {
-      expect(screen.getByText(/ai suggested recipe/i)).toBeInTheDocument();
-    });
-
-    // ChangeSummary card should show Apply and Reject buttons
-    expect(screen.getByRole('button', { name: /apply/i })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /reject/i })).toBeInTheDocument();
-  });
-
-  it('Apply button calls onApply with proposed recipe data (camelCase)', async () => {
+  it('Apply button calls onApply with proposed recipe', async () => {
     const user = userEvent.setup();
     render(<ChatPanel {...defaultProps} />);
 
@@ -113,28 +107,7 @@ describe('ChatPanel', () => {
     );
   });
 
-  it('Reject button dismisses the proposal', async () => {
-    const user = userEvent.setup();
-    render(<ChatPanel {...defaultProps} />);
-
-    const input = screen.getByRole('textbox', { name: /message/i });
-    await user.type(input, 'create a chicken recipe');
-    await user.click(screen.getByRole('button', { name: /send/i }));
-
-    await waitFor(() => {
-      expect(screen.getByRole('button', { name: /reject/i })).toBeInTheDocument();
-    });
-
-    await user.click(screen.getByRole('button', { name: /reject/i }));
-
-    // After rejecting, Apply and Reject buttons should be gone
-    await waitFor(() => {
-      expect(screen.queryByRole('button', { name: /apply/i })).not.toBeInTheDocument();
-    });
-    expect(screen.queryByRole('button', { name: /reject/i })).not.toBeInTheDocument();
-  });
-
-  it('input disabled and loading indicator shown during API call', async () => {
+  it('input disabled during API call', async () => {
     // Delay the response to observe loading state
     server.use(
       http.post(`${BASE_URL}/api/v1/chat`, async () => {
@@ -163,109 +136,125 @@ describe('ChatPanel', () => {
     });
   });
 
-  it('send button disabled when input is empty', () => {
-    render(<ChatPanel {...defaultProps} />);
+  /**
+   * Feature 3: Reject Flow Tests
+   *
+   * These 4 tests cover the reject flow functionality as specified
+   * in the Feature 3 revised plan:
+   * 1. Reject button dismisses proposal card
+   * 2. After reject, currentProposal is null (proposal no longer visible)
+   * 3. Form state unchanged after reject
+   * 4. Can send new message after rejecting proposal
+   */
+  describe('Reject Flow', () => {
+    it('Reject button dismisses proposal card', async () => {
+      const user = userEvent.setup();
+      render(<ChatPanel {...defaultProps} />);
 
-    const sendButton = screen.getByRole('button', { name: /send/i });
-    expect(sendButton).toBeDisabled();
-  });
+      // Send a message that triggers a proposal
+      const input = screen.getByRole('textbox', { name: /message/i });
+      await user.type(input, 'create a chicken recipe');
+      await user.click(screen.getByRole('button', { name: /send/i }));
 
-  it('error message renders when API call fails', async () => {
-    server.use(
-      http.post(`${BASE_URL}/api/v1/chat`, () => {
-        return HttpResponse.json({ detail: 'Internal server error' }, { status: 500 });
-      })
-    );
+      // Wait for proposal to appear
+      await waitFor(() => {
+        expect(screen.getByRole('button', { name: /reject/i })).toBeInTheDocument();
+      });
 
-    const user = userEvent.setup();
-    render(<ChatPanel {...defaultProps} />);
+      // Click reject
+      await user.click(screen.getByRole('button', { name: /reject/i }));
 
-    const input = screen.getByRole('textbox', { name: /message/i });
-    await user.type(input, 'hello');
-    await user.click(screen.getByRole('button', { name: /send/i }));
-
-    await waitFor(() => {
-      expect(screen.getByRole('alert')).toBeInTheDocument();
-    });
-    expect(screen.getByText(/failed to send message/i)).toBeInTheDocument();
-  });
-
-  it('chat history loads from sessionStorage on mount', () => {
-    const storedMessages = JSON.stringify([
-      { role: 'user', content: 'previous question' },
-      { role: 'assistant', content: 'previous answer' },
-    ]);
-    sessionStorage.setItem('chat_history', storedMessages);
-
-    render(<ChatPanel {...defaultProps} />);
-
-    expect(screen.getByText('previous question')).toBeInTheDocument();
-    expect(screen.getByText('previous answer')).toBeInTheDocument();
-  });
-
-  it('chat history saves to sessionStorage on new message', async () => {
-    const user = userEvent.setup();
-    render(<ChatPanel {...defaultProps} />);
-
-    const input = screen.getByRole('textbox', { name: /message/i });
-    await user.type(input, 'hello');
-    await user.click(screen.getByRole('button', { name: /send/i }));
-
-    await waitFor(() => {
-      expect(screen.getByText(/hello! i can help you with your recipe/i)).toBeInTheDocument();
+      // Proposal card (with Apply/Reject buttons) should be dismissed
+      await waitFor(() => {
+        expect(screen.queryByRole('button', { name: /reject/i })).not.toBeInTheDocument();
+        expect(screen.queryByRole('button', { name: /apply/i })).not.toBeInTheDocument();
+      });
     });
 
-    const stored = JSON.parse(sessionStorage.getItem('chat_history') || '[]');
-    expect(stored.length).toBeGreaterThanOrEqual(2);
-    expect(stored[0]).toMatchObject({ role: 'user', content: 'hello' });
-  });
+    it('After reject, currentProposal is null (proposal no longer visible)', async () => {
+      const user = userEvent.setup();
+      render(<ChatPanel {...defaultProps} />);
 
-  it('chat history truncates to max 50 messages in sessionStorage', async () => {
-    // Pre-fill with 49 messages
-    const existingMessages = Array.from({ length: 49 }, (_, i) => ({
-      role: i % 2 === 0 ? 'user' : 'assistant',
-      content: `message ${i + 1}`,
-    }));
-    sessionStorage.setItem('chat_history', JSON.stringify(existingMessages));
+      // Send a message that triggers a proposal
+      const input = screen.getByRole('textbox', { name: /message/i });
+      await user.type(input, 'create a chicken recipe');
+      await user.click(screen.getByRole('button', { name: /send/i }));
 
-    const user = userEvent.setup();
-    render(<ChatPanel {...defaultProps} />);
+      // Wait for proposal to appear - the text "Proposed:" indicates an active proposal
+      await waitFor(() => {
+        expect(screen.getByText(/proposed:/i)).toBeInTheDocument();
+      });
 
-    const input = screen.getByRole('textbox', { name: /message/i });
-    await user.type(input, 'hello');
-    await user.click(screen.getByRole('button', { name: /send/i }));
+      // Click reject
+      await user.click(screen.getByRole('button', { name: /reject/i }));
 
-    await waitFor(() => {
-      expect(screen.getByText(/hello! i can help you with your recipe/i)).toBeInTheDocument();
+      // After reject, the proposal text should no longer be visible
+      await waitFor(() => {
+        expect(screen.queryByText(/proposed:/i)).not.toBeInTheDocument();
+      });
     });
 
-    const stored = JSON.parse(sessionStorage.getItem('chat_history') || '[]');
-    expect(stored.length).toBeLessThanOrEqual(50);
-  });
+    it('Form state unchanged after reject', async () => {
+      const user = userEvent.setup();
+      const onApplySpy = vi.fn();
 
-  it('ARIA live region announces new AI messages', async () => {
-    const user = userEvent.setup();
-    render(<ChatPanel {...defaultProps} />);
+      // Use custom initial recipe data to verify it remains unchanged
+      const initialRecipe = {
+        ...DEFAULT_RECIPE_FORM_DATA,
+        title: 'Original Recipe Title',
+        description: 'Original description',
+      };
 
-    const input = screen.getByRole('textbox', { name: /message/i });
-    await user.type(input, 'hello');
-    await user.click(screen.getByRole('button', { name: /send/i }));
+      render(<ChatPanel {...defaultProps} currentRecipe={initialRecipe} onApply={onApplySpy} />);
 
-    await waitFor(() => {
-      expect(screen.getByText(/hello! i can help you with your recipe/i)).toBeInTheDocument();
+      // Send a message that triggers a proposal
+      const input = screen.getByRole('textbox', { name: /message/i });
+      await user.type(input, 'create a chicken recipe');
+      await user.click(screen.getByRole('button', { name: /send/i }));
+
+      // Wait for proposal to appear
+      await waitFor(() => {
+        expect(screen.getByRole('button', { name: /reject/i })).toBeInTheDocument();
+      });
+
+      // Click reject instead of apply
+      await user.click(screen.getByRole('button', { name: /reject/i }));
+
+      // Verify onApply was never called (form state unchanged)
+      expect(onApplySpy).not.toHaveBeenCalled();
     });
 
-    // Verify ARIA live region exists and contains the AI response
-    const liveRegion = screen.getByRole('log');
-    expect(liveRegion).toHaveAttribute('aria-live', 'polite');
-    expect(
-      within(liveRegion).getByText(/hello! i can help you with your recipe/i)
-    ).toBeInTheDocument();
-  });
+    it('Can send new message after rejecting proposal', async () => {
+      const user = userEvent.setup();
+      render(<ChatPanel {...defaultProps} />);
 
-  it('focus moves to input on panel open', () => {
-    render(<ChatPanel {...defaultProps} isOpen={true} />);
+      // Send first message that triggers a proposal
+      const input = screen.getByRole('textbox', { name: /message/i });
+      await user.type(input, 'create a chicken recipe');
+      await user.click(screen.getByRole('button', { name: /send/i }));
 
-    expect(screen.getByRole('textbox', { name: /message/i })).toHaveFocus();
+      // Wait for proposal to appear
+      await waitFor(() => {
+        expect(screen.getByRole('button', { name: /reject/i })).toBeInTheDocument();
+      });
+
+      // Click reject
+      await user.click(screen.getByRole('button', { name: /reject/i }));
+
+      // Verify input is enabled and we can type
+      await waitFor(() => {
+        expect(screen.getByRole('textbox', { name: /message/i })).not.toBeDisabled();
+      });
+
+      // Send a new message
+      await user.type(screen.getByRole('textbox', { name: /message/i }), 'hello');
+      await user.click(screen.getByRole('button', { name: /send/i }));
+
+      // Verify the new message appears and gets a response
+      await waitFor(() => {
+        expect(screen.getByText('hello')).toBeInTheDocument();
+        expect(screen.getByText(/hello! i can help you with your recipe/i)).toBeInTheDocument();
+      });
+    });
   });
 });

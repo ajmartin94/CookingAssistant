@@ -15,6 +15,7 @@ from app.ai.llm_client import LLMClient
 from app.ai.prompts import build_system_prompt
 from app.ai.response_parser import parse_chat_response
 from app.ai.schemas import ChatMessage, ChatRequest, ChatResponse
+from app.config import settings
 from app.database import get_db
 from app.models.recipe import Recipe
 from app.services.chat_service import truncate_message_history
@@ -103,7 +104,12 @@ async def chat(
 
     # Call LLM
     try:
-        llm_client = LLMClient()
+        llm_client = LLMClient(
+            model=settings.llm_model,
+            temperature=settings.llm_temperature,
+            max_tokens=settings.llm_max_tokens,
+            timeout=settings.llm_timeout,
+        )
         raw_response = await llm_client.complete(llm_messages)
     except LLMError as e:
         error_msg = str(e).lower()

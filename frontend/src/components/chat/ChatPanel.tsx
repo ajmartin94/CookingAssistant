@@ -18,13 +18,15 @@ interface ChatPanelProps {
   recipeId?: string;
 }
 
-export function ChatPanel({ isOpen, onClose, currentRecipe, onApply }: ChatPanelProps) {
+export function ChatPanel({ isOpen, onClose, currentRecipe, onApply, recipeId }: ChatPanelProps) {
   const [inputValue, setInputValue] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
+  // Use recipeId as the page key for edit pages, 'create' for create page
+  const pageKey = recipeId ?? 'create';
   const { messages, isLoading, error, currentProposal, sendMessage, applyChanges, rejectChanges } =
-    useChatSession();
+    useChatSession(pageKey);
 
   // Focus input when panel opens
   useEffect(() => {

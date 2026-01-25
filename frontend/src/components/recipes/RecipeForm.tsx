@@ -482,6 +482,16 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
         />
       </div>
 
+      {/* Validation Error Summary */}
+      {Object.keys(errors).length > 0 && (
+        <div role="alert" className="bg-error-50 border border-error-200 rounded-lg p-4">
+          <p className="text-error-700 font-medium">
+            Please fix {Object.keys(errors).length} error{Object.keys(errors).length > 1 ? 's' : ''}{' '}
+            above before submitting.
+          </p>
+        </div>
+      )}
+
       {/* Form Actions */}
       <div className="flex justify-end gap-3">
         <button
