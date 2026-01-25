@@ -56,17 +56,27 @@ class TestChatAPI:
         self, client: AsyncClient, auth_headers: dict, test_user: User
     ):
         """POST /api/v1/chat returns proposed_recipe when LLM response contains a recipe."""
-        response = await client.post(
-            "/api/v1/chat",
-            headers=auth_headers,
-            json={
-                "messages": [
-                    {"role": "user", "content": "Create a recipe for chocolate cake"}
-                ],
-                "current_recipe": None,
-                "recipe_id": None,
-            },
-        )
+        # Use test provider for deterministic behavior in CI
+        with patch("app.api.chat.settings") as mock_settings:
+            mock_settings.llm_model = "test"
+            mock_settings.llm_temperature = 0.7
+            mock_settings.llm_max_tokens = 2000
+            mock_settings.llm_timeout = 30
+
+            response = await client.post(
+                "/api/v1/chat",
+                headers=auth_headers,
+                json={
+                    "messages": [
+                        {
+                            "role": "user",
+                            "content": "Create a recipe for chocolate cake",
+                        }
+                    ],
+                    "current_recipe": None,
+                    "recipe_id": None,
+                },
+            )
 
         assert response.status_code == 200
         data = response.json()
