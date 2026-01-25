@@ -30,7 +30,10 @@ const defaultProps = {
  * 5. Input disabled during API call
  */
 describe('ChatPanel', () => {
-  beforeAll(() => server.listen());
+  beforeAll(() => {
+    server.listen();
+    sessionStorage.clear(); // Clear any stale data from previous test files
+  });
   afterEach(() => {
     server.resetHandlers();
     mockOnApply.mockClear();
