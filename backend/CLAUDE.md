@@ -337,6 +337,40 @@ async def test_ai_client_handles_timeout(client, auth_headers):
 
 The LLM is non-deterministic. Everything around it is not. Test everything around it.
 
+#### Using the Test Provider in Integration Tests
+
+For integration tests that call the chat API and need deterministic responses, mock settings to use the test provider (`model="test"`):
+
+```python
+from unittest.mock import patch
+
+@pytest.mark.asyncio
+async def test_chat_returns_proposed_recipe(client, auth_headers):
+    """Chat endpoint returns a recipe proposal."""
+    # Mock settings to use test provider for deterministic behavior
+    with patch("app.api.chat.settings") as mock_settings:
+        mock_settings.llm_model = "test"
+        mock_settings.llm_temperature = 0.7
+        mock_settings.llm_max_tokens = 2000
+        mock_settings.llm_timeout = 30
+
+        response = await client.post(
+            "/api/v1/chat",
+            headers=auth_headers,
+            json={"messages": [{"role": "user", "content": "Create a cake recipe"}]},
+        )
+
+    assert response.status_code == 200
+    assert response.json()["proposed_recipe"] is not None
+```
+
+**Why?** Without this mock, tests hit the real LLM configured in `.env` (e.g., `ollama/llama3.1:8b`), causing:
+- Slow tests (LLM inference takes seconds)
+- Flaky tests (LLM responses vary)
+- CI failures (LLM may not be available)
+
+The test provider (`app/ai/test_provider.py`) returns canned responses for keywords like "create", "spaghetti", "gluten-free", ensuring tests are fast and deterministic.
+
 ---
 
 <!-- Per AD-0101 -->
