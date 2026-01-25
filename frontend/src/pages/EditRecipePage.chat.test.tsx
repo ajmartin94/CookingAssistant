@@ -75,10 +75,13 @@ describe('EditRecipePage - Chat Integration', () => {
 
   it('after Apply, next chat message includes the updated recipe state', async () => {
     // Track the chat API requests to verify the recipe state is sent
-    let lastChatRequest: {
-      messages: { role: string; content: string }[];
-      current_recipe?: Record<string, unknown>;
-    } | null = null;
+    // Use object wrapper to avoid TypeScript control flow narrowing issues with closures
+    const captured: {
+      lastRequest: {
+        messages: { role: string; content: string }[];
+        current_recipe?: Record<string, unknown>;
+      } | null;
+    } = { lastRequest: null };
 
     server.use(
       http.post(`${BASE_URL}/api/v1/chat`, async ({ request }) => {
@@ -86,7 +89,7 @@ describe('EditRecipePage - Chat Integration', () => {
           messages: { role: string; content: string }[];
           current_recipe?: Record<string, unknown>;
         };
-        lastChatRequest = body;
+        captured.lastRequest = body;
         const lastMessage = body.messages[body.messages.length - 1];
 
         if (lastMessage?.content.toLowerCase().includes('create')) {
@@ -154,7 +157,7 @@ describe('EditRecipePage - Chat Integration', () => {
     });
 
     // The last chat request should include the updated recipe state
-    expect(lastChatRequest?.current_recipe).toMatchObject({
+    expect(captured.lastRequest?.current_recipe).toMatchObject({
       title: 'Updated AI Recipe',
     });
   });
