@@ -43,6 +43,32 @@ frontend/
 
 ---
 
+## Design System
+
+Full design system spec: **[docs/DESIGN_SYSTEM.md](../docs/DESIGN_SYSTEM.md)**
+
+### Quick Reference
+
+| Token | Value | Use |
+|-------|-------|-----|
+| `--bg-primary` | #1a1a1a | Page background |
+| `--bg-card` | #2a2a2a | Cards, inputs |
+| `--text-primary` | #f5f5f5 | Headings |
+| `--text-secondary` | #a0a0a0 | Body text |
+| `--accent` | #e07850 | Primary actions |
+| `--border` | #3a3a3a | Default borders |
+
+### Navigation
+- **Desktop**: 220px sidebar (left), settings/profile bottom
+- **Mobile**: 4-tab bottom bar (Home, Cookbook, Plan, Shop), profile top-right
+
+### Component Patterns
+- Cards: `--bg-card`, 1px border, 12px radius
+- Buttons: 8-10px radius, primary uses `--accent`
+- Inputs: Dark background, subtle border, focus ring uses `--accent-subtle`
+
+---
+
 ## Running Tests
 
 ```bash

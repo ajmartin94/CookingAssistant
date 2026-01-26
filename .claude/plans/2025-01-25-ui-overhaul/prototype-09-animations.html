@@ -1,0 +1,1312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cooking Assistant - Animation & Motion Exploration</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --bg-primary: #1a1918;
+      --bg-secondary: #242321;
+      --bg-card: #2a2927;
+      --bg-hover: #353432;
+      --text-primary: #f5f5f5;
+      --text-secondary: #a0a0a0;
+      --text-muted: #6b6b6b;
+      --accent: #e07850;
+      --accent-hover: #c96842;
+      --accent-subtle: rgba(224, 120, 80, 0.15);
+      --border: #3a3a3a;
+      --success: #4ade80;
+      --success-subtle: rgba(74, 222, 128, 0.15);
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      min-height: 100vh;
+      padding: 40px;
+    }
+
+    h1 {
+      font-size: 32px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .subtitle {
+      color: var(--text-muted);
+      font-size: 16px;
+      margin-bottom: 48px;
+    }
+
+    h2 {
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    h2 .badge {
+      font-size: 11px;
+      background: var(--accent-subtle);
+      color: var(--accent);
+      padding: 4px 10px;
+      border-radius: 4px;
+      font-weight: 500;
+    }
+
+    .section-desc {
+      color: var(--text-secondary);
+      font-size: 14px;
+      margin-bottom: 24px;
+      max-width: 600px;
+    }
+
+    .section {
+      margin-bottom: 64px;
+      padding-bottom: 48px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .demo-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+    }
+
+    .demo-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .demo-area {
+      height: 180px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--bg-secondary);
+      border-bottom: 1px solid var(--border);
+      padding: 24px;
+    }
+
+    .demo-info {
+      padding: 16px;
+    }
+
+    .demo-name {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .demo-timing {
+      font-size: 12px;
+      color: var(--text-muted);
+      font-family: monospace;
+    }
+
+    .demo-desc {
+      font-size: 12px;
+      color: var(--text-secondary);
+      margin-top: 8px;
+      line-height: 1.4;
+    }
+
+    /* ==================== BUTTON ANIMATIONS ==================== */
+
+    .btn {
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 500;
+      border: none;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Standard lift */
+    .btn-lift {
+      background: var(--accent);
+      color: white;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 2px 8px rgba(224, 120, 80, 0.2);
+    }
+    .btn-lift:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(224, 120, 80, 0.35);
+    }
+    .btn-lift:active {
+      transform: translateY(0);
+      box-shadow: 0 2px 8px rgba(224, 120, 80, 0.2);
+    }
+
+    /* Scale pop */
+    .btn-pop {
+      background: var(--accent);
+      color: white;
+      transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .btn-pop:hover {
+      transform: scale(1.05);
+    }
+    .btn-pop:active {
+      transform: scale(0.98);
+    }
+
+    /* Ripple effect */
+    .btn-ripple {
+      background: var(--accent);
+      color: white;
+      transition: background 0.2s ease;
+    }
+    .btn-ripple:hover {
+      background: var(--accent-hover);
+    }
+    .btn-ripple .ripple {
+      position: absolute;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.4);
+      transform: scale(0);
+      animation: ripple-effect 0.6s ease-out;
+      pointer-events: none;
+    }
+    @keyframes ripple-effect {
+      to {
+        transform: scale(4);
+        opacity: 0;
+      }
+    }
+
+    /* Glow pulse */
+    .btn-glow {
+      background: var(--accent);
+      color: white;
+      transition: all 0.3s ease;
+    }
+    .btn-glow:hover {
+      box-shadow: 0 0 20px rgba(224, 120, 80, 0.5), 0 0 40px rgba(224, 120, 80, 0.3);
+    }
+
+    /* CHOSEN: Scale pop + glow burst on click */
+    .btn-chosen {
+      background: linear-gradient(135deg, var(--accent) 0%, var(--accent-hover) 100%);
+      color: white;
+      transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 2px 8px rgba(224, 120, 80, 0.25);
+    }
+    .btn-chosen:hover {
+      transform: scale(1.05);
+      box-shadow: 0 4px 16px rgba(224, 120, 80, 0.35);
+    }
+    .btn-chosen:active {
+      transform: scale(0.98);
+    }
+    .btn-chosen.clicked {
+      animation: btn-glow-burst 0.5s ease-out;
+    }
+    @keyframes btn-glow-burst {
+      0% {
+        box-shadow: 0 0 0 0 rgba(224, 120, 80, 0.7);
+      }
+      50% {
+        box-shadow: 0 0 20px 10px rgba(224, 120, 80, 0.4), 0 4px 16px rgba(224, 120, 80, 0.35);
+      }
+      100% {
+        box-shadow: 0 4px 16px rgba(224, 120, 80, 0.35);
+      }
+    }
+
+    /* ==================== CHECKBOX/TOGGLE ANIMATIONS ==================== */
+
+    .checkbox-demo {
+      display: flex;
+      gap: 32px;
+      align-items: center;
+    }
+
+    /* Bounce check */
+    .checkbox-bounce {
+      width: 28px;
+      height: 28px;
+      border: 2px solid var(--border);
+      border-radius: 6px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .checkbox-bounce:hover {
+      border-color: var(--accent);
+    }
+    .checkbox-bounce.checked {
+      background: var(--success);
+      border-color: var(--success);
+      animation: checkbox-bounce 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .checkbox-bounce svg {
+      opacity: 0;
+      transform: scale(0);
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .checkbox-bounce.checked svg {
+      opacity: 1;
+      transform: scale(1);
+    }
+    @keyframes checkbox-bounce {
+      0% { transform: scale(1); }
+      30% { transform: scale(1.2); }
+      50% { transform: scale(0.9); }
+      70% { transform: scale(1.05); }
+      100% { transform: scale(1); }
+    }
+
+    /* Toggle switch */
+    .toggle-switch {
+      width: 52px;
+      height: 28px;
+      background: var(--border);
+      border-radius: 14px;
+      cursor: pointer;
+      position: relative;
+      transition: background 0.3s ease;
+    }
+    .toggle-switch::after {
+      content: '';
+      position: absolute;
+      width: 22px;
+      height: 22px;
+      background: white;
+      border-radius: 50%;
+      top: 3px;
+      left: 3px;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+    .toggle-switch.on {
+      background: var(--success);
+    }
+    .toggle-switch.on::after {
+      transform: translateX(24px);
+    }
+
+    /* ==================== CARD ANIMATIONS ==================== */
+
+    .card-demo {
+      display: flex;
+      gap: 16px;
+    }
+
+    .mini-card {
+      width: 100px;
+      height: 80px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    /* Lift card */
+    .card-lift {
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .card-lift:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
+      border-color: var(--text-muted);
+    }
+
+    /* Scale card */
+    .card-scale {
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .card-scale:hover {
+      transform: scale(1.05);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+    }
+
+    /* Glow card */
+    .card-glow {
+      transition: all 0.3s ease;
+    }
+    .card-glow:hover {
+      border-color: var(--accent);
+      box-shadow: 0 0 24px rgba(224, 120, 80, 0.2);
+    }
+
+    /* ==================== LOADING ANIMATIONS ==================== */
+
+    .loading-demo {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      width: 100%;
+    }
+
+    /* Skeleton shimmer */
+    .skeleton {
+      background: linear-gradient(90deg, var(--bg-card) 25%, var(--bg-hover) 50%, var(--bg-card) 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.5s infinite;
+      border-radius: 6px;
+    }
+    @keyframes shimmer {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+
+    /* Pulse skeleton */
+    .skeleton-pulse {
+      background: var(--bg-card);
+      animation: pulse 2s infinite;
+      border-radius: 6px;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+
+    /* Spinner */
+    .spinner {
+      width: 32px;
+      height: 32px;
+      border: 3px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Dots loader */
+    .dots-loader {
+      display: flex;
+      gap: 6px;
+    }
+    .dots-loader span {
+      width: 10px;
+      height: 10px;
+      background: var(--accent);
+      border-radius: 50%;
+      animation: dots-bounce 1.4s infinite ease-in-out both;
+    }
+    .dots-loader span:nth-child(1) { animation-delay: -0.32s; }
+    .dots-loader span:nth-child(2) { animation-delay: -0.16s; }
+    @keyframes dots-bounce {
+      0%, 80%, 100% { transform: scale(0); }
+      40% { transform: scale(1); }
+    }
+
+    /* ==================== LIST ANIMATIONS ==================== */
+
+    .list-demo {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      width: 100%;
+    }
+
+    .list-item {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px 16px;
+      font-size: 13px;
+      opacity: 0;
+      transform: translateY(20px);
+    }
+
+    .list-demo.animate .list-item {
+      animation: list-slide-in 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    }
+    .list-demo.animate .list-item:nth-child(1) { animation-delay: 0s; }
+    .list-demo.animate .list-item:nth-child(2) { animation-delay: 0.08s; }
+    .list-demo.animate .list-item:nth-child(3) { animation-delay: 0.16s; }
+    .list-demo.animate .list-item:nth-child(4) { animation-delay: 0.24s; }
+
+    @keyframes list-slide-in {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .replay-btn {
+      margin-top: 12px;
+      padding: 8px 16px;
+      background: var(--bg-hover);
+      border: 1px solid var(--border);
+      color: var(--text-secondary);
+      border-radius: 6px;
+      font-size: 12px;
+      cursor: pointer;
+    }
+
+    /* ==================== CELEBRATION ANIMATIONS ==================== */
+
+    .celebration-demo {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Success checkmark */
+    .success-check {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      background: var(--success);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transform: scale(0);
+      opacity: 0;
+    }
+    .success-check.animate {
+      animation: success-pop 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    }
+    .success-check svg {
+      stroke-dasharray: 30;
+      stroke-dashoffset: 30;
+    }
+    .success-check.animate svg {
+      animation: check-draw 0.4s 0.3s ease forwards;
+    }
+    @keyframes success-pop {
+      0% { transform: scale(0); opacity: 0; }
+      50% { transform: scale(1.2); opacity: 1; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    @keyframes check-draw {
+      to { stroke-dashoffset: 0; }
+    }
+
+    /* Confetti */
+    .confetti-container {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      overflow: hidden;
+    }
+    .confetti {
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      opacity: 0;
+    }
+    .confetti.animate {
+      animation: confetti-fall 1s ease forwards;
+    }
+    @keyframes confetti-fall {
+      0% {
+        opacity: 1;
+        transform: translateY(0) rotate(0deg);
+      }
+      100% {
+        opacity: 0;
+        transform: translateY(150px) rotate(720deg);
+      }
+    }
+
+    /* Counter increment */
+    .counter {
+      font-size: 48px;
+      font-weight: 700;
+      color: var(--accent);
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* ==================== PROGRESS ANIMATIONS ==================== */
+
+    .progress-demo {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    /* Progress bar */
+    .progress-bar {
+      height: 8px;
+      background: var(--border);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    .progress-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent) 0%, var(--accent-hover) 100%);
+      border-radius: 4px;
+      width: 0%;
+      transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .progress-bar-fill.animate {
+      width: 75%;
+    }
+
+    /* Step progress */
+    .step-progress {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .step-dot {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--bg-card);
+      border: 2px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 600;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .step-dot.complete {
+      background: var(--success);
+      border-color: var(--success);
+      color: white;
+    }
+    .step-dot.active {
+      border-color: var(--accent);
+      color: var(--accent);
+      transform: scale(1.1);
+    }
+    .step-line {
+      flex: 1;
+      height: 2px;
+      background: var(--border);
+      position: relative;
+    }
+    .step-line::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      height: 100%;
+      width: 0%;
+      background: var(--success);
+      transition: width 0.5s ease;
+    }
+    .step-line.complete::after {
+      width: 100%;
+    }
+
+    /* ==================== MODAL/DRAWER ANIMATIONS ==================== */
+
+    .modal-demo {
+      position: relative;
+      width: 100%;
+      height: 100%;
+    }
+
+    .modal-trigger {
+      padding: 10px 20px;
+      background: var(--accent);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 13px;
+    }
+
+    .modal-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+    }
+    .modal-overlay.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal-content {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px;
+      width: 200px;
+      transform: scale(0.9) translateY(20px);
+      opacity: 0;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .modal-overlay.show .modal-content {
+      transform: scale(1) translateY(0);
+      opacity: 1;
+    }
+
+    /* Drawer slide */
+    .drawer {
+      position: absolute;
+      right: 0;
+      top: 0;
+      bottom: 0;
+      width: 180px;
+      background: var(--bg-card);
+      border-left: 1px solid var(--border);
+      padding: 16px;
+      transform: translateX(100%);
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .drawer.show {
+      transform: translateX(0);
+    }
+
+    /* ==================== MICRO-INTERACTIONS ==================== */
+
+    .micro-demo {
+      display: flex;
+      gap: 24px;
+      align-items: center;
+    }
+
+    /* Heart like */
+    .heart-btn {
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--text-muted);
+      transition: color 0.2s ease;
+    }
+    .heart-btn:hover {
+      color: var(--text-secondary);
+    }
+    .heart-btn.liked {
+      color: #ef4444;
+      animation: heart-pop 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .heart-btn.liked svg {
+      fill: #ef4444;
+    }
+    @keyframes heart-pop {
+      0% { transform: scale(1); }
+      25% { transform: scale(1.3); }
+      50% { transform: scale(0.9); }
+      75% { transform: scale(1.1); }
+      100% { transform: scale(1); }
+    }
+
+    /* Add to cart bounce */
+    .cart-btn {
+      padding: 10px 20px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text-primary);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      transition: all 0.2s ease;
+    }
+    .cart-btn:hover {
+      border-color: var(--text-muted);
+    }
+    .cart-btn.added {
+      background: var(--success-subtle);
+      border-color: var(--success);
+      color: var(--success);
+    }
+    .cart-btn.added svg {
+      animation: cart-bounce 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    @keyframes cart-bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+
+    /* Shake error */
+    .input-shake {
+      padding: 12px 16px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text-primary);
+      font-size: 14px;
+      width: 180px;
+      outline: none;
+    }
+    .input-shake:focus {
+      border-color: var(--text-muted);
+    }
+    .input-shake.error {
+      border-color: #ef4444;
+      animation: shake 0.4s ease;
+    }
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20%, 60% { transform: translateX(-8px); }
+      40%, 80% { transform: translateX(8px); }
+    }
+
+    .note {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--accent);
+      padding: 16px 20px;
+      border-radius: 8px;
+      margin-top: 32px;
+    }
+
+    .note-title {
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .note-text {
+      font-size: 13px;
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+
+    .interactive-hint {
+      font-size: 11px;
+      color: var(--accent);
+      margin-top: 8px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Animation & Motion Exploration</h1>
+  <p class="subtitle">Interactive demos — click, hover, and interact to see animations</p>
+
+  <!-- Button Animations -->
+  <div class="section">
+    <h2>Button Interactions <span class="badge">Hover & Click</span></h2>
+    <p class="section-desc">Primary action buttons need satisfying feedback. These options range from subtle to expressive.</p>
+
+    <div class="demo-grid">
+      <div class="demo-card">
+        <div class="demo-area">
+          <button class="btn btn-lift">Start Cooking</button>
+        </div>
+        <div class="demo-info">
+          <div class="demo-name">Lift & Shadow</div>
+          <div class="demo-timing">0.2s cubic-bezier(0.4, 0, 0.2, 1)</div>
+          <div class="demo-desc">Button rises up with growing shadow. Feels like pressing a physical button.</div>
+        </div>
+      </div>
+
+      <div class="demo-card">
+        <div class="demo-area">
+          <button class="btn btn-pop">Start Cooking</button>
+        </div>
+        <div class="demo-info">
+          <div class="demo-name">Scale Pop</div>
+          <div class="demo-timing">0.15s cubic-bezier</div>
+          <div class="demo-desc">Quick scale up on hover, shrink on click. Playful and responsive.</div>
+        </div>
+      </div>
+
+      <div class="demo-card">
+        <div class="demo-area">
+          <button class="btn btn-ripple" onclick="createRipple(event)">Start Cooking</button>
+        </div>
+        <div class="demo-info">
+          <div class="demo-name">Ripple Effect</div>
+          <div class="demo-timing">0.6s ease-out</div>
+          <div class="demo-desc">Material-style ripple from click point. Confirms the click happened.</div>
+        </div>
+      </div>
+
+      <div class="demo-card">
+        <div class="demo-area">
+          <button class="btn btn-glow">Start Cooking</button>
+        </div>
+        <div class="demo-info">
+          <div class="demo-name">Glow Pulse</div>
+          <div class="demo-timing">0.3s ease</div>
+          <div class="demo-desc">Ambient glow on hover. Premium, warm feeling.</div>
+        </div>
+      </div>
+
+      <div class="demo-card" style="border-color: var(--accent); background: linear-gradient(135deg, var(--bg-card) 0%, rgba(224, 120, 80, 0.05) 100%);">
+        <div class="demo-area">
+          <button class="btn btn-chosen" onclick="triggerGlowBurst(this)">Start Cooking</button>
+        </div>
+        <div class="demo-info">
+          <div class="demo-name">CHOSEN: Scale Pop + Glow Burst</div>
+          <div class="demo-timing">0.15s hover + 0.5s click burst</div>
+          <div class="demo-desc">Scales up on hover, shrinks on press, then glow bursts outward on click. Combines responsiveness with celebration.</div>
+          <p class="interactive-hint">This is the selected button style</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Checkbox/Toggle -->
+  <div class="section">
+    <h2>Checkboxes & Toggles <span class="badge">Click to toggle</span></h2>
+    <p class="section-desc">Shopping lists and settings need satisfying check/toggle animations.</p>
+
+    <div class="demo-grid">
+      <div class="demo-card">
+        <div class="demo-area">
+          <div class="checkbox-demo">
+            <div class="checkbox-bounce" onclick="this.classList.toggle('checked')">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+            </div>
+            <div class="checkbox-bounce" onclick="this.classList.toggle('checked')">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+            </div>
+            <div class="checkbox-bounce checked" onclick="this.classList.toggle('checked')">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+            </div>
+          </div>
+        </div>
+        <div class="demo-info">
+          <div class="demo-name">Bounce Check</div>
+          <div class="demo-timing">0.4s cubic-bezier</div>
+          <div class="demo-desc">Checkbox bounces when checked. Satisfying for shopping list completion.</div>
+        </div>
+      </div>
+
+      <div class="demo-card">
+        <div class="demo-area">
+          <div class="checkbox-demo">
+            <div class="toggle-switch" onclick="this.classList.toggle('on')"></div>
+            <div class="toggle-switch on" onclick="this.classList.toggle('on')"></div>
+          </div>
+        </div>
+        <div class="demo-info">
+          <div class="demo-name">Toggle Switch</div>
+          <div class="demo-timing">0.3s cubic-bezier</div>
+          <div class="demo-desc">Smooth slide with slight overshoot. Good for settings.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Card Hover -->
+  <div class="section">
+    <h2>Card Interactions <span class="badge">Hover</span></h2>
+    <p class="section-desc">Recipe cards and meal plan items need hover states that invite clicking.</p>
+
+    <div class="demo-grid">
+      <div class="demo-card">
+        <div class="demo-area">
+          <div class="card-demo">
+            <div class="mini-card card-lift">Lift</div>
+            <div class="mini-card card-scale">Scale</div>
+            <div class="mini-card card-glow">Glow</div>
+          </div>
+        </div>
+        <div class="demo-info">
+          <div class="demo-name">Card Hover Effects</div>
+          <div class="demo-timing">0.2-0.3s ease</div>
+          <div class="demo-desc">Lift: rises with shadow. Scale: grows slightly. Glow: accent border glow.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading States -->
+  <div class="section">
+    <h2>Loading States <span class="badge">Automatic</span></h2>
+    <p class="section-desc">Recipe loading, AI thinking, data fetching — need clear loading indicators.</p>
+
+    <div class="demo-grid">
+      <div class="demo-card">
+        <div class="demo-area">
+          <div class="loading-demo">
+            <div class="skeleton" style="height: 20px; width: 60%;"></div>
+            <div class="skeleton" style="height: 16px; width: 80%;"></div>
+            <div class="skeleton" style="height: 16px; width: 45%;"></div>
+          </div>
+        </div>
+        <div class="demo-info">
+          <div class="demo-name">Skeleton Shimmer</div>
+          <div class="demo-timing">1.5s infinite</div>
+          <div class="demo-desc">Shimmer effect across placeholder shapes. Best for content loading.</div>
+        </div>
+      </div>
+
+      <div class="demo-card">
+        <div class="demo-area">
+          <div class="loading-demo">
+            <div class="skeleton-pulse" style="height: 20px; width: 60%;"></div>
+            <div class="skeleton-pulse" style="height: 16px; width: 80%;"></div>
+            <div class="skeleton-pulse" style="height: 16px; width: 45%;"></div>
+          </div>
+        </div>
+        <div class="demo-info">
+          <div class="demo-name">Skeleton Pulse</div>
+          <div class="demo-timing">2s infinite</div>
+          <div class="demo-desc">Simple opacity pulse. Subtler than shimmer.</div>
+        </div>
+      </div>
+
+      <div class="demo-card">
+        <div class="demo-area">
+          <div style="display: flex; gap: 32px; align-items: center;">
+            <div class="spinner"></div>
+            <div class="dots-loader">
+              <span></span>
+              <span></span>
+              <span></span>
+            </div>
+          </div>
+        </div>
+        <div class="demo-info">
+          <div class="demo-name">Spinners & Dots</div>
+          <div class="demo-timing">0.8s / 1.4s</div>
+          <div class="demo-desc">Spinner for actions, dots for AI thinking. Both loop infinitely.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- List Animations -->
+  <div class="section">
+    <h2>List Animations <span class="badge">Click to replay</span></h2>
+    <p class="section-desc">Shopping lists, recipe steps, meal plans — lists should animate in smoothly.</p>
+
+    <div class="demo-grid">
+      <div class="demo-card">
+        <div class="demo-area">
+          <div class="list-demo animate" id="staggerList">
+            <div class="list-item">Salmon fillets</div>
+            <div class="list-item">Broccoli</div>
+            <div class="list-item">Honey</div>
+            <div class="list-item">Garlic</div>
+          </div>
+        </div>
+        <div class="demo-info">
+          <div class="demo-name">Staggered Slide-In</div>
+          <div class="demo-timing">0.4s per item, 80ms stagger</div>
+          <div class="demo-desc">Items slide up and fade in with staggered timing. Feels organized.</div>
+          <button class="replay-btn" onclick="replayList()">Replay Animation</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Progress Animations -->
+  <div class="section">
+    <h2>Progress Indicators <span class="badge">Click to animate</span></h2>
+    <p class="section-desc">Cooking progress, shopping completion, meal prep steps.</p>
+
+    <div class="demo-grid">
+      <div class="demo-card">
+        <div class="demo-area">
+          <div class="progress-demo">
+            <div class="progress-bar">
+              <div class="progress-bar-fill" id="progressFill"></div>
+            </div>
+            <div style="font-size: 12px; color: var(--text-muted);">3 of 4 steps complete</div>
+          </div>
+        </div>
+        <div class="demo-info">
+          <div class="demo-name">Progress Bar</div>
+          <div class="demo-timing">1s cubic-bezier</div>
+          <button class="replay-btn" onclick="animateProgress()">Animate</button>
+        </div>
+      </div>
+
+      <div class="demo-card">
+        <div class="demo-area">
+          <div class="step-progress" id="stepProgress">
+            <div class="step-dot complete">1</div>
+            <div class="step-line complete"></div>
+            <div class="step-dot complete">2</div>
+            <div class="step-line"></div>
+            <div class="step-dot active">3</div>
+            <div class="step-line"></div>
+            <div class="step-dot">4</div>
+          </div>
+        </div>
+        <div class="demo-info">
+          <div class="demo-name">Step Progress</div>
+          <div class="demo-timing">0.3-0.5s each</div>
+          <div class="demo-desc">Perfect for cooking mode steps.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Celebrations -->
+  <div class="section">
+    <h2>Celebrations <span class="badge">Click to trigger</span></h2>
+    <p class="section-desc">Completing a meal, finishing shopping, streaks — moments worth celebrating.</p>
+
+    <div class="demo-grid">
+      <div class="demo-card">
+        <div class="demo-area" style="position: relative;">
+          <div class="celebration-demo" onclick="triggerSuccess(this)">
+            <div class="success-check" id="successCheck">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+            </div>
+          </div>
+        </div>
+        <div class="demo-info">
+          <div class="demo-name">Success Burst</div>
+          <div class="demo-timing">0.5s pop + 0.4s draw</div>
+          <div class="demo-desc">Checkmark pops in and draws. Click to replay.</div>
+          <p class="interactive-hint">Click the demo area</p>
+        </div>
+      </div>
+
+      <div class="demo-card">
+        <div class="demo-area" style="position: relative;" onclick="triggerConfetti(this)">
+          <div class="confetti-container" id="confettiContainer"></div>
+          <div style="text-align: center;">
+            <div style="font-size: 14px; margin-bottom: 8px;">Meal Complete!</div>
+            <div class="counter" id="streakCounter">7</div>
+            <div style="font-size: 12px; color: var(--text-muted);">day streak</div>
+          </div>
+        </div>
+        <div class="demo-info">
+          <div class="demo-name">Confetti Burst</div>
+          <div class="demo-timing">1s fall</div>
+          <div class="demo-desc">Colorful confetti for big achievements. Click to replay.</div>
+          <p class="interactive-hint">Click the demo area</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Micro-interactions -->
+  <div class="section">
+    <h2>Micro-interactions <span class="badge">Click to interact</span></h2>
+    <p class="section-desc">Small moments that add up to a polished experience.</p>
+
+    <div class="demo-grid">
+      <div class="demo-card">
+        <div class="demo-area">
+          <div class="micro-demo">
+            <button class="heart-btn" onclick="this.classList.toggle('liked')">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+              </svg>
+            </button>
+            <button class="cart-btn" onclick="toggleCart(this)">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+              </svg>
+              Add to List
+            </button>
+          </div>
+        </div>
+        <div class="demo-info">
+          <div class="demo-name">Like & Add</div>
+          <div class="demo-timing">0.4-0.5s</div>
+          <div class="demo-desc">Heart pops when liked. Cart bounces when added.</div>
+        </div>
+      </div>
+
+      <div class="demo-card">
+        <div class="demo-area">
+          <input type="text" class="input-shake" placeholder="Required field" id="shakeInput">
+          <button class="replay-btn" style="margin-left: 12px;" onclick="triggerShake()">Trigger Error</button>
+        </div>
+        <div class="demo-info">
+          <div class="demo-name">Error Shake</div>
+          <div class="demo-timing">0.4s ease</div>
+          <div class="demo-desc">Input shakes on validation error. Clear feedback without being aggressive.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal/Drawer -->
+  <div class="section">
+    <h2>Modals & Drawers <span class="badge">Click to open</span></h2>
+    <p class="section-desc">Confirmation dialogs, recipe quick-view, shopping list drawer.</p>
+
+    <div class="demo-grid">
+      <div class="demo-card">
+        <div class="demo-area">
+          <div class="modal-demo">
+            <button class="modal-trigger" onclick="toggleModal()">Open Modal</button>
+            <div class="modal-overlay" id="modalOverlay" onclick="toggleModal()">
+              <div class="modal-content" onclick="event.stopPropagation()">
+                <div style="font-size: 14px; font-weight: 600; margin-bottom: 8px;">Delete Recipe?</div>
+                <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 16px;">This cannot be undone.</div>
+                <button class="modal-trigger" onclick="toggleModal()">Close</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="demo-info">
+          <div class="demo-name">Modal Scale-In</div>
+          <div class="demo-timing">0.3s cubic-bezier</div>
+          <div class="demo-desc">Overlay fades, content scales up from center.</div>
+        </div>
+      </div>
+
+      <div class="demo-card">
+        <div class="demo-area" style="position: relative; overflow: hidden;">
+          <button class="modal-trigger" onclick="toggleDrawer()">Open Drawer</button>
+          <div class="drawer" id="drawer">
+            <div style="font-size: 14px; font-weight: 600; margin-bottom: 12px;">Quick Add</div>
+            <div style="font-size: 12px; color: var(--text-muted);">Slide from right for secondary panels.</div>
+          </div>
+        </div>
+        <div class="demo-info">
+          <div class="demo-name">Drawer Slide</div>
+          <div class="demo-timing">0.3s cubic-bezier</div>
+          <div class="demo-desc">Slides in from edge. Good for filters, quick actions.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="note">
+    <div class="note-title">Animation Philosophy</div>
+    <div class="note-text">
+      Animations should be <strong>purposeful</strong> (communicates state), <strong>quick</strong> (200-400ms for most),
+      and <strong>consistent</strong> (same easing curves throughout). Use cubic-bezier(0.4, 0, 0.2, 1) for most interactions —
+      it's the "ease-out" feel that makes things feel responsive. Reserve bounce/overshoot for celebrations.
+    </div>
+  </div>
+
+  <script>
+    // Glow burst on click (chosen button style)
+    function triggerGlowBurst(btn) {
+      btn.classList.remove('clicked');
+      btn.offsetHeight; // Trigger reflow
+      btn.classList.add('clicked');
+      setTimeout(() => btn.classList.remove('clicked'), 500);
+    }
+
+    // Ripple effect
+    function createRipple(event) {
+      const btn = event.currentTarget;
+      const ripple = document.createElement('span');
+      ripple.classList.add('ripple');
+      const rect = btn.getBoundingClientRect();
+      const size = Math.max(rect.width, rect.height);
+      ripple.style.width = ripple.style.height = size + 'px';
+      ripple.style.left = event.clientX - rect.left - size/2 + 'px';
+      ripple.style.top = event.clientY - rect.top - size/2 + 'px';
+      btn.appendChild(ripple);
+      ripple.addEventListener('animationend', () => ripple.remove());
+    }
+
+    // List replay
+    function replayList() {
+      const list = document.getElementById('staggerList');
+      list.classList.remove('animate');
+      list.offsetHeight; // Trigger reflow
+      list.classList.add('animate');
+    }
+
+    // Progress bar
+    function animateProgress() {
+      const fill = document.getElementById('progressFill');
+      fill.classList.remove('animate');
+      fill.offsetHeight;
+      fill.classList.add('animate');
+    }
+
+    // Success animation
+    function triggerSuccess(container) {
+      const check = container.querySelector('.success-check');
+      check.classList.remove('animate');
+      check.offsetHeight;
+      check.classList.add('animate');
+    }
+
+    // Confetti
+    function triggerConfetti(container) {
+      const confettiContainer = container.querySelector('.confetti-container');
+      confettiContainer.innerHTML = '';
+      const colors = ['#e07850', '#4ade80', '#fbbf24', '#5c9dc4', '#f5f5f5'];
+      for (let i = 0; i < 30; i++) {
+        const confetti = document.createElement('div');
+        confetti.className = 'confetti';
+        confetti.style.left = Math.random() * 100 + '%';
+        confetti.style.top = '40%';
+        confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
+        confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+        confetti.style.animationDelay = Math.random() * 0.3 + 's';
+        confetti.style.animationDuration = (0.8 + Math.random() * 0.4) + 's';
+        confettiContainer.appendChild(confetti);
+        setTimeout(() => confetti.classList.add('animate'), 10);
+      }
+    }
+
+    // Cart toggle
+    function toggleCart(btn) {
+      btn.classList.toggle('added');
+      if (btn.classList.contains('added')) {
+        btn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="20 6 9 17 4 12"></polyline>
+        </svg> Added!`;
+      } else {
+        btn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="12" y1="5" x2="12" y2="19"></line>
+          <line x1="5" y1="12" x2="19" y2="12"></line>
+        </svg> Add to List`;
+      }
+    }
+
+    // Shake input
+    function triggerShake() {
+      const input = document.getElementById('shakeInput');
+      input.classList.remove('error');
+      input.offsetHeight;
+      input.classList.add('error');
+      setTimeout(() => input.classList.remove('error'), 500);
+    }
+
+    // Modal
+    function toggleModal() {
+      document.getElementById('modalOverlay').classList.toggle('show');
+    }
+
+    // Drawer
+    function toggleDrawer() {
+      document.getElementById('drawer').classList.toggle('show');
+    }
+
+    // Auto-animate progress on load
+    setTimeout(() => animateProgress(), 500);
+  </script>
+</body>
+</html>
