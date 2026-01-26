@@ -77,7 +77,8 @@ describe('RecipeDetailPage', () => {
       render(<RecipeDetailPage />);
 
       await waitFor(() => {
-        expect(screen.getByText(/4 servings/i)).toBeInTheDocument();
+        expect(screen.getByTestId('servings')).toHaveTextContent('4');
+        expect(screen.getByText(/servings/i)).toBeInTheDocument();
       });
     });
 
@@ -94,7 +95,7 @@ describe('RecipeDetailPage', () => {
 
       await waitFor(() => {
         const difficultyBadge = screen.getByText(/easy/i); // mockRecipe has difficultyLevel: 'easy'
-        expect(difficultyBadge).toHaveClass('bg-success-100', 'text-success-700');
+        expect(difficultyBadge).toHaveClass('bg-success', 'text-text-primary');
       });
     });
 

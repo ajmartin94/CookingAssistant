@@ -37,6 +37,7 @@ function App() {
 
             {/* Protected routes - with sidebar layout */}
             <Route element={<ProtectedLayout />}>
+              <Route path="/home" element={<HomePage />} />
               <Route path="/recipes" element={<RecipesPage />} />
               <Route path="/recipes/create" element={<CreateRecipePage />} />
               <Route path="/recipes/:id" element={<RecipeDetailPage />} />

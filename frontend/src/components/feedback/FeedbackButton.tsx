@@ -19,7 +19,7 @@ export function FeedbackButton() {
         type="button"
         onClick={openModal}
         aria-label="Give Feedback"
-        className="fixed bottom-4 right-4 px-4 py-2 bg-blue-600 text-white rounded-full shadow-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
+        className="fixed bottom-4 right-4 px-4 py-2 bg-accent text-text-primary rounded-full shadow-lg hover:bg-accent-hover focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2 transition-colors"
       >
         Feedback
       </button>

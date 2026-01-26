@@ -31,9 +31,48 @@ export default {
        * Each scale runs from lightest (50) to darkest (950).
        */
       colors: {
+        // ===============================================
+        // SEMANTIC DESIGN TOKENS (CSS Variables)
+        // ===============================================
+        // These tokens reference CSS custom properties defined in theme.css
+        // Use these for theme-aware components instead of hardcoded colors
+
+        // Background tokens
+        'primary': 'var(--bg-primary)',     // Page background
+        'secondary': 'var(--bg-secondary)', // Secondary/alternate areas
+        'card': 'var(--bg-card)',           // Cards, inputs, containers
+        'hover': 'var(--bg-hover)',         // Hover states
+
+        // Text tokens (prefixed to avoid conflict with bg tokens)
+        'text-primary': 'var(--text-primary)',     // Headings, primary text
+        'text-secondary': 'var(--text-secondary)', // Body text
+        'text-muted': 'var(--text-muted)',         // Subtle text
+
+        // Border tokens
+        'default': 'var(--border)',         // Default borders
+
+        // Accent tokens
+        'accent': 'var(--accent)',           // Primary accent (CTAs)
+        'accent-hover': 'var(--accent-hover)', // Accent hover state
+        'accent-subtle': 'var(--accent-subtle)', // Accent backgrounds
+        'text-on-accent': 'var(--text-on-accent)', // Text on accent backgrounds
+
+        // Semantic status tokens (theme-aware)
+        'success': 'var(--success, #539557)',
+        'success-subtle': 'var(--success-subtle, rgba(83, 149, 87, 0.15))',
+        'warning': 'var(--warning, #eab308)',
+        'warning-subtle': 'var(--warning-subtle, rgba(234, 179, 8, 0.15))',
+        'error': 'var(--error, #dc4545)',
+        'error-subtle': 'var(--error-subtle, rgba(220, 69, 69, 0.15))',
+
+        // ===============================================
+        // PALETTE COLORS (for specific use cases)
+        // ===============================================
+        // Use palette colors sparingly - prefer semantic tokens above
+
         // Primary: Terracotta - warm, earthy orange
         // Use for: buttons, links, key actions, brand elements
-        primary: {
+        'primary-palette': {
           50: '#fef6f3',
           100: '#fdeae4',
           200: '#fcd5c9',

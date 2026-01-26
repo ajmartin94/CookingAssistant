@@ -69,10 +69,10 @@ describe('RecipeCard', () => {
   });
 
   describe('Time and Servings', () => {
-    it('should display total time', () => {
+    it('should display cook time', () => {
       render(<RecipeCard recipe={mockRecipe} />);
 
-      expect(screen.getByText('27 min')).toBeInTheDocument();
+      expect(screen.getByText('12 min')).toBeInTheDocument();
     });
 
     it('should display servings', () => {
@@ -103,7 +103,8 @@ describe('RecipeCard', () => {
 
       const difficultyBadge = screen.getByText('easy');
       expect(difficultyBadge).toBeInTheDocument();
-      expect(difficultyBadge).toHaveClass('bg-success-100', 'text-success-700');
+      // Uses semantic design tokens: bg-success for background, text-text-primary for text
+      expect(difficultyBadge).toHaveClass('bg-success', 'text-text-primary');
     });
 
     it('should display difficulty level with medium styling', () => {
@@ -111,7 +112,8 @@ describe('RecipeCard', () => {
       render(<RecipeCard recipe={mediumRecipe} />);
 
       const difficultyBadge = screen.getByText('medium');
-      expect(difficultyBadge).toHaveClass('bg-warning-100', 'text-warning-700');
+      // Uses semantic design tokens: bg-warning for background, text-text-primary for text
+      expect(difficultyBadge).toHaveClass('bg-warning', 'text-text-primary');
     });
 
     it('should display difficulty level with hard styling', () => {
@@ -119,7 +121,8 @@ describe('RecipeCard', () => {
       render(<RecipeCard recipe={hardRecipe} />);
 
       const difficultyBadge = screen.getByText('hard');
-      expect(difficultyBadge).toHaveClass('bg-error-100', 'text-error-700');
+      // Uses semantic design tokens: bg-error for background, text-text-primary for text
+      expect(difficultyBadge).toHaveClass('bg-error', 'text-text-primary');
     });
   });
 
@@ -185,6 +188,122 @@ describe('RecipeCard', () => {
 
       const link = container.querySelector('a');
       expect(link).toHaveClass('rounded-lg', 'shadow-soft');
+    });
+  });
+
+  /**
+   * ============================================================================
+   * COOKBOOK PAGE REDESIGN - RECIPE CARD TESTS (Feature 7 - UI/UX Overhaul)
+   * ============================================================================
+   * These tests verify the new RecipeCard design with:
+   * - data-testid attributes for E2E testing
+   * - Image fallback with gradient and first letter
+   * - Card metadata with dedicated data-testid
+   * - Tag display with data-testid
+   */
+
+  describe('Cookbook Page Redesign - data-testid Attributes', () => {
+    it('should have data-testid="recipe-card" on the card container', () => {
+      render(<RecipeCard recipe={mockRecipe} />);
+
+      const recipeCard = screen.getByTestId('recipe-card');
+      expect(recipeCard).toBeInTheDocument();
+    });
+
+    it('should have data-testid="card-title" on the title element', () => {
+      render(<RecipeCard recipe={mockRecipe} />);
+
+      const cardTitle = screen.getByTestId('card-title');
+      expect(cardTitle).toBeInTheDocument();
+      expect(cardTitle).toHaveTextContent('Chocolate Chip Cookies');
+    });
+
+    it('should have data-testid="card-image" when image URL is provided', () => {
+      render(<RecipeCard recipe={mockRecipe} />);
+
+      const cardImage = screen.getByTestId('card-image');
+      expect(cardImage).toBeInTheDocument();
+    });
+
+    it('should have data-testid="image-fallback" when no image URL', () => {
+      const recipeWithoutImage = { ...mockRecipe, imageUrl: undefined };
+      render(<RecipeCard recipe={recipeWithoutImage} />);
+
+      const imageFallback = screen.getByTestId('image-fallback');
+      expect(imageFallback).toBeInTheDocument();
+    });
+
+    it('should have data-testid="card-metadata" for time and servings section', () => {
+      render(<RecipeCard recipe={mockRecipe} />);
+
+      const cardMetadata = screen.getByTestId('card-metadata');
+      expect(cardMetadata).toBeInTheDocument();
+    });
+
+    it('should have data-testid="card-time" for cook time display', () => {
+      render(<RecipeCard recipe={mockRecipe} />);
+
+      const cardTime = screen.getByTestId('card-time');
+      expect(cardTime).toBeInTheDocument();
+      expect(cardTime).toHaveTextContent(/12/); // cookTimeMinutes
+    });
+
+    it('should have data-testid="card-tag" on dietary tags', () => {
+      render(<RecipeCard recipe={mockRecipe} />);
+
+      const cardTags = screen.getAllByTestId('card-tag');
+      expect(cardTags.length).toBeGreaterThanOrEqual(1);
+      expect(cardTags[0]).toHaveTextContent('vegetarian');
+    });
+  });
+
+  describe('Cookbook Page Redesign - Image Fallback with First Letter', () => {
+    it('should display gradient fallback with first letter when no image', () => {
+      const recipeWithoutImage = { ...mockRecipe, imageUrl: undefined, title: 'Pasta Carbonara' };
+      render(<RecipeCard recipe={recipeWithoutImage} />);
+
+      const imageFallback = screen.getByTestId('image-fallback');
+      expect(imageFallback).toBeInTheDocument();
+      // Should display the first letter of the recipe title
+      expect(imageFallback).toHaveTextContent('P');
+    });
+
+    it('should display first letter from multi-word recipe title', () => {
+      const recipeWithoutImage = { ...mockRecipe, imageUrl: undefined, title: 'Apple Pie Delight' };
+      render(<RecipeCard recipe={recipeWithoutImage} />);
+
+      const imageFallback = screen.getByTestId('image-fallback');
+      expect(imageFallback).toHaveTextContent('A');
+    });
+
+    it('should have gradient background styling on image fallback', () => {
+      const recipeWithoutImage = { ...mockRecipe, imageUrl: undefined };
+      render(<RecipeCard recipe={recipeWithoutImage} />);
+
+      const imageFallback = screen.getByTestId('image-fallback');
+      // Check for gradient class or inline style
+      expect(
+        imageFallback.className.includes('gradient') ||
+          imageFallback.className.includes('bg-') ||
+          imageFallback.getAttribute('style')?.includes('gradient')
+      ).toBe(true);
+    });
+  });
+
+  describe('Cookbook Page Redesign - Card Layout', () => {
+    it('should render card as a clickable link', () => {
+      render(<RecipeCard recipe={mockRecipe} />);
+
+      const link = screen.getByRole('link');
+      expect(link).toHaveAttribute('href', '/recipes/1');
+    });
+
+    it('should have accessible name matching recipe title', () => {
+      render(<RecipeCard recipe={mockRecipe} />);
+
+      // Card should be findable by accessible name
+      const link = screen.getByRole('link', { name: /chocolate chip cookies/i });
+      expect(link).toBeInTheDocument();
     });
   });
 });

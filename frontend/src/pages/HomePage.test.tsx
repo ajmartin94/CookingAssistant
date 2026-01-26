@@ -1,9 +1,16 @@
+/**
+ * Tests for HomePage (Public Landing Page)
+ *
+ * These tests verify the unauthenticated landing page experience.
+ * For authenticated home page tests, see HomePageRedesign.test.tsx
+ */
+
 import { describe, it, expect } from 'vitest';
 import { render, screen } from '../test/test-utils';
 import HomePage from './HomePage';
 
 describe('HomePage', () => {
-  describe('Rendering', () => {
+  describe('Public Landing Page', () => {
     it('should render the main heading', () => {
       render(<HomePage />);
 
@@ -33,44 +40,13 @@ describe('HomePage', () => {
     });
   });
 
-  describe('Feature Cards', () => {
-    it('should display Recipe Library feature card', () => {
-      render(<HomePage />);
-
-      expect(screen.getByRole('heading', { name: /recipe library/i })).toBeInTheDocument();
-      expect(screen.getByText(/store and organize your favorite recipes/i)).toBeInTheDocument();
-    });
-
-    it('should display Meal Planning feature card', () => {
-      render(<HomePage />);
-
-      expect(screen.getByRole('heading', { name: /meal planning/i })).toBeInTheDocument();
-      expect(
-        screen.getByText(/plan your meals and generate smart grocery lists/i)
-      ).toBeInTheDocument();
-    });
-
-    it('should display Interactive Cooking feature card', () => {
-      render(<HomePage />);
-
-      expect(screen.getByRole('heading', { name: /interactive cooking/i })).toBeInTheDocument();
-      expect(screen.getByText(/step-by-step guidance with voice assistance/i)).toBeInTheDocument();
-    });
-  });
-
   describe('Layout', () => {
-    it('should have gradient background', () => {
+    it('should have semantic background color', () => {
       const { container } = render(<HomePage />);
 
-      const mainDiv = container.querySelector('.bg-gradient-to-br');
+      // Uses semantic design token bg-primary for theme-aware background
+      const mainDiv = container.querySelector('.bg-primary');
       expect(mainDiv).toBeInTheDocument();
-    });
-
-    it('should display feature cards in a grid layout', () => {
-      const { container } = render(<HomePage />);
-
-      const featureGrid = container.querySelector('.grid');
-      expect(featureGrid).toBeInTheDocument();
     });
   });
 });

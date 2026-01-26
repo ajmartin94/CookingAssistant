@@ -1,12 +1,16 @@
 /**
  * Recipe Detail Page
  *
- * Displays full details of a single recipe
+ * Displays full details of a single recipe with redesigned UI featuring:
+ * - Hero section with image or gradient fallback
+ * - Metadata bar for prep/cook time and servings
+ * - Two-column responsive layout
+ * - Timer buttons for steps with duration
  */
 
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ChevronLeft, Clock, Users } from '../components/common/icons';
+import { ChevronLeft, Clock, Users, Timer } from '../components/common/icons';
 import { recipeApi } from '../services/recipeApi';
 import type { Recipe } from '../types';
 import { useAuth } from '../contexts/AuthContext';
@@ -77,17 +81,17 @@ export default function RecipeDetailPage() {
     }
   };
 
-  // Get difficulty color
+  // Get difficulty color - uses semantic tokens (matching RecipeCard pattern)
   const getDifficultyColor = (difficulty: string) => {
     switch (difficulty) {
       case 'easy':
-        return 'bg-success-100 text-success-700';
+        return 'bg-success text-text-primary';
       case 'medium':
-        return 'bg-warning-100 text-warning-700';
+        return 'bg-warning text-text-primary';
       case 'hard':
-        return 'bg-error-100 text-error-700';
+        return 'bg-error text-text-primary';
       default:
-        return 'bg-neutral-100 text-neutral-800';
+        return 'bg-secondary text-text-secondary';
     }
   };
 
@@ -95,7 +99,7 @@ export default function RecipeDetailPage() {
   if (loading) {
     return (
       <div className="flex justify-center items-center min-h-[50vh]">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-accent"></div>
       </div>
     );
   }
@@ -103,13 +107,13 @@ export default function RecipeDetailPage() {
   // Error state
   if (error || !recipe) {
     return (
-      <div className="bg-error-50 border border-error-200 rounded-lg p-6">
-        <p className="text-error-700">
+      <div className="bg-error-subtle border border-error rounded-lg p-6">
+        <p className="text-error">
           <strong>Error:</strong> {error || 'Recipe not found'}
         </p>
         <button
           onClick={() => navigate('/recipes')}
-          className="mt-4 px-4 py-2 bg-primary-500 text-white rounded-lg font-semibold hover:bg-primary-600 transition"
+          className="mt-4 px-4 py-2 bg-accent text-text-on-accent rounded-lg font-semibold hover:bg-accent-hover transition"
         >
           Back to Recipes
         </button>
@@ -118,6 +122,7 @@ export default function RecipeDetailPage() {
   }
 
   const isOwner = user?.id === recipe.ownerId;
+  const firstLetter = recipe.title.charAt(0).toUpperCase();
 
   return (
     <div>
@@ -125,118 +130,139 @@ export default function RecipeDetailPage() {
       <div className="mb-6">
         <button
           onClick={() => navigate('/recipes')}
-          className="text-primary-500 hover:text-primary-600 font-medium mb-4 flex items-center gap-1"
+          className="text-accent hover:text-accent-hover font-medium mb-4 flex items-center gap-1"
         >
           <ChevronLeft className="w-5 h-5" />
           Back to Recipes
         </button>
       </div>
 
-      {/* Recipe Header */}
-      <div className="bg-white rounded-lg shadow-soft overflow-hidden mb-6">
-        {/* Recipe Image */}
-        {recipe.imageUrl && (
-          <div className="h-96 overflow-hidden">
-            <img src={recipe.imageUrl} alt={recipe.title} className="w-full h-full object-cover" />
+      {/* Hero Section */}
+      <div
+        data-testid="recipe-hero"
+        className="relative w-full rounded-lg overflow-hidden mb-6 min-h-[300px]"
+      >
+        {recipe.imageUrl ? (
+          <>
+            <img
+              data-testid="recipe-hero-image"
+              src={recipe.imageUrl}
+              alt={recipe.title}
+              className="w-full h-96 object-cover"
+            />
+            <div
+              data-testid="hero-overlay"
+              className="gradient-overlay absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"
+            />
+          </>
+        ) : (
+          <div
+            data-testid="recipe-hero-fallback"
+            className="w-full h-96 bg-gradient-to-br from-accent to-accent-hover flex flex-col items-center justify-center"
+          >
+            <span
+              data-testid="recipe-hero-letter"
+              className="text-8xl font-bold text-text-on-accent/80"
+            >
+              {firstLetter}
+            </span>
           </div>
         )}
-
-        <div className="p-6">
-          {/* Title and Actions */}
-          <div className="flex justify-between items-start mb-4">
-            <div>
-              <h1 className="text-4xl font-bold text-neutral-900 mb-2" data-testid="recipe-title">
-                {recipe.title}
-              </h1>
-              <p className="text-lg text-neutral-600" data-testid="recipe-description">
-                {recipe.description}
-              </p>
-            </div>
-
-            {isOwner && (
-              <div className="flex gap-2">
-                <button
-                  onClick={() => setShowShareModal(true)}
-                  className="px-4 py-2 border border-primary-500 text-primary-500 rounded-lg font-semibold hover:bg-primary-50 transition"
-                >
-                  Share
-                </button>
-                <button
-                  onClick={() => navigate(`/recipes/${recipe.id}/edit`)}
-                  className="px-4 py-2 bg-primary-500 text-white rounded-lg font-semibold hover:bg-primary-600 transition"
-                >
-                  Edit
-                </button>
-                <button
-                  onClick={handleDelete}
-                  disabled={deleting}
-                  className="px-4 py-2 bg-error-500 text-white rounded-lg font-semibold hover:bg-error-600 transition disabled:opacity-50"
-                >
-                  {deleting ? 'Deleting...' : 'Delete'}
-                </button>
-              </div>
-            )}
-          </div>
-
-          {/* Meta Information */}
-          <div className="flex flex-wrap items-center gap-4 mb-4">
-            <div className="flex items-center gap-2 text-neutral-600">
-              <Clock className="w-5 h-5" />
-              <span>
-                Prep: <span data-testid="prep-time">{recipe.prepTimeMinutes}</span> min | Cook:{' '}
-                <span data-testid="cook-time">{recipe.cookTimeMinutes}</span> min | Total:{' '}
-                <span data-testid="total-time">{recipe.totalTimeMinutes}</span> min
-              </span>
-            </div>
-
-            <div className="flex items-center gap-2 text-neutral-600">
-              <Users className="w-5 h-5" />
-              <span data-testid="servings">{recipe.servings} servings</span>
-            </div>
-          </div>
-
-          {/* Tags */}
-          <div className="flex flex-wrap gap-2">
-            {recipe.cuisineType && (
-              <span className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">
-                {recipe.cuisineType}
-              </span>
-            )}
-            <span
-              className={`px-3 py-1 rounded-full text-sm font-medium ${getDifficultyColor(
-                recipe.difficultyLevel
-              )}`}
-            >
-              {recipe.difficultyLevel}
-            </span>
-            {recipe.dietaryTags.map((tag) => (
-              <span
-                key={tag}
-                className="px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-sm font-medium"
-              >
-                {tag}
-              </span>
-            ))}
-          </div>
+        <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
+          <h1 className="text-4xl font-bold drop-shadow-lg" data-testid="recipe-title">
+            {recipe.title}
+          </h1>
+          {recipe.description && (
+            <p className="text-lg text-white/90 mt-2 drop-shadow" data-testid="recipe-description">
+              {recipe.description}
+            </p>
+          )}
+        </div>
+        {/* Edit button in hero */}
+        <div className="absolute top-4 right-4">
+          <button
+            data-testid="edit-button"
+            aria-label="Edit recipe"
+            onClick={() => navigate(`/recipes/${recipe.id}/edit`)}
+            className="px-4 py-2 bg-card/90 hover:bg-card text-text-primary rounded-lg font-semibold transition shadow"
+          >
+            Edit
+          </button>
         </div>
       </div>
 
-      <div className="grid md:grid-cols-3 gap-6">
+      {/* Metadata Bar */}
+      <div
+        data-testid="metadata-bar"
+        className="bg-card rounded-lg shadow-soft p-4 mb-6 flex flex-wrap items-center justify-center gap-6"
+      >
+        <div className="flex items-center gap-2 text-text-secondary">
+          <Clock className="w-5 h-5" />
+          <span>
+            Prep: <span data-testid="prep-time">{recipe.prepTimeMinutes}</span> min
+          </span>
+        </div>
+        <div className="flex items-center gap-2 text-text-secondary">
+          <Clock className="w-5 h-5" />
+          <span>
+            Cook: <span data-testid="cook-time">{recipe.cookTimeMinutes}</span> min
+          </span>
+        </div>
+        <div className="flex items-center gap-2 text-text-secondary">
+          <Clock className="w-5 h-5" />
+          <span>
+            Total: <span data-testid="total-time">{recipe.totalTimeMinutes}</span> min
+          </span>
+        </div>
+        <div className="flex items-center gap-2 text-text-secondary">
+          <Users className="w-5 h-5" />
+          <span>
+            <span data-testid="servings">{recipe.servings}</span> servings
+          </span>
+        </div>
+      </div>
+
+      {/* Tags */}
+      <div className="flex flex-wrap gap-2 mb-6">
+        {recipe.cuisineType && (
+          <span className="px-3 py-1 bg-accent-subtle text-accent rounded-full text-sm font-medium">
+            {recipe.cuisineType}
+          </span>
+        )}
+        <span
+          className={`px-3 py-1 rounded-full text-sm font-medium ${getDifficultyColor(
+            recipe.difficultyLevel
+          )}`}
+        >
+          {recipe.difficultyLevel}
+        </span>
+        {recipe.dietaryTags.map((tag) => (
+          <span
+            key={tag}
+            className="px-3 py-1 bg-accent-subtle text-accent rounded-full text-sm font-medium"
+          >
+            {tag}
+          </span>
+        ))}
+      </div>
+
+      {/* Two-column content layout */}
+      <div data-testid="recipe-content" className="grid md:grid-cols-3 gap-6">
         {/* Ingredients */}
-        <div className="md:col-span-1">
-          <div className="bg-white rounded-lg shadow-soft p-6 sticky top-4">
-            <h2 className="text-2xl font-bold text-neutral-900 mb-4">Ingredients</h2>
+        <div data-testid="ingredients-section" className="md:col-span-1">
+          <div className="bg-card rounded-lg shadow-soft p-6 sticky top-4">
+            <h2 className="text-2xl font-bold text-text-primary mb-4">Ingredients</h2>
             <ul className="space-y-2" data-testid="ingredients-list">
               {recipe.ingredients.map((ingredient, index) => (
-                <li key={index} className="flex items-start gap-2">
-                  <span className="text-primary-500 font-bold">•</span>
-                  <span className="text-neutral-700">
+                <li key={index} className="flex items-start gap-2" data-testid="ingredient">
+                  <span className="text-accent font-bold">•</span>
+                  <span className="text-text-secondary">
                     <strong>
                       {ingredient.amount} {ingredient.unit}
                     </strong>{' '}
                     {ingredient.name}
                     {ingredient.notes && (
-                      <span className="text-neutral-500 text-sm"> ({ingredient.notes})</span>
+                      <span className="text-text-muted text-sm"> ({ingredient.notes})</span>
                     )}
                   </span>
                 </li>
@@ -246,9 +272,9 @@ export default function RecipeDetailPage() {
         </div>
 
         {/* Instructions */}
-        <div className="md:col-span-2">
-          <div className="bg-white rounded-lg shadow-soft p-6">
-            <h2 className="text-2xl font-bold text-neutral-900 mb-4">Instructions</h2>
+        <div data-testid="instructions-section" className="md:col-span-2">
+          <div className="bg-card rounded-lg shadow-soft p-6">
+            <h2 className="text-2xl font-bold text-text-primary mb-4">Instructions</h2>
             <ol className="space-y-4" data-testid="instructions-list">
               {recipe.instructions.map((instruction) => (
                 <li
@@ -256,15 +282,23 @@ export default function RecipeDetailPage() {
                   className="flex gap-4 items-start"
                   data-testid="instruction"
                 >
-                  <div className="flex-shrink-0 w-8 h-8 bg-primary-500 text-white rounded-full flex items-center justify-center font-bold">
+                  <div
+                    data-testid="step-number"
+                    className="flex-shrink-0 w-8 h-8 bg-accent text-text-on-accent rounded-full flex items-center justify-center font-bold"
+                  >
                     {instruction.stepNumber}
                   </div>
                   <div className="flex-1">
-                    <p className="text-neutral-700">{instruction.instruction}</p>
+                    <p className="text-text-secondary">{instruction.instruction}</p>
                     {instruction.durationMinutes && (
-                      <p className="text-sm text-neutral-500 mt-1">
-                        ⏱️ {instruction.durationMinutes} minutes
-                      </p>
+                      <button
+                        data-testid="timer-button"
+                        aria-label={`Start ${instruction.durationMinutes} minute timer`}
+                        className="mt-2 inline-flex items-center gap-1 px-3 py-1 bg-accent-subtle hover:bg-accent text-accent hover:text-text-on-accent rounded-full text-sm font-medium transition"
+                      >
+                        <Timer className="w-4 h-4" />
+                        {instruction.durationMinutes} min
+                      </button>
                     )}
                   </div>
                 </li>
@@ -274,23 +308,26 @@ export default function RecipeDetailPage() {
 
           {/* Notes */}
           {recipe.notes && (
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 mt-6">
-              <h3 className="text-lg font-semibold text-blue-900 mb-2">Notes</h3>
-              <p className="text-blue-800">{recipe.notes}</p>
+            <div
+              data-testid="recipe-notes"
+              className="bg-accent-subtle border border-accent rounded-lg p-6 mt-6"
+            >
+              <h2 className="text-lg font-semibold text-accent mb-2">Notes</h2>
+              <p className="text-text-secondary">{recipe.notes}</p>
             </div>
           )}
 
           {/* Source */}
           {(recipe.sourceName || recipe.sourceUrl) && (
-            <div className="bg-neutral-50 border border-neutral-200 rounded-lg p-6 mt-6">
-              <h3 className="text-lg font-semibold text-neutral-900 mb-2">Source</h3>
-              {recipe.sourceName && <p className="text-neutral-700">{recipe.sourceName}</p>}
+            <div className="bg-secondary border border-default rounded-lg p-6 mt-6">
+              <h3 className="text-lg font-semibold text-text-primary mb-2">Source</h3>
+              {recipe.sourceName && <p className="text-text-secondary">{recipe.sourceName}</p>}
               {recipe.sourceUrl && (
                 <a
                   href={recipe.sourceUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-primary-500 hover:text-primary-600 underline"
+                  className="text-accent hover:text-accent-hover underline"
                 >
                   View Original Recipe
                 </a>
@@ -299,6 +336,27 @@ export default function RecipeDetailPage() {
           )}
         </div>
       </div>
+
+      {/* Owner actions */}
+      {isOwner && (
+        <div className="fixed bottom-6 right-6 flex gap-2">
+          <button
+            aria-label="Share recipe"
+            onClick={() => setShowShareModal(true)}
+            className="px-4 py-2 border border-accent bg-card text-accent rounded-lg font-semibold hover:bg-accent-subtle transition shadow-lg"
+          >
+            Share
+          </button>
+          <button
+            aria-label="Delete recipe"
+            onClick={handleDelete}
+            disabled={deleting}
+            className="px-4 py-2 bg-error text-text-on-accent rounded-lg font-semibold hover:opacity-90 transition disabled:opacity-50 shadow-lg"
+          >
+            {deleting ? 'Deleting...' : 'Delete'}
+          </button>
+        </div>
+      )}
 
       {/* Share Modal */}
       <ShareModal

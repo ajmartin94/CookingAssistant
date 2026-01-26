@@ -51,9 +51,10 @@ export function Sidebar({ children }: SidebarProps) {
 
       {/* Sidebar */}
       <aside
+        data-testid="sidebar"
         className={`
           fixed top-0 left-0 z-40 h-full
-          bg-white border-r border-neutral-200
+          bg-card border-r border-default
           flex flex-col
           transition-all duration-200 ease-in-out
           ${isMobileOpen ? 'translate-x-0' : '-translate-x-full'}
@@ -65,23 +66,24 @@ export function Sidebar({ children }: SidebarProps) {
         {/* Logo / Header */}
         <div
           className={`
-          flex items-center h-16 border-b border-neutral-200
+          flex items-center h-16 border-b border-default
           ${isCollapsed ? 'justify-center px-2' : 'justify-between px-4'}
         `}
         >
           <Link to="/recipes" className="flex items-center gap-2" onClick={closeMobile}>
-            <div className="w-8 h-8 bg-primary-500 rounded-lg flex items-center justify-center">
-              <ChefHat className="w-5 h-5 text-white" />
+            <div className="w-8 h-8 bg-accent rounded-lg flex items-center justify-center">
+              <ChefHat className="w-5 h-5 text-text-primary" />
             </div>
             {!isCollapsed && (
-              <span className="font-display font-bold text-lg text-neutral-900">CookBook</span>
+              <span className="font-display font-bold text-lg text-text-primary">CookBook</span>
             )}
           </Link>
 
           {/* Collapse toggle - desktop only */}
           <button
             onClick={toggleCollapse}
-            className="hidden lg:flex items-center justify-center w-8 h-8 rounded-lg hover:bg-neutral-100 text-neutral-500"
+            data-testid="sidebar-collapse"
+            className="hidden lg:flex items-center justify-center w-8 h-8 rounded-lg hover:bg-hover text-text-muted"
             aria-label={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
           >
             {isCollapsed ? (
@@ -147,7 +149,7 @@ export function Sidebar({ children }: SidebarProps) {
         </nav>
 
         {/* Action button */}
-        <div className="p-3 border-t border-neutral-200">
+        <div className="p-3 border-t border-default">
           <SidebarActionButton
             icon={<Plus className="w-5 h-5" />}
             label="New Recipe"

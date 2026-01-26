@@ -21,9 +21,9 @@ export function SidebarActionButton({ icon, label, onClick }: SidebarActionButto
       onClick={onClick}
       className={`
         flex items-center gap-3
-        bg-primary-500 text-white
+        bg-accent text-text-primary
         rounded-lg font-semibold
-        hover:bg-primary-600
+        hover:bg-accent-hover
         transition-colors duration-200
         ${isCollapsed ? 'p-3 justify-center' : 'px-4 py-3 w-full'}
       `}

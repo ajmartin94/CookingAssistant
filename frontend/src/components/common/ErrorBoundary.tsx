@@ -48,11 +48,11 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
       }
 
       return (
-        <div className="min-h-screen flex items-center justify-center bg-neutral-50 px-4">
+        <div className="min-h-screen flex items-center justify-center bg-primary px-4">
           <div className="max-w-md w-full text-center">
             <div className="mb-6">
               <svg
-                className="mx-auto h-16 w-16 text-error-500"
+                className="mx-auto h-16 w-16 text-error"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -66,30 +66,30 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
                 />
               </svg>
             </div>
-            <h1 className="text-2xl font-bold text-neutral-900 mb-2">Something went wrong</h1>
-            <p className="text-neutral-600 mb-6">
+            <h1 className="text-2xl font-bold text-text-primary mb-2">Something went wrong</h1>
+            <p className="text-text-secondary mb-6">
               We apologize for the inconvenience. An unexpected error has occurred.
             </p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
               <button
                 onClick={this.handleReset}
-                className="inline-flex items-center justify-center px-4 py-2 font-semibold rounded-lg bg-primary-500 text-white hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors duration-200"
+                className="inline-flex items-center justify-center px-4 py-2 font-semibold rounded-lg bg-accent text-text-primary hover:bg-accent-hover focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent transition-colors duration-200"
               >
                 Try again
               </button>
               <button
                 onClick={() => window.location.reload()}
-                className="inline-flex items-center justify-center px-4 py-2 font-semibold rounded-lg border-2 border-primary-500 text-primary-600 hover:bg-primary-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors duration-200"
+                className="inline-flex items-center justify-center px-4 py-2 font-semibold rounded-lg border-2 border-accent text-accent hover:bg-hover focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent transition-colors duration-200"
               >
                 Reload page
               </button>
             </div>
             {import.meta.env.DEV && this.state.error && (
               <details className="mt-6 text-left">
-                <summary className="cursor-pointer text-sm text-neutral-500 hover:text-neutral-700">
+                <summary className="cursor-pointer text-sm text-text-muted hover:text-text-secondary">
                   Error details (development only)
                 </summary>
-                <pre className="mt-2 p-4 bg-neutral-100 rounded-lg text-xs text-error-600 overflow-auto max-h-48">
+                <pre className="mt-2 p-4 bg-card rounded-lg text-xs text-error overflow-auto max-h-48">
                   {this.state.error.message}
                   {'\n\n'}
                   {this.state.error.stack}

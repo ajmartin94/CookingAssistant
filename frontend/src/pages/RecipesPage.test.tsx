@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach, beforeAll, afterAll } from 'vitest';
-import { render, screen, waitFor } from '../test/test-utils';
+import { render, screen, waitFor, within } from '../test/test-utils';
 import RecipesPage from './RecipesPage';
 import { server } from '../test/mocks/server';
 import { http, HttpResponse } from 'msw';
@@ -23,6 +23,7 @@ describe('RecipesPage', () => {
     localStorage.setItem('auth_token', 'test-token');
   });
   afterEach(() => {
+    vi.useRealTimers();
     server.resetHandlers();
     mockNavigate.mockClear();
     localStorage.clear();
@@ -447,6 +448,721 @@ describe('RecipesPage', () => {
       await waitFor(() => {
         expect(capturedPage).toBe('2');
       });
+    });
+  });
+
+  /**
+   * ============================================================================
+   * COOKBOOK PAGE REDESIGN TESTS (Feature 7 - UI/UX Overhaul)
+   * ============================================================================
+   * These tests verify the new cookbook page design with:
+   * - Recipe cards in responsive grid (1-4 columns based on screen)
+   * - Each card shows image (or fallback), title, time, tags
+   * - Search input filters recipes by title (debounced, case-insensitive)
+   * - Sort dropdown (newest, alphabetical, cook time)
+   * - Empty state when no recipes match search
+   * - Empty state for new users with no recipes
+   * - Card hover state with subtle elevation
+   * - Recipe cards without images display gradient fallback with first letter
+   */
+
+  describe('Cookbook Page Redesign - Grid Layout', () => {
+    it('should render recipe cards in a grid container with data-testid', async () => {
+      server.use(
+        http.get(`${BASE_URL}/api/v1/recipes`, () => {
+          return HttpResponse.json({
+            recipes: [
+              mockBackendRecipe({ id: '1', title: 'Recipe One' }),
+              mockBackendRecipe({ id: '2', title: 'Recipe Two' }),
+              mockBackendRecipe({ id: '3', title: 'Recipe Three' }),
+            ],
+            total: 3,
+            page: 1,
+            page_size: 12,
+            total_pages: 1,
+          });
+        })
+      );
+
+      const { container } = render(<RecipesPage />);
+
+      await waitFor(() => {
+        // Should have a recipe-grid container with data-testid
+        const recipeGrid = container.querySelector('[data-testid="recipe-grid"]');
+        expect(recipeGrid).toBeInTheDocument();
+      });
+
+      // Recipe cards should be inside the grid
+      const recipeCards = screen.getAllByTestId('recipe-card');
+      expect(recipeCards).toHaveLength(3);
+    });
+
+    it('should use CSS Grid display for the recipe grid', async () => {
+      server.use(
+        http.get(`${BASE_URL}/api/v1/recipes`, () => {
+          return HttpResponse.json({
+            recipes: [mockBackendRecipe({ id: '1', title: 'Grid Recipe' })],
+            total: 1,
+            page: 1,
+            page_size: 12,
+            total_pages: 1,
+          });
+        })
+      );
+
+      const { container } = render(<RecipesPage />);
+
+      await waitFor(() => {
+        const recipeGrid = container.querySelector('[data-testid="recipe-grid"]');
+        expect(recipeGrid).toBeInTheDocument();
+        // Verify it has grid class for CSS Grid layout
+        expect(recipeGrid).toHaveClass('grid');
+      });
+    });
+  });
+
+  describe('Cookbook Page Redesign - Card Content', () => {
+    it('should display image, title, and metadata on each card', async () => {
+      server.use(
+        http.get(`${BASE_URL}/api/v1/recipes`, () => {
+          return HttpResponse.json({
+            recipes: [
+              mockBackendRecipe({
+                id: '1',
+                title: 'Card Content Recipe',
+                cook_time_minutes: 45,
+                dietary_tags: ['vegetarian', 'gluten-free'],
+                image_url: 'https://example.com/recipe.jpg',
+              }),
+            ],
+            total: 1,
+            page: 1,
+            page_size: 12,
+            total_pages: 1,
+          });
+        })
+      );
+
+      render(<RecipesPage />);
+
+      await waitFor(() => {
+        const recipeCard = screen.getByTestId('recipe-card');
+        expect(recipeCard).toBeInTheDocument();
+      });
+
+      const recipeCard = screen.getByTestId('recipe-card');
+
+      // Should show title with data-testid
+      const cardTitle = within(recipeCard).getByTestId('card-title');
+      expect(cardTitle).toHaveTextContent('Card Content Recipe');
+
+      // Should show image or image container
+      const cardImage = within(recipeCard).getByTestId('card-image');
+      expect(cardImage).toBeInTheDocument();
+
+      // Should show metadata
+      const cardMetadata = within(recipeCard).getByTestId('card-metadata');
+      expect(cardMetadata).toBeInTheDocument();
+    });
+
+    it('should display gradient fallback with first letter when no image', async () => {
+      server.use(
+        http.get(`${BASE_URL}/api/v1/recipes`, () => {
+          return HttpResponse.json({
+            recipes: [
+              mockBackendRecipe({
+                id: '1',
+                title: 'No Image Recipe',
+                image_url: null,
+              }),
+            ],
+            total: 1,
+            page: 1,
+            page_size: 12,
+            total_pages: 1,
+          });
+        })
+      );
+
+      render(<RecipesPage />);
+
+      await waitFor(() => {
+        const recipeCard = screen.getByTestId('recipe-card');
+        expect(recipeCard).toBeInTheDocument();
+      });
+
+      const recipeCard = screen.getByTestId('recipe-card');
+
+      // Should show image fallback with first letter
+      const imageFallback = within(recipeCard).getByTestId('image-fallback');
+      expect(imageFallback).toBeInTheDocument();
+      expect(imageFallback).toHaveTextContent('N'); // First letter of "No Image Recipe"
+    });
+
+    it('should display cook time on recipe cards', async () => {
+      server.use(
+        http.get(`${BASE_URL}/api/v1/recipes`, () => {
+          return HttpResponse.json({
+            recipes: [
+              mockBackendRecipe({
+                id: '1',
+                title: 'Timed Recipe',
+                cook_time_minutes: 45,
+              }),
+            ],
+            total: 1,
+            page: 1,
+            page_size: 12,
+            total_pages: 1,
+          });
+        })
+      );
+
+      render(<RecipesPage />);
+
+      await waitFor(() => {
+        const recipeCard = screen.getByTestId('recipe-card');
+        expect(recipeCard).toBeInTheDocument();
+      });
+
+      const recipeCard = screen.getByTestId('recipe-card');
+
+      // Should show card time with data-testid
+      const cardTime = within(recipeCard).getByTestId('card-time');
+      expect(cardTime).toBeInTheDocument();
+      expect(cardTime).toHaveTextContent(/45/);
+    });
+
+    it('should display dietary tags on recipe cards', async () => {
+      server.use(
+        http.get(`${BASE_URL}/api/v1/recipes`, () => {
+          return HttpResponse.json({
+            recipes: [
+              mockBackendRecipe({
+                id: '1',
+                title: 'Tagged Recipe',
+                dietary_tags: ['vegetarian', 'gluten-free'],
+              }),
+            ],
+            total: 1,
+            page: 1,
+            page_size: 12,
+            total_pages: 1,
+          });
+        })
+      );
+
+      render(<RecipesPage />);
+
+      await waitFor(() => {
+        const recipeCard = screen.getByTestId('recipe-card');
+        expect(recipeCard).toBeInTheDocument();
+      });
+
+      const recipeCard = screen.getByTestId('recipe-card');
+
+      // Should have at least one tag with data-testid
+      const tags = within(recipeCard).getAllByTestId('card-tag');
+      expect(tags.length).toBeGreaterThanOrEqual(1);
+    });
+  });
+
+  describe('Cookbook Page Redesign - Debounced Search', () => {
+    it('should have a search input with data-testid', async () => {
+      render(<RecipesPage />);
+
+      const searchInput = screen.getByTestId('search-input');
+      expect(searchInput).toBeInTheDocument();
+    });
+
+    it('should filter recipes with debounced search (300ms delay)', async () => {
+      vi.useFakeTimers({ shouldAdvanceTime: true });
+      let searchCaptured = '';
+
+      server.use(
+        http.get(`${BASE_URL}/api/v1/recipes`, ({ request }) => {
+          const url = new URL(request.url);
+          searchCaptured = url.searchParams.get('search') || '';
+          return HttpResponse.json({
+            recipes: searchCaptured
+              ? [mockBackendRecipe({ id: '1', title: 'Chocolate Cake' })]
+              : [
+                  mockBackendRecipe({ id: '1', title: 'Chocolate Cake' }),
+                  mockBackendRecipe({ id: '2', title: 'Vanilla Pudding' }),
+                ],
+            total: searchCaptured ? 1 : 2,
+            page: 1,
+            page_size: 12,
+            total_pages: 1,
+          });
+        })
+      );
+
+      const { user } = render(<RecipesPage />);
+
+      // Wait for initial load
+      await waitFor(() => {
+        expect(screen.getByText(/showing/i)).toBeInTheDocument();
+      });
+
+      const searchInput = screen.getByTestId('search-input');
+
+      // Type in search - should not trigger immediately due to debounce
+      await user.type(searchInput, 'chocolate');
+
+      // Advance timer past debounce (300ms)
+      await vi.advanceTimersByTimeAsync(350);
+
+      await waitFor(() => {
+        expect(searchCaptured).toBe('chocolate');
+      });
+
+      vi.useRealTimers();
+    });
+
+    it('should perform case-insensitive search', async () => {
+      let searchCaptured = '';
+
+      server.use(
+        http.get(`${BASE_URL}/api/v1/recipes`, ({ request }) => {
+          const url = new URL(request.url);
+          searchCaptured = url.searchParams.get('search') || '';
+          return HttpResponse.json({
+            recipes: [mockBackendRecipe({ id: '1', title: 'PASTA Dish' })],
+            total: 1,
+            page: 1,
+            page_size: 12,
+            total_pages: 1,
+          });
+        })
+      );
+
+      const { user } = render(<RecipesPage />);
+
+      await waitFor(() => {
+        expect(screen.getByText(/showing/i)).toBeInTheDocument();
+      });
+
+      const searchInput = screen.getByTestId('search-input');
+      await user.type(searchInput, 'pasta');
+      await user.click(screen.getByRole('button', { name: /^search$/i }));
+
+      await waitFor(() => {
+        // Search query should be sent to API (backend handles case-insensitivity)
+        expect(searchCaptured).toBe('pasta');
+      });
+    });
+  });
+
+  describe('Cookbook Page Redesign - Sort Functionality', () => {
+    it('should render a sort dropdown with data-testid', async () => {
+      render(<RecipesPage />);
+
+      await waitFor(() => {
+        const sortDropdown = screen.getByTestId('sort-dropdown');
+        expect(sortDropdown).toBeInTheDocument();
+      });
+    });
+
+    it('should have sort options for newest, alphabetical, and cook time', async () => {
+      render(<RecipesPage />);
+
+      await waitFor(() => {
+        const sortDropdown = screen.getByTestId('sort-dropdown');
+        expect(sortDropdown).toBeInTheDocument();
+      });
+
+      const sortDropdown = screen.getByTestId('sort-dropdown');
+
+      // Check for sort options
+      const options = within(sortDropdown).getAllByRole('option');
+      const optionTexts = options.map((opt) => opt.textContent?.toLowerCase());
+
+      expect(optionTexts.some((text) => text?.includes('newest') || text?.includes('recent'))).toBe(
+        true
+      );
+      expect(
+        optionTexts.some(
+          (text) =>
+            text?.includes('alphabetical') || text?.includes('a-z') || text?.includes('name')
+        )
+      ).toBe(true);
+      expect(optionTexts.some((text) => text?.includes('time') || text?.includes('duration'))).toBe(
+        true
+      );
+    });
+
+    it('should sort recipes alphabetically when selected', async () => {
+      let sortCaptured = '';
+
+      server.use(
+        http.get(`${BASE_URL}/api/v1/recipes`, ({ request }) => {
+          const url = new URL(request.url);
+          sortCaptured = url.searchParams.get('sort') || '';
+          return HttpResponse.json({
+            recipes: [
+              mockBackendRecipe({ id: '1', title: 'Apple Pie' }),
+              mockBackendRecipe({ id: '2', title: 'Banana Bread' }),
+              mockBackendRecipe({ id: '3', title: 'Zucchini Soup' }),
+            ],
+            total: 3,
+            page: 1,
+            page_size: 12,
+            total_pages: 1,
+          });
+        })
+      );
+
+      const { user } = render(<RecipesPage />);
+
+      await waitFor(() => {
+        expect(screen.getByTestId('sort-dropdown')).toBeInTheDocument();
+      });
+
+      const sortDropdown = screen.getByTestId('sort-dropdown');
+      await user.selectOptions(sortDropdown, 'alphabetical');
+
+      await waitFor(() => {
+        expect(sortCaptured).toMatch(/alphabetical|title|name/i);
+      });
+    });
+
+    it('should sort recipes by cook time when selected', async () => {
+      let sortCaptured = '';
+
+      server.use(
+        http.get(`${BASE_URL}/api/v1/recipes`, ({ request }) => {
+          const url = new URL(request.url);
+          sortCaptured = url.searchParams.get('sort') || '';
+          return HttpResponse.json({
+            recipes: [
+              mockBackendRecipe({ id: '1', title: 'Quick Recipe', cook_time_minutes: 15 }),
+              mockBackendRecipe({ id: '2', title: 'Medium Recipe', cook_time_minutes: 45 }),
+              mockBackendRecipe({ id: '3', title: 'Long Recipe', cook_time_minutes: 120 }),
+            ],
+            total: 3,
+            page: 1,
+            page_size: 12,
+            total_pages: 1,
+          });
+        })
+      );
+
+      const { user } = render(<RecipesPage />);
+
+      await waitFor(() => {
+        expect(screen.getByTestId('sort-dropdown')).toBeInTheDocument();
+      });
+
+      const sortDropdown = screen.getByTestId('sort-dropdown');
+      await user.selectOptions(sortDropdown, 'cook_time');
+
+      await waitFor(() => {
+        expect(sortCaptured).toMatch(/cook_time|time|duration/i);
+      });
+    });
+  });
+
+  describe('Cookbook Page Redesign - Empty States', () => {
+    it('should display empty state with data-testid when no recipes exist', async () => {
+      server.use(
+        http.get(`${BASE_URL}/api/v1/recipes`, () => {
+          return HttpResponse.json({
+            recipes: [],
+            total: 0,
+            page: 1,
+            page_size: 12,
+            total_pages: 0,
+          });
+        })
+      );
+
+      render(<RecipesPage />);
+
+      await waitFor(() => {
+        const emptyState = screen.getByTestId('empty-state');
+        expect(emptyState).toBeInTheDocument();
+      });
+    });
+
+    it('should display call-to-action in empty state', async () => {
+      server.use(
+        http.get(`${BASE_URL}/api/v1/recipes`, () => {
+          return HttpResponse.json({
+            recipes: [],
+            total: 0,
+            page: 1,
+            page_size: 12,
+            total_pages: 0,
+          });
+        })
+      );
+
+      render(<RecipesPage />);
+
+      await waitFor(() => {
+        const emptyState = screen.getByTestId('empty-state');
+        expect(emptyState).toBeInTheDocument();
+
+        // Should have a CTA button or link
+        const cta = screen.getByTestId('empty-state-cta');
+        expect(cta).toBeInTheDocument();
+      });
+    });
+
+    it('should display search empty state when no results match search', async () => {
+      server.use(
+        http.get(`${BASE_URL}/api/v1/recipes`, ({ request }) => {
+          const url = new URL(request.url);
+          const search = url.searchParams.get('search');
+
+          if (search) {
+            return HttpResponse.json({
+              recipes: [],
+              total: 0,
+              page: 1,
+              page_size: 12,
+              total_pages: 0,
+            });
+          }
+
+          return HttpResponse.json({
+            recipes: [mockBackendRecipe({ id: '1', title: 'Test Recipe' })],
+            total: 1,
+            page: 1,
+            page_size: 12,
+            total_pages: 1,
+          });
+        })
+      );
+
+      const { user } = render(<RecipesPage />);
+
+      // Wait for initial load
+      await waitFor(() => {
+        expect(screen.getByText(/showing/i)).toBeInTheDocument();
+      });
+
+      // Search for something that doesn't exist
+      const searchInput = screen.getByTestId('search-input');
+      await user.type(searchInput, 'xyznonexistent');
+      await user.click(screen.getByRole('button', { name: /^search$/i }));
+
+      await waitFor(() => {
+        expect(screen.getByText(/no recipes found|no results|no matches/i)).toBeInTheDocument();
+      });
+    });
+
+    it('should have accessible role on empty state for screen readers', async () => {
+      server.use(
+        http.get(`${BASE_URL}/api/v1/recipes`, () => {
+          return HttpResponse.json({
+            recipes: [],
+            total: 0,
+            page: 1,
+            page_size: 12,
+            total_pages: 0,
+          });
+        })
+      );
+
+      render(<RecipesPage />);
+
+      await waitFor(() => {
+        const emptyState = screen.getByTestId('empty-state');
+        expect(emptyState).toBeInTheDocument();
+
+        // Should have role="status" or aria-live for accessibility
+        const role = emptyState.getAttribute('role');
+        const ariaLive = emptyState.getAttribute('aria-live');
+        expect(role === 'status' || ariaLive === 'polite').toBe(true);
+      });
+    });
+  });
+
+  describe('Cookbook Page Redesign - Card Navigation', () => {
+    it('should navigate to recipe detail when clicking a card', async () => {
+      server.use(
+        http.get(`${BASE_URL}/api/v1/recipes`, () => {
+          return HttpResponse.json({
+            recipes: [mockBackendRecipe({ id: 'recipe-123', title: 'Clickable Recipe' })],
+            total: 1,
+            page: 1,
+            page_size: 12,
+            total_pages: 1,
+          });
+        })
+      );
+
+      const { user } = render(<RecipesPage />);
+
+      await waitFor(() => {
+        const recipeCard = screen.getByTestId('recipe-card');
+        expect(recipeCard).toBeInTheDocument();
+      });
+
+      const recipeCard = screen.getByTestId('recipe-card');
+      await user.click(recipeCard);
+
+      // If the card is a Link, verify it has correct href
+      expect(recipeCard.closest('a')).toHaveAttribute('href', '/recipes/recipe-123');
+    });
+
+    it('should make recipe cards keyboard accessible (focusable)', async () => {
+      server.use(
+        http.get(`${BASE_URL}/api/v1/recipes`, () => {
+          return HttpResponse.json({
+            recipes: [mockBackendRecipe({ id: '1', title: 'Accessible Recipe' })],
+            total: 1,
+            page: 1,
+            page_size: 12,
+            total_pages: 1,
+          });
+        })
+      );
+
+      render(<RecipesPage />);
+
+      await waitFor(() => {
+        const recipeCard = screen.getByTestId('recipe-card');
+        expect(recipeCard).toBeInTheDocument();
+      });
+
+      const recipeCard = screen.getByTestId('recipe-card');
+      const link = recipeCard.closest('a');
+
+      // Should be focusable (either tabindex or is an <a> tag)
+      expect(link).not.toBeNull();
+      expect(link?.tagName.toLowerCase()).toBe('a');
+    });
+  });
+
+  describe('Cookbook Page Redesign - Card Hover State', () => {
+    it('should have hover classes for visual feedback', async () => {
+      server.use(
+        http.get(`${BASE_URL}/api/v1/recipes`, () => {
+          return HttpResponse.json({
+            recipes: [mockBackendRecipe({ id: '1', title: 'Hover Recipe' })],
+            total: 1,
+            page: 1,
+            page_size: 12,
+            total_pages: 1,
+          });
+        })
+      );
+
+      render(<RecipesPage />);
+
+      await waitFor(() => {
+        const recipeCard = screen.getByTestId('recipe-card');
+        expect(recipeCard).toBeInTheDocument();
+      });
+
+      const recipeCard = screen.getByTestId('recipe-card');
+      const link = recipeCard.closest('a');
+
+      // Should have hover effect classes (shadow, transform, etc.)
+      expect(link).toHaveClass('hover:shadow-soft-md');
+    });
+  });
+
+  describe('Cookbook Page Redesign - Responsive Grid Columns', () => {
+    it('should have responsive grid classes for different breakpoints', async () => {
+      server.use(
+        http.get(`${BASE_URL}/api/v1/recipes`, () => {
+          return HttpResponse.json({
+            recipes: [
+              mockBackendRecipe({ id: '1', title: 'Recipe 1' }),
+              mockBackendRecipe({ id: '2', title: 'Recipe 2' }),
+            ],
+            total: 2,
+            page: 1,
+            page_size: 12,
+            total_pages: 1,
+          });
+        })
+      );
+
+      const { container } = render(<RecipesPage />);
+
+      await waitFor(() => {
+        const recipeGrid = container.querySelector('[data-testid="recipe-grid"]');
+        expect(recipeGrid).toBeInTheDocument();
+      });
+
+      const recipeGrid = container.querySelector('[data-testid="recipe-grid"]');
+
+      // Should have responsive grid column classes for 1-4 columns at different breakpoints
+      // Mobile: 1 column (grid-cols-1)
+      // Tablet: 2 columns (sm:grid-cols-2 or md:grid-cols-2)
+      // Desktop: 3 columns (lg:grid-cols-3 or xl:grid-cols-3)
+      // Wide: 4 columns (2xl:grid-cols-4)
+      expect(recipeGrid).toHaveClass('grid-cols-1');
+      expect(
+        recipeGrid?.className.includes('sm:grid-cols-2') ||
+          recipeGrid?.className.includes('md:grid-cols-2')
+      ).toBe(true);
+      expect(
+        recipeGrid?.className.includes('xl:grid-cols-3') ||
+          recipeGrid?.className.includes('lg:grid-cols-3')
+      ).toBe(true);
+      expect(recipeGrid?.className.includes('2xl:grid-cols-4')).toBe(true);
+    });
+  });
+
+  describe('Cookbook Page Redesign - Accessibility', () => {
+    it('should have accessible label on search input', async () => {
+      render(<RecipesPage />);
+
+      const searchInput = screen.getByTestId('search-input');
+      expect(searchInput).toBeInTheDocument();
+
+      // Should have aria-label or be labelled
+      const ariaLabel = searchInput.getAttribute('aria-label');
+      const ariaLabelledBy = searchInput.getAttribute('aria-labelledby');
+      const placeholder = searchInput.getAttribute('placeholder');
+
+      expect(ariaLabel || ariaLabelledBy || placeholder).toBeTruthy();
+    });
+
+    it('should have accessible label on sort dropdown', async () => {
+      render(<RecipesPage />);
+
+      await waitFor(() => {
+        const sortDropdown = screen.getByTestId('sort-dropdown');
+        expect(sortDropdown).toBeInTheDocument();
+      });
+
+      const sortDropdown = screen.getByTestId('sort-dropdown');
+
+      // Should have aria-label for accessibility
+      const ariaLabel = sortDropdown.getAttribute('aria-label');
+      expect(ariaLabel).toBeTruthy();
+    });
+
+    it('should have descriptive accessible name on recipe cards', async () => {
+      server.use(
+        http.get(`${BASE_URL}/api/v1/recipes`, () => {
+          return HttpResponse.json({
+            recipes: [mockBackendRecipe({ id: '1', title: 'Accessible Recipe Card' })],
+            total: 1,
+            page: 1,
+            page_size: 12,
+            total_pages: 1,
+          });
+        })
+      );
+
+      render(<RecipesPage />);
+
+      await waitFor(() => {
+        const recipeCard = screen.getByTestId('recipe-card');
+        expect(recipeCard).toBeInTheDocument();
+      });
+
+      // Should be able to find by accessible name
+      const link = screen.getByRole('link', { name: /accessible recipe card/i });
+      expect(link).toBeInTheDocument();
     });
   });
 });
