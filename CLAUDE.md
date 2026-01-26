@@ -44,6 +44,11 @@ Every AI feature should support:
 - **AI Assist**: AI suggests, user approves
 - **AI Automation**: End-to-end with minimal input
 
+### Issue Management
+
+- **Never close issues manually** — let PR merges close them via `Closes #123`
+- Labels: `bug`, `enhancement`, `idea`, `chore`, `ready`
+- See [docs/CONTRIBUTING.md](docs/CONTRIBUTING.md#backlog--issues) for full workflow
 
 ---
 

@@ -179,6 +179,47 @@ PR cannot merge until all checks pass.
 
 ---
 
+## Backlog & Issues
+
+We use GitHub Issues to track bugs, features, and ideas.
+
+### Labels
+
+| Label | When to use |
+|-------|-------------|
+| `bug` | Something is broken |
+| `enhancement` | Improvement to existing functionality |
+| `idea` | Future possibility, needs scoping |
+| `chore` | Refactoring, docs, deps, CI changes |
+| `ready` | Scoped and ready to be picked up |
+
+Every issue gets **one type label** (`bug`, `enhancement`, `idea`, or `chore`).
+Add `ready` when the issue is scoped and ready for implementation.
+
+### Workflow
+
+1. **Create an issue** — capture the idea with a type label
+2. **Discuss** — use comments to refine scope; run `/brainstorm` for bigger features
+3. **Add `ready`** — when scoped (usually after brainstorm completes)
+4. **Implement** — reference the issue in your PR with `Closes #123`
+5. **Auto-close** — issue closes when PR merges
+
+### Finding Work
+
+```
+is:issue is:open label:ready              # Ready to pick up
+is:issue is:open label:bug                # All open bugs
+is:issue is:open label:idea -label:ready  # Unscoped ideas for brainstorming
+```
+
+### Conventions
+
+- **Brainstorm docs**: Include `GitHub Issue: #123` at the top
+- **PR titles**: Use conventional commits (`feat:`, `fix:`, `chore:`, etc.)
+- **Branches**: Optionally include issue number (e.g., `feature/123-recipe-chat`)
+
+---
+
 ## Testing
 
 See [TESTING.md](TESTING.md) for detailed testing guidance.
