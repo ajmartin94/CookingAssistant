@@ -56,6 +56,7 @@ See color palette prototype: `.claude/plans/2025-01-25-ui-overhaul/prototype-08-
   --accent: #e07850;          /* Primary actions, highlights */
   --accent-hover: #c96842;    /* Accent hover state */
   --accent-subtle: rgba(224, 120, 80, 0.15); /* Accent backgrounds */
+  --text-on-accent: #ffffff;  /* Text on accent backgrounds (buttons, gradients) */
 
   /* Borders */
   --border: #3a3a3a;          /* Default borders */
@@ -76,7 +77,7 @@ See color palette prototype: `.claude/plans/2025-01-25-ui-overhaul/prototype-08-
 | Page | `--bg-primary` | — | — |
 | Sidebar | `--bg-secondary` | `--text-secondary` | `--border` (right) |
 | Cards | `--bg-card` | `--text-primary` | `--border` |
-| Primary buttons | `--accent` | white | — |
+| Primary buttons | `--accent` | `--text-on-accent` | — |
 | Secondary buttons | `--bg-card` | `--text-primary` | `--border` |
 | Inputs | `--bg-card` | `--text-primary` | `--border` |
 | Muted labels | — | `--text-muted` | — |

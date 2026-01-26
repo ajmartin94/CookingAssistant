@@ -160,6 +160,15 @@ See [E2E Infrastructure Conventions](../e2e/CLAUDE.md#infrastructure-conventions
   className={`sidebar ${isOpen ? 'w-64' : 'w-16'}`}
   ```
 - **Tailwind v4 + Vite**: Use `@tailwindcss/vite` plugin, not `@tailwindcss/postcss`
+- **jsdom doesn't compute Tailwind styles**: In Vitest tests, `getComputedStyle()` returns default values (not Tailwind-applied styles) because jsdom doesn't process CSS. Check class names instead:
+  ```tsx
+  // BAD: getComputedStyle doesn't work with Tailwind in jsdom
+  const style = window.getComputedStyle(element);
+  expect(style.display).toBe('grid');
+
+  // GOOD: Check for the class name
+  expect(element.className).toMatch(/\bgrid\b/);
+  ```
 
 ---
 
@@ -386,6 +395,30 @@ Choose unique accessible names that won't conflict with other UI elements. E2E t
 
 // GOOD: "Give Feedback" is unique
 <button aria-label="Give Feedback">Feedback</button>
+```
+
+### Design Token Enforcement
+
+The `src/test/design-tokens.test.tsx` file enforces that components use semantic design tokens instead of hardcoded Tailwind colors. If you add a new component or page, add a test case to verify it doesn't use:
+
+- Hardcoded colors: `bg-white`, `text-neutral-*`, `bg-blue-*`, etc.
+- Palette suffixes: `bg-success-100` (use `bg-success` or `bg-success-subtle`)
+
+**Correct patterns:**
+```tsx
+// Backgrounds
+bg-card, bg-primary, bg-secondary, bg-hover
+
+// Text
+text-text-primary, text-text-secondary, text-text-muted
+
+// Accent
+bg-accent, text-accent, bg-accent-subtle
+
+// Status badges (e.g., difficulty)
+bg-success text-text-primary   // NOT bg-success-100 text-success-700
+bg-warning text-text-primary
+bg-error text-text-primary
 ```
 
 ---
