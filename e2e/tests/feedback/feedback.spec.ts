@@ -22,11 +22,11 @@ test.describe('Feature: User Submits Feedback', () => {
       // Navigate to the home page (unauthenticated)
       await page.goto('/');
 
-      // The feedback button should be visible in the bottom-right corner
+      // The feedback button should be visible in the bottom-left corner
       const feedbackButton = page.getByRole('button', { name: /feedback/i });
       await publicExpect(feedbackButton).toBeVisible();
 
-      // Verify it's positioned in the bottom-right (fixed position)
+      // Verify it's positioned in the bottom-left (fixed position)
       const boundingBox = await feedbackButton.boundingBox();
       const viewportSize = page.viewportSize();
 
@@ -34,8 +34,8 @@ test.describe('Feature: User Submits Feedback', () => {
       publicExpect(viewportSize).toBeTruthy();
 
       if (boundingBox && viewportSize) {
-        // Button should be in the right half of the screen
-        publicExpect(boundingBox.x).toBeGreaterThan(viewportSize.width / 2);
+        // Button should be in the left half of the screen
+        publicExpect(boundingBox.x).toBeLessThan(viewportSize.width / 2);
         // Button should be in the bottom half of the screen
         publicExpect(boundingBox.y).toBeGreaterThan(viewportSize.height / 2);
       }
@@ -49,7 +49,7 @@ test.describe('Feature: User Submits Feedback', () => {
       const feedbackButton = authenticatedPage.getByRole('button', { name: /feedback/i });
       await expect(feedbackButton).toBeVisible();
 
-      // Verify it's positioned in the bottom-right (fixed position)
+      // Verify it's positioned in the bottom-left (fixed position)
       const boundingBox = await feedbackButton.boundingBox();
       const viewportSize = authenticatedPage.viewportSize();
 
@@ -57,8 +57,8 @@ test.describe('Feature: User Submits Feedback', () => {
       expect(viewportSize).toBeTruthy();
 
       if (boundingBox && viewportSize) {
-        // Button should be in the right half of the screen
-        expect(boundingBox.x).toBeGreaterThan(viewportSize.width / 2);
+        // Button should be in the left half of the screen
+        expect(boundingBox.x).toBeLessThan(viewportSize.width / 2);
         // Button should be in the bottom half of the screen
         expect(boundingBox.y).toBeGreaterThan(viewportSize.height / 2);
       }
