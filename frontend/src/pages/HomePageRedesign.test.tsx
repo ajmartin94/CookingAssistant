@@ -166,7 +166,7 @@ describe('HomePage Redesign', () => {
 
     it('should navigate to correct pages', async () => {
       render(<HomePage />, {
-        wrapper: ({ children }) => (
+        wrapper: ({ children }: { children: React.ReactNode }) => (
           <MemoryRouter initialEntries={['/home']}>{children}</MemoryRouter>
         ),
       });

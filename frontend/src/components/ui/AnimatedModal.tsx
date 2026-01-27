@@ -24,7 +24,7 @@ export function AnimatedModal({
   onClose,
   children,
   'data-testid': testId,
-}: AnimatedModalProps): JSX.Element | null {
+}: AnimatedModalProps) {
   const prefersReducedMotion = useReducedMotion();
 
   // Handle escape key to close modal

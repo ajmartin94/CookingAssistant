@@ -26,7 +26,7 @@ export function Skeleton({
   variant = 'rectangular',
   className = '',
   'data-testid': testId,
-}: SkeletonProps): JSX.Element {
+}: SkeletonProps) {
   const variantClasses = {
     rectangular: 'rounded',
     rounded: 'rounded-lg',

@@ -85,7 +85,9 @@ describe('MobileTabBar', () => {
   describe('active tab styling', () => {
     it('should highlight Home tab when on home route', () => {
       render(<MobileTabBar />, {
-        wrapper: ({ children }) => <MemoryRouter initialEntries={['/']}>{children}</MemoryRouter>,
+        wrapper: ({ children }: { children: React.ReactNode }) => (
+          <MemoryRouter initialEntries={['/']}>{children}</MemoryRouter>
+        ),
       });
 
       const homeTab = screen.getByRole('link', { name: /home/i });
@@ -94,7 +96,7 @@ describe('MobileTabBar', () => {
 
     it('should highlight Cookbook tab when on recipes route', () => {
       render(<MobileTabBar />, {
-        wrapper: ({ children }) => (
+        wrapper: ({ children }: { children: React.ReactNode }) => (
           <MemoryRouter initialEntries={['/recipes']}>{children}</MemoryRouter>
         ),
       });
@@ -105,7 +107,9 @@ describe('MobileTabBar', () => {
 
     it('should apply accent color to active tab', () => {
       render(<MobileTabBar />, {
-        wrapper: ({ children }) => <MemoryRouter initialEntries={['/']}>{children}</MemoryRouter>,
+        wrapper: ({ children }: { children: React.ReactNode }) => (
+          <MemoryRouter initialEntries={['/']}>{children}</MemoryRouter>
+        ),
       });
 
       const homeTab = screen.getByRole('link', { name: /home/i });
@@ -115,7 +119,9 @@ describe('MobileTabBar', () => {
 
     it('should not highlight inactive tabs', () => {
       render(<MobileTabBar />, {
-        wrapper: ({ children }) => <MemoryRouter initialEntries={['/']}>{children}</MemoryRouter>,
+        wrapper: ({ children }: { children: React.ReactNode }) => (
+          <MemoryRouter initialEntries={['/']}>{children}</MemoryRouter>
+        ),
       });
 
       const cookbookTab = screen.getByRole('link', { name: /cookbook|recipes/i });
@@ -129,7 +135,9 @@ describe('MobileTabBar', () => {
       const user = userEvent.setup();
 
       render(<MobileTabBar />, {
-        wrapper: ({ children }) => <MemoryRouter initialEntries={['/']}>{children}</MemoryRouter>,
+        wrapper: ({ children }: { children: React.ReactNode }) => (
+          <MemoryRouter initialEntries={['/']}>{children}</MemoryRouter>
+        ),
       });
 
       const cookbookTab = screen.getByRole('link', { name: /cookbook|recipes/i });

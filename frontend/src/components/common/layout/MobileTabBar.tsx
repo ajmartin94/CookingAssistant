@@ -25,7 +25,7 @@ const tabs: TabConfig[] = [
   { path: '/shopping', label: 'Shop', icon: ShoppingCart },
 ];
 
-export function MobileTabBar({ className = '' }: MobileTabBarProps): JSX.Element {
+export function MobileTabBar({ className = '' }: MobileTabBarProps) {
   const location = useLocation();
 
   const isTabActive = (path: string) => {

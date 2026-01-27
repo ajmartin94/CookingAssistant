@@ -4,7 +4,7 @@
  * A styled input component with focus ring, error state, and disabled state.
  */
 
-import { useId } from 'react';
+import React, { useId } from 'react';
 
 export interface InputProps {
   id?: string;
@@ -39,7 +39,7 @@ export function Input({
   'aria-label': ariaLabel,
   'aria-describedby': ariaDescribedBy,
   className = '',
-}: InputProps): JSX.Element {
+}: InputProps) {
   const generatedId = useId();
   const inputId = id || generatedId;
   const errorId = `${inputId}-error`;

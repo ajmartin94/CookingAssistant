@@ -4,13 +4,15 @@
  * A composable card component with Card, CardHeader, CardContent, and CardFooter.
  */
 
+import React from 'react';
+
 export interface CardProps {
   children: React.ReactNode;
   className?: string;
   hoverable?: boolean;
 }
 
-export function Card({ children, className = '', hoverable = false }: CardProps): JSX.Element {
+export function Card({ children, className = '', hoverable = false }: CardProps) {
   return (
     <div
       className={`
@@ -31,7 +33,7 @@ export interface CardHeaderProps {
   className?: string;
 }
 
-export function CardHeader({ children, className = '' }: CardHeaderProps): JSX.Element {
+export function CardHeader({ children, className = '' }: CardHeaderProps) {
   return <div className={`px-4 py-3 border-b border-default ${className}`}>{children}</div>;
 }
 
@@ -40,7 +42,7 @@ export interface CardContentProps {
   className?: string;
 }
 
-export function CardContent({ children, className = '' }: CardContentProps): JSX.Element {
+export function CardContent({ children, className = '' }: CardContentProps) {
   return <div className={`px-4 py-4 ${className}`}>{children}</div>;
 }
 
@@ -49,6 +51,6 @@ export interface CardFooterProps {
   className?: string;
 }
 
-export function CardFooter({ children, className = '' }: CardFooterProps): JSX.Element {
+export function CardFooter({ children, className = '' }: CardFooterProps) {
   return <div className={`px-4 py-3 border-t border-default ${className}`}>{children}</div>;
 }

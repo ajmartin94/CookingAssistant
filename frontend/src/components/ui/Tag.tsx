@@ -4,12 +4,14 @@
  * A small tag/badge component for displaying metadata.
  */
 
+import React from 'react';
+
 export interface TagProps {
   children: React.ReactNode;
   className?: string;
 }
 
-export function Tag({ children, className = '' }: TagProps): JSX.Element {
+export function Tag({ children, className = '' }: TagProps) {
   return (
     <span
       className={`
@@ -31,7 +33,7 @@ export interface BadgeProps {
   variant?: 'default' | 'accent';
 }
 
-export function Badge({ children, className = '', variant = 'accent' }: BadgeProps): JSX.Element {
+export function Badge({ children, className = '', variant = 'accent' }: BadgeProps) {
   const variantClasses = {
     default: 'bg-hover text-text-secondary',
     accent: 'bg-accent text-white',

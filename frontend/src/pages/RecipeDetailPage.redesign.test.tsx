@@ -376,7 +376,7 @@ describe('Recipe Page Redesign', () => {
                 {
                   step_number: 4,
                   instruction: 'Serve immediately with cheese',
-                  duration_minutes: null,
+                  duration_minutes: undefined,
                 },
               ],
             })
@@ -505,7 +505,11 @@ describe('Recipe Page Redesign', () => {
           return HttpResponse.json(
             mockBackendRecipe({
               instructions: [
-                { step_number: 1, instruction: 'Gather all ingredients', duration_minutes: null },
+                {
+                  step_number: 1,
+                  instruction: 'Gather all ingredients',
+                  duration_minutes: undefined,
+                },
               ],
             })
           );
@@ -528,10 +532,10 @@ describe('Recipe Page Redesign', () => {
           return HttpResponse.json(
             mockBackendRecipe({
               instructions: [
-                { step_number: 1, instruction: 'Prep ingredients', duration_minutes: null },
+                { step_number: 1, instruction: 'Prep ingredients', duration_minutes: undefined },
                 { step_number: 2, instruction: 'Simmer for 20 minutes', duration_minutes: 20 },
                 { step_number: 3, instruction: 'Bake at 350F', duration_minutes: 45 },
-                { step_number: 4, instruction: 'Let cool', duration_minutes: null },
+                { step_number: 4, instruction: 'Let cool', duration_minutes: undefined },
               ],
             })
           );

@@ -4,6 +4,8 @@
  * A reusable button component with variant styles, loading state, and disabled state.
  */
 
+import React from 'react';
+
 export interface ButtonProps {
   variant?: 'primary' | 'secondary' | 'ghost' | 'danger';
   size?: 'sm' | 'md' | 'lg';
@@ -37,7 +39,7 @@ export function Button({
   onClick,
   type = 'button',
   'aria-label': ariaLabel,
-}: ButtonProps): JSX.Element {
+}: ButtonProps) {
   const disabled = isDisabled || isLoading;
 
   const handleClick = () => {
