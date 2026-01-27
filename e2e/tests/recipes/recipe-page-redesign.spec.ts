@@ -287,11 +287,14 @@ test.describe('Recipe Page Redesign', () => {
 
       await authenticatedPage.goto(`/recipes/${recipe.id}`);
 
+      // Wait for instructions section to be visible
+      await expect(authenticatedPage.locator('[data-testid="instructions-section"]')).toBeVisible();
+
       // Timer buttons should appear for steps with durations
-      const timerButtons = authenticatedPage.locator('[data-testid="timer-button"], button:has-text("timer"), button:has-text("min")');
+      const timerButtons = authenticatedPage.locator('[data-testid="timer-button"]');
 
       // Should have at least 2 timer buttons (for steps 1 and 2)
-      expect(await timerButtons.count()).toBeGreaterThanOrEqual(2);
+      await expect(timerButtons).toHaveCount(2);
     });
 
     test('should not display timer button for steps without duration', async ({ authenticatedPage, request }) => {

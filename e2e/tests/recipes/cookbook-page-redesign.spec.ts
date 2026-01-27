@@ -539,8 +539,8 @@ test.describe('Cookbook Page Redesign', () => {
 
       await recipesPage.goto();
 
-      // The hover styles are on the parent <Link> element which contains the recipe-card div
-      const recipeCardLink = authenticatedPage.locator('a:has([data-testid="recipe-card"])').first();
+      // The data-testid="recipe-card" is now on the Link element itself
+      const recipeCardLink = authenticatedPage.locator('[data-testid="recipe-card"]').first();
 
       // Get initial box shadow
       const initialShadow = await recipeCardLink.evaluate((el) =>
