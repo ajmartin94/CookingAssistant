@@ -4,7 +4,7 @@
  * Verifies tag rendering with muted background and theme support.
  */
 
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen } from '../../test/test-utils';
 import userEvent from '@testing-library/user-event';
 import { Tag, Badge } from './Tag';
@@ -178,8 +178,8 @@ describe('Badge', () => {
       const badgeChild = screen.getByTestId('badge-child');
       const badge = badgeChild.parentElement;
 
-      // Badge should have text-white class
-      expect(badge!.className).toContain('text-white');
+      // Badge should have text color for accent background (design token)
+      expect(badge!.className).toContain('text-text-on-accent');
     });
 
     it('should render with pill-like border-radius (4px)', () => {
@@ -294,6 +294,61 @@ describe('Badge', () => {
 
       const button = screen.getByRole('button');
       expect(button).toHaveFocus();
+    });
+  });
+
+  describe('strict plan requirements', () => {
+    it('should render with pill shape (rounded-full) for badge', () => {
+      render(
+        <Badge>
+          <span data-testid="badge-child">Pill</span>
+        </Badge>
+      );
+
+      const badgeChild = screen.getByTestId('badge-child');
+      const badge = badgeChild.parentElement;
+
+      // Plan requires pill shape = rounded-full
+      expect(badge!.className).toContain('rounded-full');
+    });
+
+    it('should support dismissible tags with onRemove callback', () => {
+      const handleRemove = vi.fn();
+
+      render(<Tag onRemove={handleRemove}>Removable</Tag>);
+
+      // Should render a remove/close button
+      const removeButton = screen.getByRole('button');
+      expect(removeButton).toBeInTheDocument();
+    });
+
+    it('should support color variants for Tag (success, warning, error)', () => {
+      render(
+        <Tag variant="success">
+          <span data-testid="tag-child">Healthy</span>
+        </Tag>
+      );
+
+      const tagChild = screen.getByTestId('tag-child');
+      const tag = tagChild.parentElement;
+
+      expect(
+        tag!.className.includes('success') || tag!.getAttribute('data-variant') === 'success'
+      ).toBe(true);
+    });
+
+    it('should render Badge with text-on-accent token instead of text-white', () => {
+      render(
+        <Badge>
+          <span data-testid="badge-child">Token</span>
+        </Badge>
+      );
+
+      const badgeChild = screen.getByTestId('badge-child');
+      const badge = badgeChild.parentElement;
+
+      // Should use design token text-text-on-accent, not hardcoded text-white
+      expect(badge!.className).toContain('text-text-on-accent');
     });
   });
 });

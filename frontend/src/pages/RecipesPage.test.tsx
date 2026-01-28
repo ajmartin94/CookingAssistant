@@ -31,10 +31,10 @@ describe('RecipesPage', () => {
   afterAll(() => server.close());
 
   describe('Rendering', () => {
-    it('should render the page heading', async () => {
+    it('should render the page heading as "Cookbook"', async () => {
       render(<RecipesPage />);
 
-      expect(screen.getByRole('heading', { name: /my recipes/i })).toBeInTheDocument();
+      expect(screen.getByRole('heading', { name: /cookbook/i })).toBeInTheDocument();
     });
 
     it('should render sidebar guidance in empty state', async () => {
@@ -54,7 +54,7 @@ describe('RecipesPage', () => {
       render(<RecipesPage />);
 
       await waitFor(() => {
-        expect(screen.getByText(/clicking new recipe in the sidebar/i)).toBeInTheDocument();
+        expect(screen.getByText(/get started/i)).toBeInTheDocument();
       });
     });
 
@@ -141,7 +141,7 @@ describe('RecipesPage', () => {
       });
     });
 
-    it('should show sidebar guidance in empty state', async () => {
+    it('should show guidance in empty state', async () => {
       server.use(
         http.get(`${BASE_URL}/api/v1/recipes`, () => {
           return HttpResponse.json({
@@ -157,7 +157,7 @@ describe('RecipesPage', () => {
       render(<RecipesPage />);
 
       await waitFor(() => {
-        expect(screen.getByText(/clicking new recipe in the sidebar/i)).toBeInTheDocument();
+        expect(screen.getByText(/get started/i)).toBeInTheDocument();
       });
     });
 
@@ -1061,8 +1061,8 @@ describe('RecipesPage', () => {
       const recipeCard = screen.getByTestId('recipe-card');
       const link = recipeCard.closest('a');
 
-      // Should have hover effect classes (shadow, transform, etc.)
-      expect(link).toHaveClass('hover:shadow-soft-md');
+      // Should have card animation class for hover glow effect
+      expect(link).toHaveClass('card-animated');
     });
   });
 
@@ -1163,6 +1163,177 @@ describe('RecipesPage', () => {
       // Should be able to find by accessible name
       const link = screen.getByRole('link', { name: /accessible recipe card/i });
       expect(link).toBeInTheDocument();
+    });
+  });
+
+  /**
+   * ============================================================================
+   * COOKBOOK PAGE REDESIGN - NEW FEATURES (Feature 7 - Phase 2)
+   * ============================================================================
+   * Tests for missing features identified in the UI overhaul:
+   * - Import button
+   * - Collections section with Lucide icons
+   * - Search icon inside input
+   * - View toggle (grid/list)
+   * - Active filter tags as removable pills
+   * - Time badge overlay on recipe cards
+   * - Favorite heart overlay on recipe cards
+   * - Sort options: Recently Added, Alphabetical, Cook Time, Most Cooked
+   */
+
+  describe('Cookbook Header', () => {
+    it('should have an Import button with upload icon', async () => {
+      render(<RecipesPage />);
+
+      const importBtn = screen.getByRole('button', { name: /import/i });
+      expect(importBtn).toBeInTheDocument();
+    });
+
+    it('should have a New Recipe button', async () => {
+      render(<RecipesPage />);
+
+      const newRecipeLink = screen.getByRole('link', { name: /new recipe/i });
+      expect(newRecipeLink).toBeInTheDocument();
+    });
+  });
+
+  describe('Collections Section', () => {
+    it('should render a Collections section with title', async () => {
+      render(<RecipesPage />);
+
+      expect(screen.getByRole('heading', { name: /collections/i })).toBeInTheDocument();
+    });
+
+    it('should render a "Manage" link', async () => {
+      render(<RecipesPage />);
+
+      expect(screen.getByText(/manage/i)).toBeInTheDocument();
+    });
+
+    it('should render 5 collection cards', async () => {
+      render(<RecipesPage />);
+
+      const collectionCards = screen.getAllByTestId('collection-card');
+      expect(collectionCards).toHaveLength(5);
+    });
+
+    it('should render collection cards with names: Favorites, Quick Meals, Healthy, Party Food, New Collection', async () => {
+      render(<RecipesPage />);
+
+      expect(screen.getByText('Favorites')).toBeInTheDocument();
+      expect(screen.getByText('Quick Meals')).toBeInTheDocument();
+      expect(screen.getByText('Healthy')).toBeInTheDocument();
+      expect(screen.getByText('Party Food')).toBeInTheDocument();
+      expect(screen.getByText('New Collection')).toBeInTheDocument();
+    });
+
+    it('should render collection cards with recipe counts', async () => {
+      render(<RecipesPage />);
+
+      expect(screen.getByText(/12 recipes/i)).toBeInTheDocument();
+      expect(screen.getByText(/8 recipes/i)).toBeInTheDocument();
+    });
+
+    it('should use Lucide icons (SVG elements) not emoji text', async () => {
+      render(<RecipesPage />);
+
+      const collectionCards = screen.getAllByTestId('collection-card');
+      // Each collection card should contain an SVG icon
+      collectionCards.forEach((card) => {
+        const svg = card.querySelector('svg');
+        expect(svg).toBeInTheDocument();
+      });
+    });
+  });
+
+  describe('Search with Icon Inside', () => {
+    it('should render search icon inside the search input wrapper', async () => {
+      const { container } = render(<RecipesPage />);
+
+      // The search wrapper should contain an SVG icon
+      const searchWrapper = container.querySelector('[data-testid="search-wrapper"]');
+      expect(searchWrapper).toBeInTheDocument();
+      const svg = searchWrapper?.querySelector('svg');
+      expect(svg).toBeInTheDocument();
+    });
+  });
+
+  describe('View Toggle', () => {
+    it('should render grid and list view toggle buttons', async () => {
+      render(<RecipesPage />);
+
+      const gridBtn = screen.getByRole('button', { name: /grid view/i });
+      const listBtn = screen.getByRole('button', { name: /list view/i });
+      expect(gridBtn).toBeInTheDocument();
+      expect(listBtn).toBeInTheDocument();
+    });
+
+    it('should highlight the active view toggle', async () => {
+      render(<RecipesPage />);
+
+      const gridBtn = screen.getByRole('button', { name: /grid view/i });
+      // Grid should be active by default
+      expect(gridBtn.className).toMatch(/bg-hover|active/);
+    });
+
+    it('should switch view when clicking list toggle', async () => {
+      const { user } = render(<RecipesPage />);
+
+      const listBtn = screen.getByRole('button', { name: /list view/i });
+      await user.click(listBtn);
+
+      expect(listBtn.className).toMatch(/bg-hover|active/);
+    });
+  });
+
+  describe('Active Filter Tags', () => {
+    it('should display active filter pills when filters are applied', async () => {
+      const { user } = render(<RecipesPage />);
+
+      // Apply a cuisine filter
+      const selects = screen.getAllByRole('combobox');
+      await user.selectOptions(selects[0], 'Italian');
+
+      await waitFor(() => {
+        const filterTag = screen.getByTestId('filter-tag-cuisine');
+        expect(filterTag).toBeInTheDocument();
+        expect(filterTag).toHaveTextContent(/italian/i);
+      });
+    });
+
+    it('should remove filter when clicking the X on a filter pill', async () => {
+      const { user } = render(<RecipesPage />);
+
+      // Apply a cuisine filter
+      const selects = screen.getAllByRole('combobox');
+      await user.selectOptions(selects[0], 'Italian');
+
+      await waitFor(() => {
+        expect(screen.getByTestId('filter-tag-cuisine')).toBeInTheDocument();
+      });
+
+      // Click the remove button on the filter tag
+      const removeBtn = within(screen.getByTestId('filter-tag-cuisine')).getByRole('button');
+      await user.click(removeBtn);
+
+      await waitFor(() => {
+        expect(screen.queryByTestId('filter-tag-cuisine')).not.toBeInTheDocument();
+      });
+    });
+  });
+
+  describe('Sort Options', () => {
+    it('should have sort options: Recently Added, Alphabetical, Cook Time, Most Cooked', async () => {
+      render(<RecipesPage />);
+
+      const sortDropdown = screen.getByTestId('sort-dropdown');
+      const options = within(sortDropdown).getAllByRole('option');
+      const texts = options.map((o) => o.textContent?.toLowerCase());
+
+      expect(texts.some((t) => t?.includes('recently added') || t?.includes('newest'))).toBe(true);
+      expect(texts.some((t) => t?.includes('alphabetical'))).toBe(true);
+      expect(texts.some((t) => t?.includes('cook time'))).toBe(true);
+      expect(texts.some((t) => t?.includes('most cooked'))).toBe(true);
     });
   });
 });

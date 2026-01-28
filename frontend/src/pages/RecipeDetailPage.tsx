@@ -10,11 +10,14 @@
 
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ChevronLeft, Clock, Users, Timer } from '../components/common/icons';
+import { ChevronLeft, Clock, Users, Timer, Heart } from '../components/common/icons';
 import { recipeApi } from '../services/recipeApi';
 import type { Recipe } from '../types';
 import { useAuth } from '../contexts/AuthContext';
 import ShareModal from '../components/sharing/ShareModal';
+import IngredientsList from '../components/recipes/IngredientsList';
+import RecipeNotes from '../components/recipes/RecipeNotes';
+import StartCookingBar from '../components/recipes/StartCookingBar';
 
 export default function RecipeDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -178,8 +181,14 @@ export default function RecipeDetailPage() {
             </p>
           )}
         </div>
-        {/* Edit button in hero */}
-        <div className="absolute top-4 right-4">
+        {/* Action buttons in hero */}
+        <div className="absolute top-4 right-4 flex gap-2">
+          <button
+            aria-label="Favorite recipe"
+            className="w-10 h-10 flex items-center justify-center bg-black/50 hover:bg-black/70 text-white rounded-lg transition shadow"
+          >
+            <Heart className="w-5 h-5" />
+          </button>
           <button
             data-testid="edit-button"
             aria-label="Edit recipe"
@@ -250,25 +259,7 @@ export default function RecipeDetailPage() {
       <div data-testid="recipe-content" className="grid md:grid-cols-3 gap-6">
         {/* Ingredients */}
         <div data-testid="ingredients-section" className="md:col-span-1">
-          <div className="bg-card rounded-lg shadow-soft p-6 sticky top-4">
-            <h2 className="text-2xl font-bold text-text-primary mb-4">Ingredients</h2>
-            <ul className="space-y-2" data-testid="ingredients-list">
-              {recipe.ingredients.map((ingredient, index) => (
-                <li key={index} className="flex items-start gap-2" data-testid="ingredient">
-                  <span className="text-accent font-bold">•</span>
-                  <span className="text-text-secondary">
-                    <strong>
-                      {ingredient.amount} {ingredient.unit}
-                    </strong>{' '}
-                    {ingredient.name}
-                    {ingredient.notes && (
-                      <span className="text-text-muted text-sm"> ({ingredient.notes})</span>
-                    )}
-                  </span>
-                </li>
-              ))}
-            </ul>
-          </div>
+          <IngredientsList ingredients={recipe.ingredients} baseServings={recipe.servings} />
         </div>
 
         {/* Instructions */}
@@ -306,23 +297,15 @@ export default function RecipeDetailPage() {
             </ol>
           </div>
 
-          {/* Notes */}
-          {recipe.notes && (
-            <div
-              data-testid="recipe-notes"
-              className="bg-accent-subtle border border-accent rounded-lg p-6 mt-6"
-            >
-              <h2 className="text-lg font-semibold text-accent mb-2">Notes</h2>
-              <p className="text-text-secondary">{recipe.notes}</p>
-            </div>
-          )}
+          {/* Notes & Reflections */}
+          <RecipeNotes notes={recipe.notes} />
 
           {/* Source */}
           {(recipe.sourceName || recipe.sourceUrl) && (
             <div className="bg-secondary border border-default rounded-lg p-6 mt-6">
               <h3 className="text-lg font-semibold text-text-primary mb-2">Source</h3>
               {recipe.sourceName && <p className="text-text-secondary">{recipe.sourceName}</p>}
-              {recipe.sourceUrl && (
+              {recipe.sourceUrl && /^https?:\/\//i.test(recipe.sourceUrl) && (
                 <a
                   href={recipe.sourceUrl}
                   target="_blank"
@@ -357,6 +340,9 @@ export default function RecipeDetailPage() {
           </button>
         </div>
       )}
+
+      {/* Start Cooking Bar */}
+      <StartCookingBar />
 
       {/* Share Modal */}
       <ShareModal

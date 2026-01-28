@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Clock, Users } from '../common/icons';
+import { Clock, Users, Heart } from '../common/icons';
 import type { Recipe } from '../../types';
 
 interface RecipeCardProps {
@@ -30,13 +30,13 @@ const RecipeCard: React.FC<RecipeCardProps> = ({ recipe }) => {
   return (
     <Link
       to={`/recipes/${recipe.id}`}
-      className="block bg-card rounded-lg shadow-soft hover:shadow-soft-md transition-shadow duration-200 overflow-hidden"
+      className="block bg-card rounded-lg shadow-soft card-animated overflow-hidden"
       aria-label={recipe.title}
       data-testid="recipe-card"
     >
       <div>
         {/* Recipe Image */}
-        <div className="h-48 bg-secondary overflow-hidden">
+        <div className="h-48 bg-secondary overflow-hidden relative">
           {recipe.imageUrl ? (
             <img
               src={recipe.imageUrl}
@@ -54,6 +54,22 @@ const RecipeCard: React.FC<RecipeCardProps> = ({ recipe }) => {
               </span>
             </div>
           )}
+          {/* Favorite Heart Overlay */}
+          <button
+            className="absolute top-2 left-2 text-accent"
+            data-testid="favorite-heart"
+            aria-label="Toggle favorite"
+            onClick={(e) => e.preventDefault()}
+          >
+            <Heart className="w-5 h-5" />
+          </button>
+          {/* Time Badge Overlay */}
+          <span
+            className="absolute top-2 right-2 bg-secondary/80 text-text-primary text-xs px-2 py-1 rounded"
+            data-testid="time-badge"
+          >
+            {recipe.cookTimeMinutes} min
+          </span>
         </div>
 
         {/* Recipe Info */}

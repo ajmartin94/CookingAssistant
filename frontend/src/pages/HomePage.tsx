@@ -7,7 +7,7 @@
 
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Clock, Users, ChefHat, ArrowRight } from 'lucide-react';
+import { Clock, Users, ChefHat, ArrowRight, Gauge } from 'lucide-react';
 import { AIChatInput, SuggestionChips, ContextCard, QuickActions } from '../components/home';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -61,7 +61,7 @@ export default function HomePage() {
       <div className="min-h-screen bg-primary">
         <div className="container mx-auto px-4 py-16">
           <div className="text-center mb-16">
-            <h1 className="text-6xl font-bold text-primary mb-4">Cooking Assistant</h1>
+            <h1 className="text-6xl font-bold text-text-primary mb-4">Cooking Assistant</h1>
             <p className="text-xl text-text-secondary mb-8">
               Your AI-powered cooking companion for planning, shopping, and cooking with ease
             </p>
@@ -94,7 +94,7 @@ export default function HomePage() {
         className="max-w-4xl mx-auto px-4 py-8 lg:px-8 flex flex-col"
       >
         {/* Greeting */}
-        <div className="mb-8">
+        <div className="mb-8 animate-fade-in">
           <h1 data-testid="greeting" className="text-2xl font-semibold text-text-primary mb-1">
             {greeting}
           </h1>
@@ -102,13 +102,20 @@ export default function HomePage() {
         </div>
 
         {/* AI Chat Input */}
-        <div className="mb-8">
+        <div
+          className="mb-8 animate-slide-in"
+          style={{ animationDelay: '100ms', animationFillMode: 'both' }}
+        >
           <AIChatInput onSubmit={handleChatSubmit} />
           <SuggestionChips onChipClick={handleChipClick} />
         </div>
 
         {/* Context Cards + Quick Actions Grid */}
-        <div className="grid lg:grid-cols-2 gap-6" data-testid="context-cards">
+        <div
+          className="grid lg:grid-cols-2 gap-6 animate-slide-in"
+          style={{ animationDelay: '200ms', animationFillMode: 'both' }}
+          data-testid="context-cards"
+        >
           {/* Primary Card - Tonight's Meal */}
           <ContextCard
             title="Tonight's Dinner"
@@ -132,10 +139,17 @@ export default function HomePage() {
                   <span className="flex items-center gap-1">
                     <Users className="w-4 h-4" />4 servings
                   </span>
+                  <span className="flex items-center gap-1">
+                    <Gauge className="w-4 h-4" />
+                    Medium
+                  </span>
                 </div>
                 <div className="flex gap-2">
-                  <button className="px-4 py-2 bg-accent text-text-primary rounded-lg text-sm font-medium hover:bg-accent-hover transition">
+                  <button className="btn-animated px-4 py-2 bg-accent text-text-primary rounded-lg text-sm font-medium hover:bg-accent-hover transition">
                     Start Cooking
+                  </button>
+                  <button className="btn-animated px-4 py-2 bg-card text-text-secondary border border-default rounded-lg text-sm font-medium hover:bg-hover transition">
+                    View Recipe
                   </button>
                 </div>
               </div>
@@ -176,7 +190,10 @@ export default function HomePage() {
         </div>
 
         {/* Quick Actions */}
-        <div className="mt-6">
+        <div
+          className="mt-6 animate-slide-in"
+          style={{ animationDelay: '300ms', animationFillMode: 'both' }}
+        >
           <h2 className="text-sm font-medium text-text-muted mb-3">Quick Actions</h2>
           <QuickActions />
         </div>
@@ -187,7 +204,7 @@ export default function HomePage() {
         <div
           role="alert"
           data-testid="toast"
-          className="fixed bottom-20 left-1/2 -translate-x-1/2 bg-card border border-default rounded-lg px-4 py-3 shadow-lg z-50"
+          className="fixed bottom-20 left-1/2 -translate-x-1/2 bg-card border border-default rounded-lg px-4 py-3 shadow-lg z-50 animate-scale-in"
         >
           <p className="text-sm text-text-primary">{toastMessage}</p>
         </div>

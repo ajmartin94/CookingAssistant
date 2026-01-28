@@ -49,7 +49,7 @@ const MoonIcon = () => (
   </svg>
 );
 
-export const ThemeToggle = () => {
+export function ThemeToggle() {
   const { theme, toggleTheme } = useTheme();
 
   const ariaLabel = theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme';
@@ -59,9 +59,9 @@ export const ThemeToggle = () => {
       onClick={toggleTheme}
       aria-label={ariaLabel}
       type="button"
-      className="p-2 rounded-lg hover:bg-neutral-200 dark:hover:bg-neutral-700 transition-colors"
+      className="p-2 rounded-lg text-text-primary hover:bg-hover transition-colors"
     >
       {theme === 'dark' ? <SunIcon /> : <MoonIcon />}
     </button>
   );
-};
+}

@@ -1,8 +1,12 @@
 # Plan: UI/UX Overhaul
 
+**Status:** Revision Required — see brainstorm.md "Lessons Learned" section
+
 ## Overview
 
 Transform the Cooking Assistant from functional prototype to polished v1.0 MVP. This plan covers 9 features executed through sequential TDD rounds, establishing a design system foundation and redesigning all existing screens.
+
+**CRITICAL: Prototypes are the source of truth.** Each screen feature includes a Visual Verification section. Implementers MUST open the referenced prototype HTML file and verify every element matches before marking a feature complete.
 
 **Scope includes:**
 - Design system infrastructure (CSS tokens, theming, light+dark modes)
@@ -63,7 +67,7 @@ Establish the theming infrastructure: CSS custom properties for colors, typograp
 
 - [ ] CSS custom properties defined for all design tokens (see Color Palette below)
 - [ ] Light and dark mode themes with correct color values
-- [ ] Theme toggle component (temporary location: header)
+- [ ] Theme toggle component in Settings page (not header)
 - [ ] System preference detection (prefers-color-scheme) on first visit
 - [ ] Theme preference persisted to localStorage
 - [ ] ThemeContext provides `theme`, `setTheme`, `toggleTheme`
@@ -270,19 +274,38 @@ Build reusable UI components (Button, Card, Input, Tag/Badge) styled according t
 
 Implement the new navigation structure: collapsible desktop sidebar (left) and mobile bottom tab bar. Includes responsive behavior and active state indicators.
 
+**Prototype reference:** All prototypes show the correct sidebar structure (Home, Cookbook, Meal Plan, Shopping, Settings).
+
 ### Layers
 
 [Frontend, E2E]
 
 ### Acceptance Criteria
 
-- [ ] Desktop (>=768px): 220px sidebar with logo, nav items, settings at bottom
-- [ ] Desktop: Sidebar can collapse to icon-only mode (~64px)
-- [ ] Desktop: Collapse state persisted to localStorage
-- [ ] Mobile (<768px): Bottom tab bar with 4 tabs (Home, Cookbook, Plan, Shop)
-- [ ] Mobile: Profile/settings badge in top-right header
+**Sidebar Structure (MUST match prototypes):**
+- [ ] Logo "CookingAssistant" links to `/home` (not `/recipes`)
+- [ ] Nav items in this exact order:
+  1. Home → `/home` (icon: `Home`)
+  2. Cookbook → `/recipes` (icon: `BookOpen`)
+  3. Meal Plan → `/planning` (icon: `Calendar`)
+  4. Shopping → `/shopping` (icon: `ShoppingCart`)
+- [ ] Settings at bottom of sidebar → `/settings` (icon: `Settings`)
+- [ ] **Remove** old nav items: My Recipes, Libraries, Discover, Cook Mode
+
+**Desktop Behavior (>=768px):**
+- [ ] 220px sidebar width when expanded
+- [ ] Sidebar can collapse to icon-only mode (~64px)
+- [ ] Collapse state persisted to localStorage
+- [ ] "New Recipe" button at bottom of sidebar
+
+**Mobile Behavior (<768px):**
+- [ ] Bottom tab bar with 4 tabs: Home, Cookbook, Plan, Shop
+- [ ] Profile/settings accessible from top-right header
+- [ ] No sidebar on mobile
+
+**Visual:**
 - [ ] Active route highlighted with accent color
-- [ ] Smooth transitions between collapsed/expanded states
+- [ ] Smooth transitions between collapsed/expanded states (200ms)
 - [ ] Navigation works correctly when resizing browser window
 
 ### Accessibility
@@ -295,7 +318,9 @@ Implement the new navigation structure: collapsible desktop sidebar (left) and m
 ### E2E
 
 **Tests:**
-- Desktop: Navigate using sidebar items
+- Desktop: Navigate to Home using sidebar, verify URL is `/home`
+- Desktop: Logo click navigates to `/home`
+- Desktop: Navigate using all sidebar items (Cookbook, Meal Plan, Shopping, Settings)
 - Desktop: Collapse and expand sidebar, verify state persists
 - Mobile: Navigate using bottom tabs
 - Mobile: Profile accessible from header
@@ -304,22 +329,33 @@ Implement the new navigation structure: collapsible desktop sidebar (left) and m
 ### Frontend
 
 **Tests:**
-- Sidebar renders nav items at desktop width
+- Sidebar renders exactly 4 main nav items + Settings
+- Logo links to `/home`
+- Sidebar does NOT contain "My Recipes", "Libraries", "Discover", "Cook Mode"
 - Sidebar collapse button toggles width
 - Mobile renders bottom tab bar instead of sidebar
 - Active route shows correct styling (accent color)
 - Navigation items are keyboard accessible
 
 **Implementation:**
-- Refactor `Sidebar.tsx` for new design (220px width, new styling)
+- Rewrite `Sidebar.tsx` with new nav structure (not refactor — replace)
+- Update logo link from `/recipes` to `/home`
+- Remove: SidebarSection groupings, Libraries, Discover, Cook Mode items
 - Add `MobileTabBar.tsx` component
 - Use CSS media queries or `useMediaQuery` hook for responsive behavior
 - Update `MainLayout.tsx` to conditionally render sidebar vs tabs
 - Update E2E page objects to handle both navigation patterns
 
+### Visual Verification
+
+Before marking complete, open any prototype HTML file and verify:
+- [ ] Sidebar has exactly: Home, Cookbook, Meal Plan, Shopping (+ Settings at bottom)
+- [ ] No extra nav items exist
+- [ ] Logo click goes to Home
+
 ### Breaking Changes
 
-- Current `Sidebar.tsx` structure changes significantly
+- Current `Sidebar.tsx` completely rewritten
 - Mobile navigation changes from slide-in overlay to bottom tabs
 - E2E tests using sidebar selectors need updates
 - Empty state text "click New Recipe in the sidebar" becomes invalid on mobile
@@ -330,7 +366,9 @@ Implement the new navigation structure: collapsible desktop sidebar (left) and m
 
 ### Summary
 
-Redesign the home page with AI-first layout: central chat input with suggestion chips, smart context cards (tonight's meal, shopping needed, plan week), and quick actions. AI chat is visual only — actual functionality deferred.
+Redesign the home page with AI-first layout: central chat input with suggestion chips, smart context cards (tonight's meal, week preview), and quick actions. AI chat is visual only — actual functionality deferred.
+
+**Prototype reference:** `.claude/plans/2025-01-25-ui-overhaul/prototype-02-home-ai-first.html`
 
 ### Layers
 
@@ -338,13 +376,45 @@ Redesign the home page with AI-first layout: central chat input with suggestion 
 
 ### Acceptance Criteria
 
-- [ ] AI chat input centered with placeholder "What are we cooking?"
-- [ ] Suggestion chips below input (horizontally scrollable on mobile)
-- [ ] Clicking suggestion chip shows toast or navigates (visual feedback)
-- [ ] Smart context cards with mocked data (Tonight's Meal, Plan Your Week, etc.)
-- [ ] Quick actions section navigating to Cookbook, Meal Plan, Shopping
+**Header:**
 - [ ] Time-of-day greeting ("Good morning", "Good afternoon", "Good evening")
-- [ ] Responsive layout (desktop 2-column, mobile stacked)
+- [ ] Current date displayed below greeting
+
+**AI Chat Input:**
+- [ ] Centered input with placeholder "What are we cooking?"
+- [ ] "Go" button with send icon on right side of input
+- [ ] Clicking Go or pressing Enter shows toast (AI functionality deferred)
+
+**Suggestion Chips:**
+- [ ] 4 chips in a row: "Plan next week's meals", "What can I make with chicken?", "Find a quick dinner recipe", "Add recipe from URL"
+- [ ] Horizontally scrollable on mobile
+- [ ] Clicking chip shows toast or navigates (visual feedback)
+
+**Context Cards (two-column layout on desktop):**
+- [ ] "Tonight's Dinner" card (left column):
+  - "Ready" badge
+  - "Planned for 6:30 PM" subtitle
+  - Recipe photo placeholder (or gradient fallback with icon)
+  - Recipe title (e.g., "Honey Garlic Salmon")
+  - Metadata: time, servings, difficulty (e.g., "35 min · 4 servings · Medium")
+  - "Start Cooking" button (primary/accent)
+  - "View Recipe" button (secondary/outline)
+- [ ] "This Week" card (right column):
+  - Week preview list (Fri, Today, Sun, Mon, Tue)
+  - "Today" row highlighted with accent color
+  - "Not planned" shown for empty days
+  - "View full plan →" link at bottom
+
+**Quick Actions (below context cards):**
+- [ ] Three action cards in a column:
+  1. "Go Shopping" — icon: `ShoppingCart`, subtitle: "12 items across 2 stores"
+  2. "Add Recipe" — icon: `Plus`, subtitle: "Import or create new"
+  3. "Recent Reflection" — icon: `MessageSquare`, subtitle: "Pasta was too salty — noted"
+- [ ] Each card has arrow icon on right indicating navigation
+
+**Layout:**
+- [ ] Desktop: Context cards side-by-side (2 columns)
+- [ ] Mobile: Everything stacked vertically
 - [ ] All emojis removed, replaced with Lucide icons
 
 ### Accessibility
@@ -357,29 +427,43 @@ Redesign the home page with AI-first layout: central chat input with suggestion 
 ### E2E
 
 **Tests:**
-- Home page loads with chat input visible
+- Home page loads at `/home` with chat input visible
 - Suggestion chips are clickable (show toast or navigate)
-- Quick actions navigate to correct pages
+- "Start Cooking" and "View Recipe" buttons visible on dinner card
+- Quick actions (Go Shopping, Add Recipe, Recent Reflection) are present
 - Greeting displays appropriate time-of-day text
 
 ### Frontend
 
 **Tests:**
-- Chat input renders with correct placeholder
-- Suggestion chips render in horizontal list
-- Context cards render (mocked data)
-- Quick actions navigate correctly
-- Layout changes at mobile breakpoint
+- Chat input renders with placeholder "What are we cooking?"
+- Suggestion chips render exactly 4 chips
+- Tonight's Dinner card shows: title, time, servings, difficulty, two buttons
+- This Week card shows 5 days with "Today" highlighted
+- Quick actions render 3 cards: Go Shopping, Add Recipe, Recent Reflection
+- Layout is 2-column on desktop (>=768px)
+- Layout stacks on mobile (<768px)
 - No emojis present (check for emoji unicode ranges)
 - Greeting shows correct time-based text
 
 **Implementation:**
 - Rebuild `HomePage.tsx` with new structure
 - Create `AIChatInput.tsx` (visual component, shows toast on submit)
-- Create `SuggestionChips.tsx` with sample suggestions
+- Create `SuggestionChips.tsx` with exactly 4 suggestions
 - Create `ContextCard.tsx` for smart context display
+- Create `QuickActionCard.tsx` for action items
 - Use CSS Grid for 2-column desktop layout
 - Replace all emoji usage with Lucide icons
+
+### Visual Verification
+
+Before marking complete, open `prototype-02-home-ai-first.html` and verify:
+- [ ] Greeting + date matches layout
+- [ ] AI input + suggestion chips match
+- [ ] Tonight's Dinner card has photo placeholder, title, metadata, TWO buttons
+- [ ] This Week card has day list with "Today" highlighted
+- [ ] Quick Actions are: Go Shopping, Add Recipe, Recent Reflection (NOT Cookbook/Meal Plan/Shopping)
+- [ ] Two-column layout for context cards on desktop
 
 ### Breaking Changes
 
@@ -393,7 +477,9 @@ Redesign the home page with AI-first layout: central chat input with suggestion 
 
 ### Summary
 
-Redesign the recipe detail page with hero image, ingredients panel, step-by-step instructions, and notes section. Match prototype-04-recipe.html design.
+Redesign the recipe detail page with hero image, ingredients panel, step-by-step instructions, and notes section.
+
+**Prototype reference:** `.claude/plans/2025-01-25-ui-overhaul/prototype-04-recipe.html`
 
 ### Layers
 
@@ -401,52 +487,112 @@ Redesign the recipe detail page with hero image, ingredients panel, step-by-step
 
 ### Acceptance Criteria
 
-- [ ] Hero image with gradient overlay and recipe title
+**Hero Section:**
+- [ ] Hero image with gradient overlay (from-transparent to-black/70)
 - [ ] Fallback for recipes without images (gradient with first letter)
-- [ ] Metadata bar (prep time, cook time, servings, difficulty)
-- [ ] Two-column layout: ingredients (left), instructions (right)
-- [ ] Steps numbered with clear visual hierarchy
-- [ ] Timer buttons inline with steps that have times (visual only)
-- [ ] Notes section at bottom
-- [ ] Edit/Delete actions in header
-- [ ] Responsive: stacks to single column on mobile
+- [ ] Recipe title overlaid on hero (bottom)
+- [ ] Back button (top-left, semi-transparent background)
+- [ ] Action buttons (top-right): Favorite/heart, Share, More menu
+
+**Metadata (in hero overlay):**
+- [ ] Total time (e.g., "35 min total")
+- [ ] Servings (e.g., "4 servings")
+- [ ] Difficulty (e.g., "Medium difficulty")
+- [ ] Calories (e.g., "520 cal/serving") — display if available
+
+**Ingredients Panel (left column, sticky):**
+- [ ] Panel title "Ingredients"
+- [ ] Servings adjuster: +/- buttons to scale ingredient quantities
+- [ ] Ingredient list with checkboxes (visual state, can be checked off)
+- [ ] Each ingredient shows: amount (accent color), name
+- [ ] "Add to Shopping List" button at bottom of panel
+
+**Instructions (right column):**
+- [ ] Section title "Instructions"
+- [ ] Numbered steps with step number in circle
+- [ ] Step text with comfortable line height
+- [ ] Timer buttons inline with steps that have durations (visual only)
+- [ ] Timer button shows clock icon + duration (e.g., "Set 12 min timer")
+
+**Tags Section:**
+- [ ] Section title "Tags"
+- [ ] Tags displayed as pills (e.g., "High Protein", "Weeknight", "Healthy")
+
+**Notes & Reflections Section:**
+- [ ] Section title "Notes & Reflections"
+- [ ] Existing notes displayed as cards with date and label
+- [ ] "Add a note" button (dashed border style)
+
+**Fixed Bottom Bar:**
+- [ ] "Start Cooking" CTA bar fixed at bottom of viewport
+- [ ] Left side: "Ready to cook? Guided mode will walk you through each step."
+- [ ] Right side: "Start Cooking" button (primary/accent) with play icon
+
+**Layout:**
+- [ ] Desktop: Two-column (ingredients 320px, instructions flex)
+- [ ] Mobile: Stacks to single column
+- [ ] Ingredients panel is sticky on desktop (stays visible while scrolling)
 
 ### Accessibility
 
 - [ ] Hero image has alt text (recipe title)
-- [ ] Instructions list uses semantic <ol> element
+- [ ] Instructions list uses semantic `<ol>` element
 - [ ] Timer buttons have accessible labels describing the duration
 - [ ] Notes section has heading for screen reader navigation
+- [ ] Ingredient checkboxes are keyboard accessible
+- [ ] Servings adjuster buttons have accessible labels
 
 ### E2E
 
 **Tests:**
 - Recipe page displays recipe title and image
-- Ingredients list shows all ingredients
+- Ingredients list shows all ingredients with checkboxes
+- Servings adjuster +/- buttons are visible
+- "Add to Shopping List" button is visible
 - Steps display in correct order with numbers
 - Timer buttons appear for steps with durations
+- "Start Cooking" bar is visible at bottom
 - Edit button navigates to edit page
-- Delete button shows confirmation (if implemented)
 
 ### Frontend
 
 **Tests:**
 - Hero section renders image and title
 - Fallback renders when no image URL
-- Metadata bar shows correct values
-- Ingredients render in list format
-- Steps render with numbers
+- Favorite/heart button renders in hero
+- Metadata shows time, servings, difficulty in hero overlay
+- Servings adjuster renders with +/- buttons
+- Ingredients render with checkboxes
+- Checking ingredient toggles visual state
+- "Add to Shopping List" button renders
+- Steps render with numbers in circles
 - Timer button renders for steps with duration
 - Notes section shows existing notes
+- "Add a note" button renders
+- "Start Cooking" bar is fixed at bottom
 - Layout stacks on mobile width
 
 **Implementation:**
 - Rebuild `RecipeDetailPage.tsx` with new layout
-- Create `RecipeHero.tsx` for hero section with fallback
-- Create `IngredientsList.tsx` component
+- Create `RecipeHero.tsx` for hero section with fallback and action buttons
+- Create `IngredientsList.tsx` with checkboxes and servings adjuster
 - Create `InstructionSteps.tsx` component
-- Create `RecipeNotes.tsx` component
+- Create `RecipeNotes.tsx` with "Add a note" button
+- Create `StartCookingBar.tsx` fixed bottom CTA
 - Use CSS Grid for 2-column layout
+- Implement sticky positioning for ingredients panel
+
+### Visual Verification
+
+Before marking complete, open `prototype-04-recipe.html` and verify:
+- [ ] Hero has back button (left), action buttons (right: heart, share, menu)
+- [ ] Metadata in hero: time, servings, difficulty, calories
+- [ ] Ingredients panel has servings adjuster (+/- buttons)
+- [ ] Ingredients have checkboxes
+- [ ] "Add to Shopping List" button at bottom of ingredients
+- [ ] Timer buttons on relevant steps
+- [ ] Notes section has "Add a note" button
+- [ ] Fixed "Start Cooking" bar at bottom
 
 ### Breaking Changes
 
@@ -460,7 +606,9 @@ Redesign the recipe detail page with hero image, ingredients panel, step-by-step
 
 ### Summary
 
-Redesign the cookbook/recipes list page with recipe card grid, collections filter, search, and sort options. Match prototype-05-cookbook.html design.
+Redesign the cookbook/recipes list page with recipe card grid, collections, search, and sort options.
+
+**Prototype reference:** `.claude/plans/2025-01-25-ui-overhaul/prototype-05-cookbook.html`
 
 ### Layers
 
@@ -468,29 +616,73 @@ Redesign the cookbook/recipes list page with recipe card grid, collections filte
 
 ### Acceptance Criteria
 
-- [ ] Recipe cards in responsive grid (1-4 columns based on screen)
-- [ ] Each card shows image (or fallback), title, time, tags
-- [ ] Search input filters recipes by title (debounced, case-insensitive)
-- [ ] Sort dropdown (newest, alphabetical, cook time)
-- [ ] Collections sidebar/filter (All, Favorites, Recent)
-- [ ] Empty state when no recipes match search
+**Header:**
+- [ ] Page title "Cookbook"
+- [ ] "Import" button (secondary style) with upload icon
+- [ ] "New Recipe" button (primary style) with plus icon
+
+**Collections Section (horizontal scroll):**
+- [ ] Section title "Collections" with "Manage →" link
+- [ ] Horizontally scrollable collection cards
+- [ ] Each collection card shows: icon, name, recipe count
+- [ ] Collection cards use Lucide icons (NO emojis):
+  - Favorites: `Heart` icon
+  - Quick Meals: `Zap` icon
+  - Healthy: `Salad` icon
+  - Party Food: `PartyPopper` icon
+  - New Collection: `Plus` icon
+- [ ] Clicking collection filters recipes
+
+**Search & Filters Row:**
+- [ ] Search input with search icon inside (left side of input)
+- [ ] "Filters" button that shows/hides filter panel
+- [ ] View toggle: grid view / list view icons
+- [ ] Active view indicated with background highlight
+
+**Active Filter Tags:**
+- [ ] Active filters shown as pills below search row
+- [ ] Each pill has filter text + "×" remove button
+- [ ] Clicking "×" removes that filter
+- [ ] Example: "Under 30 min ×", "High Protein ×"
+
+**Results Info Row:**
+- [ ] Results count (e.g., "24 recipes")
+- [ ] Sort dropdown: "Recently Added", "Alphabetical", "Cook Time", "Most Cooked"
+
+**Recipe Cards Grid:**
+- [ ] Responsive grid (1-4 columns based on screen width)
+- [ ] Each card shows:
+  - Image (or gradient fallback with first letter)
+  - Time badge overlaid on image (top-right, e.g., "35 min")
+  - Favorite heart icon overlaid on image (top-left, filled if favorited)
+  - Title
+  - Metadata: servings, difficulty
+  - Tags as small pills
+- [ ] Card hover: subtle elevation + border color change
+
+**Empty States:**
+- [ ] Empty state when no recipes match search/filters
 - [ ] Empty state for new users with no recipes
-- [ ] Card hover state with subtle elevation
-- [ ] Recipe cards without images display gradient fallback with first letter
+- [ ] Empty state includes illustration/icon and helpful text
 
 ### Accessibility
 
 - [ ] Search input has accessible label
 - [ ] Sort dropdown is keyboard accessible
-- [ ] Collection filters are keyboard navigable
+- [ ] View toggle buttons have accessible labels
+- [ ] Collection cards are keyboard navigable
+- [ ] Filter tag remove buttons have accessible labels
 - [ ] Empty state is announced to screen readers
 - [ ] Recipe cards are focusable with descriptive accessible names
 
 ### E2E
 
 **Tests:**
-- Cookbook page displays recipe cards in grid
+- Cookbook page displays at `/recipes`
+- Collections section is visible with scrollable cards
 - Search filters visible recipes by title
+- Filter tags appear when filters active, can be removed
+- View toggle switches between grid and list
 - Sort changes card order
 - Clicking card navigates to recipe detail
 - Empty state displays when no recipes exist
@@ -499,27 +691,53 @@ Redesign the cookbook/recipes list page with recipe card grid, collections filte
 ### Frontend
 
 **Tests:**
+- Page title is "Cookbook" (not "My Recipes")
+- "Import" and "New Recipe" buttons render in header
+- Collections section renders with 5 collection cards
+- Collection cards use Lucide icons (not emojis)
+- Search input has search icon inside
+- View toggle renders grid/list buttons
+- Active filter tags render as removable pills
 - Recipe cards render in grid
+- Recipe cards show time badge on image
+- Recipe cards show favorite heart on image
 - Search input filters by title (debounced)
 - Sort dropdown changes order
 - Empty state shows when no results
-- Empty state shows for new users
-- Card hover shows visual feedback (elevation)
+- Card hover shows visual feedback
 - Fallback gradient displays for cards without images
 
 **Implementation:**
-- Refactor `RecipesPage.tsx` with new layout
-- Update `RecipeCard.tsx` with new styling and fallback
-- Add search state with debounce (300ms)
-- Add sort state and sorting logic
-- Create `EmptyState.tsx` component (reusable for other pages)
-- Update empty state text to be responsive-aware (no "sidebar" reference on mobile)
+- Rebuild `RecipesPage.tsx` with new layout (not refactor — replace)
+- Create `CollectionsSection.tsx` with horizontal scroll
+- Create `CollectionCard.tsx` with Lucide icons
+- Update search to have icon inside input
+- Create `FilterTags.tsx` for active filter pills
+- Create `ViewToggle.tsx` for grid/list switch
+- Update `RecipeCard.tsx` with:
+  - Time badge overlay
+  - Favorite heart overlay
+  - New hover state
+- Create `EmptyState.tsx` component (reusable)
+- Update empty state text to be responsive-aware
+
+### Visual Verification
+
+Before marking complete, open `prototype-05-cookbook.html` and verify:
+- [ ] Header has "Cookbook" title, Import button, New Recipe button
+- [ ] Collections section with horizontal scroll
+- [ ] Collection icons are Lucide icons (Heart, Zap, Salad, PartyPopper, Plus) — NOT emojis
+- [ ] Search input has icon inside
+- [ ] Filters button and View toggle present
+- [ ] Active filter tags shown as removable pills
+- [ ] Recipe cards have time badge AND favorite heart overlaid on image
+- [ ] Grid/list view toggle works
 
 ### Breaking Changes
 
-- Current `RecipesPage.tsx` layout changes significantly
-- Current `RecipeCard.tsx` restyled
-- 18 RecipesPage tests + 19 RecipeCard tests may need updates
+- Current `RecipesPage.tsx` completely rewritten
+- Current `RecipeCard.tsx` restyled significantly
+- 18 RecipesPage tests + 19 RecipeCard tests need rewrites
 - E2E tests in `list.spec.ts` need selector updates
 
 ---
@@ -597,7 +815,7 @@ Implement micro-interactions, transitions, and celebration animations as defined
 
 ### Summary
 
-Add seasonal color variations (Spring, Summer, Fall, Winter) that adjust accent colors and subtle background tints. Users can select their preferred season in settings.
+Add seasonal color variations (Spring, Summer, Fall, Winter) that adjust accent colors and subtle background tints. Users select their preferred season in the Settings page.
 
 ### Layers
 
@@ -605,28 +823,38 @@ Add seasonal color variations (Spring, Summer, Fall, Winter) that adjust accent 
 
 ### Acceptance Criteria
 
-- [ ] Four seasonal themes with distinct accent colors
-- [ ] Spring: #66bb6a (fresh green)
-- [ ] Summer: #ffa726 (warm orange)
-- [ ] Fall: #e07850 (coral - default)
-- [ ] Winter: #5c9dc4 (cool blue)
-- [ ] Season selector in settings page
-- [ ] Season preference persisted to localStorage
-- [ ] Smooth transition when changing seasons (300ms)
-- [ ] Works correctly in both light and dark modes
+**Seasonal Colors:**
+- [ ] Four seasonal themes with distinct accent colors:
+  - Spring: #66bb6a (fresh green)
+  - Summer: #ffa726 (warm orange)
+  - Fall: #e07850 (coral - default)
+  - Winter: #5c9dc4 (cool blue)
 - [ ] Accent-subtle colors adjust per season
+- [ ] Works correctly in both light and dark modes
+- [ ] Smooth transition when changing seasons (300ms)
+
+**Settings Page Integration:**
+- [ ] Season picker in Settings page (below theme toggle)
+- [ ] Four season options displayed as selectable cards or buttons
+- [ ] Each option shows: season name, color swatch
+- [ ] Selected season indicated with checkmark AND border (not color alone)
+- [ ] Season preference persisted to localStorage
 
 ### Accessibility
 
 - [ ] Season selector is keyboard accessible
 - [ ] Season names are clearly labeled (not just colors)
-- [ ] Color is not the only indicator of selected season (add checkmark or border)
+- [ ] Color is not the only indicator of selected season (checkmark + border)
+- [ ] Focus visible on season options
 
 ### Frontend
 
 **Tests:**
-- Season selector renders four options
+- Season picker renders in Settings page
+- Season picker renders four options (Spring, Summer, Fall, Winter)
+- Each option shows season name
 - Selecting season updates CSS variables (--accent changes)
+- Selected season shows checkmark indicator
 - Season persists across page reloads
 - Each season has distinct accent color
 - Seasonal themes work in both light and dark modes
@@ -635,8 +863,8 @@ Add seasonal color variations (Spring, Summer, Fall, Winter) that adjust accent 
 - Extend `ThemeContext` with `season` state
 - Define seasonal color palettes in theme.css
 - Add `[data-season="spring"]` etc. selectors
-- Create `SeasonPicker.tsx` component for settings
-- Update SettingsPage to include season picker
+- Create `SeasonPicker.tsx` component
+- Add SeasonPicker to SettingsPage (in Appearance section with theme toggle)
 - CSS variables cascade: mode sets base colors, season overrides accent
 
 ### Breaking Changes

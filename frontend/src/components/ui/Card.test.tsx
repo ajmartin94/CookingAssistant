@@ -297,4 +297,67 @@ describe('Card', () => {
       ).toBe(true);
     });
   });
+
+  describe('strict plan requirements', () => {
+    it('should have card-animated class when hoverable for glow border effect', () => {
+      render(
+        <Card hoverable>
+          <p data-testid="card-child">Animated card</p>
+        </Card>
+      );
+
+      const cardChild = screen.getByTestId('card-child');
+      const card = cardChild.parentElement;
+
+      // Plan requires card-animated class for hover glow effect
+      expect(card!.className).toContain('card-animated');
+    });
+
+    it('should accept padding prop to control internal spacing', () => {
+      render(
+        <Card padding="lg">
+          <p data-testid="card-child">Padded card</p>
+        </Card>
+      );
+
+      const cardChild = screen.getByTestId('card-child');
+      const card = cardChild.parentElement;
+
+      // Should have large padding class
+      expect(card!.className).toMatch(/p-6|p-8/);
+    });
+
+    it('should accept variant prop for different card styles', () => {
+      render(
+        <Card variant="elevated">
+          <p data-testid="card-child">Elevated card</p>
+        </Card>
+      );
+
+      const cardChild = screen.getByTestId('card-child');
+      const card = cardChild.parentElement;
+
+      expect(
+        card!.getAttribute('data-variant') === 'elevated' || card!.className.includes('shadow')
+      ).toBe(true);
+    });
+
+    it('should have role="article" or semantic element for accessibility', () => {
+      render(
+        <Card>
+          <p data-testid="card-child">Accessible card</p>
+        </Card>
+      );
+
+      const cardChild = screen.getByTestId('card-child');
+      const card = cardChild.parentElement;
+
+      // Card should have a semantic role for screen readers
+      expect(
+        card!.getAttribute('role') === 'article' ||
+          card!.tagName.toLowerCase() === 'article' ||
+          card!.tagName.toLowerCase() === 'section'
+      ).toBe(true);
+    });
+  });
 });

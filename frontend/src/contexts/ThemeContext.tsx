@@ -14,12 +14,12 @@ import type { ReactNode } from 'react';
 type Theme = 'light' | 'dark';
 type Season = 'spring' | 'summer' | 'fall' | 'winter';
 
-// Season accent colors
-const SEASON_COLORS: Record<Season, string> = {
-  spring: '#66bb6a',
-  summer: '#ffa726',
-  fall: '#e07850',
-  winter: '#5c9dc4',
+// Season accent colors with hover and subtle variants
+const SEASON_COLORS: Record<Season, { accent: string; hover: string; subtle: string }> = {
+  spring: { accent: '#66bb6a', hover: '#4caf50', subtle: 'rgba(102, 187, 106, 0.15)' },
+  summer: { accent: '#ffa726', hover: '#f57c00', subtle: 'rgba(255, 167, 38, 0.15)' },
+  fall: { accent: '#e07850', hover: '#c96842', subtle: 'rgba(224, 120, 80, 0.15)' },
+  winter: { accent: '#5c9dc4', hover: '#4a8ab4', subtle: 'rgba(92, 157, 196, 0.15)' },
 };
 
 interface ThemeContextType {
@@ -80,7 +80,10 @@ const getInitialSeason = (): Season => {
  * Apply season accent color to document
  */
 const applySeasonAccent = (season: Season): void => {
-  document.documentElement.style.setProperty('--accent', SEASON_COLORS[season]);
+  const colors = SEASON_COLORS[season];
+  document.documentElement.style.setProperty('--accent', colors.accent);
+  document.documentElement.style.setProperty('--accent-hover', colors.hover);
+  document.documentElement.style.setProperty('--accent-subtle', colors.subtle);
   document.documentElement.setAttribute('data-season', season);
 };
 

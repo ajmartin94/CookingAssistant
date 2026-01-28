@@ -1,50 +1,43 @@
 /**
- * Skeleton Component
+ * Skeleton Loading Component
  *
- * A loading placeholder with shimmer animation effect.
- * Supports different variants: rectangular (default), rounded, and circular.
+ * Displays a shimmer animation placeholder for loading states.
+ * Uses the animate-shimmer CSS class defined in theme.css.
  */
 
-import React from 'react';
-
-export interface SkeletonProps {
-  /** Width of the skeleton in pixels or CSS value */
-  width?: number | string;
-  /** Height of the skeleton in pixels or CSS value */
-  height?: number | string;
-  /** Shape variant of the skeleton */
-  variant?: 'rectangular' | 'rounded' | 'circular';
-  /** Additional CSS classes */
+interface SkeletonProps {
+  width?: string | number;
+  height?: string | number;
+  borderRadius?: string | number;
+  variant?: 'text' | 'circular' | 'rectangular';
   className?: string;
-  /** Test ID for testing */
-  'data-testid'?: string;
 }
+
+const variantStyles: Record<string, string> = {
+  text: 'rounded',
+  circular: 'rounded-full',
+  rectangular: 'rounded-lg',
+};
 
 export function Skeleton({
   width,
   height,
-  variant = 'rectangular',
+  borderRadius,
+  variant = 'text',
   className = '',
-  'data-testid': testId,
 }: SkeletonProps) {
-  const variantClasses = {
-    rectangular: 'rounded',
-    rounded: 'rounded-lg',
-    circular: 'rounded-full',
-  };
-
-  const style: React.CSSProperties = {
-    width: typeof width === 'number' ? `${width}px` : width,
-    height: typeof height === 'number' ? `${height}px` : height,
-  };
+  const variantClass = variantStyles[variant] || variantStyles.text;
 
   return (
     <div
-      className={`skeleton animate-shimmer bg-[var(--bg-hover)] ${variantClasses[variant]} ${className}`}
-      style={style}
-      data-testid={testId}
+      data-testid="skeleton"
+      className={`skeleton animate-shimmer bg-hover ${variantClass} ${className}`}
+      style={{
+        width: typeof width === 'number' ? `${width}px` : width,
+        height: typeof height === 'number' ? `${height}px` : height,
+        borderRadius: typeof borderRadius === 'number' ? `${borderRadius}px` : borderRadius,
+      }}
       aria-hidden="true"
-      role="presentation"
     />
   );
 }

@@ -37,7 +37,7 @@ describe('MobileTabBar', () => {
 
       const homeTab = screen.getByRole('link', { name: /home/i });
       expect(homeTab).toBeInTheDocument();
-      expect(homeTab).toHaveAttribute('href', '/');
+      expect(homeTab).toHaveAttribute('href', '/home');
     });
 
     it('should render Cookbook tab', () => {
@@ -86,7 +86,7 @@ describe('MobileTabBar', () => {
     it('should highlight Home tab when on home route', () => {
       render(<MobileTabBar />, {
         wrapper: ({ children }: { children: React.ReactNode }) => (
-          <MemoryRouter initialEntries={['/']}>{children}</MemoryRouter>
+          <MemoryRouter initialEntries={['/home']}>{children}</MemoryRouter>
         ),
       });
 

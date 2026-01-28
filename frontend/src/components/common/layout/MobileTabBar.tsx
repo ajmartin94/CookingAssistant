@@ -19,7 +19,7 @@ interface TabConfig {
 }
 
 const tabs: TabConfig[] = [
-  { path: '/', label: 'Home', icon: Home },
+  { path: '/home', label: 'Home', icon: Home },
   { path: '/recipes', label: 'Cookbook', icon: BookOpen },
   { path: '/planning', label: 'Plan', icon: Calendar },
   { path: '/shopping', label: 'Shop', icon: ShoppingCart },
@@ -29,8 +29,8 @@ export function MobileTabBar({ className = '' }: MobileTabBarProps) {
   const location = useLocation();
 
   const isTabActive = (path: string) => {
-    if (path === '/') {
-      return location.pathname === '/';
+    if (path === '/home') {
+      return location.pathname === '/' || location.pathname === '/home';
     }
     return location.pathname.startsWith(path);
   };

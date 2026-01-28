@@ -10,21 +10,39 @@ export interface CardProps {
   children: React.ReactNode;
   className?: string;
   hoverable?: boolean;
+  padding?: 'none' | 'sm' | 'md' | 'lg';
+  variant?: 'default' | 'elevated';
 }
 
-export function Card({ children, className = '', hoverable = false }: CardProps) {
+const paddingClasses = {
+  none: '',
+  sm: 'p-2',
+  md: 'p-4',
+  lg: 'p-6',
+};
+
+export function Card({
+  children,
+  className = '',
+  hoverable = false,
+  padding,
+  variant = 'default',
+}: CardProps) {
   return (
-    <div
+    <article
       className={`
         bg-card border border-default rounded-xl
-        ${hoverable ? 'cursor-pointer transition-all duration-200 hover:shadow-lg hover:shadow-accent/10 hover:border-accent/30 focus:outline-none focus:ring-2 focus:ring-accent-subtle' : ''}
+        ${hoverable ? 'card-animated cursor-pointer transition-all duration-200 hover:shadow-lg hover:shadow-accent/10 hover:border-accent/30 focus:outline-none focus:ring-2 focus:ring-accent-subtle' : ''}
+        ${variant === 'elevated' ? 'shadow-md' : ''}
+        ${padding ? paddingClasses[padding] : ''}
         ${className}
       `}
       tabIndex={hoverable ? 0 : undefined}
       data-hoverable={hoverable || undefined}
+      data-variant={variant}
     >
       {children}
-    </div>
+    </article>
   );
 }
 

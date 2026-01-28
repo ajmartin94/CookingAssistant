@@ -19,15 +19,26 @@ import { render, screen, waitFor } from './test-utils';
 import HomePage from '../pages/HomePage';
 import RecipesPage from '../pages/RecipesPage';
 import LoginPage from '../pages/LoginPage';
+import CreateRecipePage from '../pages/CreateRecipePage';
+import EditRecipePage from '../pages/EditRecipePage';
+import LibrariesPage from '../pages/LibrariesPage';
+import LibraryDetailPage from '../pages/LibraryDetailPage';
+import SettingsPage from '../pages/SettingsPage';
+import SharedRecipePage from '../pages/SharedRecipePage';
+import RecipeDetailPage from '../pages/RecipeDetailPage';
 
 // Import components to test
 import RecipeCard from '../components/recipes/RecipeCard';
+import RecipeForm from '../components/recipes/RecipeForm';
 import { Sidebar } from '../components/common/layout/Sidebar';
+import { TopBar } from '../components/common/layout/TopBar';
+import { MainLayout } from '../components/common/layout/MainLayout';
 import { ChatPanel } from '../components/chat/ChatPanel';
 import { FeedbackButton } from '../components/feedback/FeedbackButton';
 import { ErrorBoundary } from '../components/common/ErrorBoundary';
 
-import type { Recipe } from '../types';
+import type { Recipe, RecipeFormData } from '../types';
+import { DEFAULT_RECIPE_FORM_DATA } from '../types';
 
 // Mock recipe data
 const mockRecipe: Recipe = {
@@ -344,7 +355,7 @@ describe('Design Token Migration', () => {
 
       // Wait for page to render
       await waitFor(() => {
-        expect(screen.getByRole('heading', { name: 'My Recipes' })).toBeInTheDocument();
+        expect(screen.getByRole('heading', { name: 'Cookbook' })).toBeInTheDocument();
       });
 
       const hardcodedColors = findAllHardcodedColors(container);
@@ -359,7 +370,7 @@ describe('Design Token Migration', () => {
       const { container } = render(<RecipesPage />);
 
       await waitFor(() => {
-        expect(screen.getByRole('heading', { name: 'My Recipes' })).toBeInTheDocument();
+        expect(screen.getByRole('heading', { name: 'Cookbook' })).toBeInTheDocument();
       });
 
       const filterContainer = container.querySelector('.shadow-soft');
@@ -371,7 +382,7 @@ describe('Design Token Migration', () => {
       render(<RecipesPage />);
 
       await waitFor(() => {
-        const heading = screen.getByRole('heading', { name: 'My Recipes' });
+        const heading = screen.getByRole('heading', { name: 'Cookbook' });
         expect(heading.className).toMatch(/\btext-primary\b/);
         expect(heading.className).not.toMatch(/\btext-neutral-\d+\b/);
       });
@@ -555,6 +566,588 @@ describe('Design Token Migration', () => {
       // This will fail until Tailwind config is updated to use CSS variables
       expect(computedStyle.backgroundColor).not.toBe('');
       expect(computedStyle.backgroundColor).not.toBe('transparent');
+    });
+  });
+
+  /**
+   * ============================================================================
+   * ADDITIONAL PAGES AND COMPONENTS - Feature 2: Design Token Migration
+   *
+   * The following tests verify that ALL pages and components from the plan
+   * use semantic design tokens instead of hardcoded Tailwind color classes.
+   * ============================================================================
+   */
+
+  describe('CreateRecipePage', () => {
+    it('should use semantic design tokens instead of hardcoded colors', () => {
+      const { container } = render(<CreateRecipePage />);
+
+      const hardcodedColors = findAllHardcodedColors(container);
+
+      expect(
+        hardcodedColors.size,
+        `Found hardcoded colors in CreateRecipePage: ${JSON.stringify(Object.fromEntries(hardcodedColors))}`
+      ).toBe(0);
+    });
+
+    it('should use text-text-primary token for page heading', () => {
+      render(<CreateRecipePage />);
+
+      const heading = screen.getByRole('heading', { level: 1 });
+      // Should use text-text-primary, not text-neutral-900
+      expect(heading.className).toMatch(/\btext-text-primary\b/);
+      expect(heading.className).not.toMatch(/\btext-neutral-\d+\b/);
+    });
+
+    it('should use semantic tokens for back button', () => {
+      render(<CreateRecipePage />);
+
+      const backButton = screen.getByRole('button', { name: /back to recipes/i });
+      // Should use text-accent, not text-primary-500
+      expect(backButton.className).toMatch(/\btext-accent\b/);
+      expect(backButton.className).not.toMatch(/\btext-primary-\d+\b/);
+    });
+
+    it('should use semantic tokens for AI Chat button', () => {
+      render(<CreateRecipePage />);
+
+      const chatButton = screen.getByRole('button', { name: /ai chat/i });
+      // Should use bg-accent-subtle text-accent, not bg-primary-100 text-primary-700
+      expect(chatButton.className).toMatch(/\bbg-accent-subtle\b/);
+      expect(chatButton.className).not.toMatch(/\bbg-primary-\d+\b/);
+    });
+  });
+
+  describe('EditRecipePage', () => {
+    it('should use semantic design tokens instead of hardcoded colors', async () => {
+      const { container } = render(<EditRecipePage />);
+
+      // Wait for potential loading state
+      await waitFor(() => {
+        const hardcodedColors = findAllHardcodedColors(container);
+        expect(
+          hardcodedColors.size,
+          `Found hardcoded colors in EditRecipePage: ${JSON.stringify(Object.fromEntries(hardcodedColors))}`
+        ).toBe(0);
+      });
+    });
+
+    it('should use semantic tokens for loading spinner', () => {
+      const { container } = render(<EditRecipePage />);
+
+      const spinner = container.querySelector('.animate-spin');
+      // Should use border-accent, not border-primary-500
+      expect(spinner?.className).toMatch(/\bborder-accent\b/);
+      expect(spinner?.className).not.toMatch(/\bborder-primary-\d+\b/);
+    });
+  });
+
+  describe('LibrariesPage', () => {
+    it('should use semantic design tokens instead of hardcoded colors', async () => {
+      const { container } = render(<LibrariesPage />);
+
+      await waitFor(() => {
+        const hardcodedColors = findAllHardcodedColors(container);
+        expect(
+          hardcodedColors.size,
+          `Found hardcoded colors in LibrariesPage: ${JSON.stringify(Object.fromEntries(hardcodedColors))}`
+        ).toBe(0);
+      });
+    });
+
+    it('should use text-text-primary token for page heading', async () => {
+      render(<LibrariesPage />);
+
+      await waitFor(() => {
+        const heading = screen.getByRole('heading', { name: /my libraries/i });
+        expect(heading.className).toMatch(/\btext-text-primary\b/);
+        expect(heading.className).not.toMatch(/\btext-neutral-\d+\b/);
+      });
+    });
+
+    it('should use bg-accent token for primary button', async () => {
+      render(<LibrariesPage />);
+
+      await waitFor(() => {
+        const newLibraryButton = screen.getByRole('button', { name: /new library/i });
+        // Should use bg-accent, not bg-primary-500
+        expect(newLibraryButton.className).toMatch(/\bbg-accent\b/);
+        expect(newLibraryButton.className).not.toMatch(/\bbg-primary-\d+\b/);
+      });
+    });
+
+    it('should use bg-card token for modal background when shown', async () => {
+      render(<LibrariesPage />);
+
+      // Click to show create form
+      const newLibraryButton = screen.getByRole('button', { name: /new library/i });
+      newLibraryButton.click();
+
+      await waitFor(() => {
+        const modal = screen.getByRole('heading', { name: /create new library/i }).closest('div');
+        // Modal container should use bg-card, not bg-white
+        expect(modal?.className).toMatch(/\bbg-card\b/);
+        expect(modal?.className).not.toMatch(/\bbg-white\b/);
+      });
+    });
+  });
+
+  describe('LibraryDetailPage', () => {
+    it('should use semantic design tokens instead of hardcoded colors', async () => {
+      const { container } = render(<LibraryDetailPage />);
+
+      await waitFor(() => {
+        const hardcodedColors = findAllHardcodedColors(container);
+        expect(
+          hardcodedColors.size,
+          `Found hardcoded colors in LibraryDetailPage: ${JSON.stringify(Object.fromEntries(hardcodedColors))}`
+        ).toBe(0);
+      });
+    });
+
+    it('should use text-accent token for breadcrumb links', async () => {
+      const { container } = render(<LibraryDetailPage />);
+
+      await waitFor(() => {
+        const breadcrumbLinks = container.querySelectorAll('nav a');
+        breadcrumbLinks.forEach((link) => {
+          // Should use text-accent, not text-primary-500
+          expect(link.className).toMatch(/\btext-accent\b/);
+          expect(link.className).not.toMatch(/\btext-primary-\d+\b/);
+        });
+      });
+    });
+
+    it('should use bg-card token for header container', async () => {
+      const { container } = render(<LibraryDetailPage />);
+
+      await waitFor(() => {
+        const headerCard = container.querySelector('.shadow-soft');
+        if (headerCard) {
+          // Should use bg-card, not bg-white
+          expect(headerCard.className).toMatch(/\bbg-card\b/);
+          expect(headerCard.className).not.toMatch(/\bbg-white\b/);
+        }
+      });
+    });
+  });
+
+  describe('SettingsPage', () => {
+    it('should use semantic design tokens instead of hardcoded colors', async () => {
+      const { container } = render(<SettingsPage />);
+
+      await waitFor(() => {
+        const hardcodedColors = findAllHardcodedColors(container);
+        expect(
+          hardcodedColors.size,
+          `Found hardcoded colors in SettingsPage: ${JSON.stringify(Object.fromEntries(hardcodedColors))}`
+        ).toBe(0);
+      });
+    });
+
+    it('should use text-text-primary token for page heading', async () => {
+      render(<SettingsPage />);
+
+      await waitFor(() => {
+        const heading = screen.getByRole('heading', { level: 1 });
+        expect(heading.className).toMatch(/\btext-text-primary\b/);
+        expect(heading.className).not.toMatch(/\btext-neutral-\d+\b/);
+      });
+    });
+
+    it('should use bg-card token for form container', async () => {
+      const { container } = render(<SettingsPage />);
+
+      await waitFor(() => {
+        const formContainers = container.querySelectorAll('.shadow-soft');
+        formContainers.forEach((formContainer) => {
+          // Should use bg-card, not bg-white
+          expect(formContainer.className).toMatch(/\bbg-card\b/);
+          expect(formContainer.className).not.toMatch(/\bbg-white\b/);
+        });
+      });
+    });
+
+    it('should use border-default token for input borders', async () => {
+      render(<SettingsPage />);
+
+      await waitFor(() => {
+        const inputs = screen.getAllByRole('textbox');
+        inputs.forEach((input) => {
+          // Should use border-default, not border-neutral-300
+          expect(input.className).toMatch(/\bborder-default\b/);
+          expect(input.className).not.toMatch(/\bborder-neutral-\d+\b/);
+        });
+      });
+    });
+
+    it('should use bg-accent token for save button', async () => {
+      render(<SettingsPage />);
+
+      await waitFor(() => {
+        const saveButton = screen.getByRole('button', { name: /save preferences/i });
+        // Should use bg-accent, not bg-primary-500
+        expect(saveButton.className).toMatch(/\bbg-accent\b/);
+        expect(saveButton.className).not.toMatch(/\bbg-primary-\d+\b/);
+      });
+    });
+  });
+
+  describe('SharedRecipePage', () => {
+    it('should use semantic design tokens instead of hardcoded colors', async () => {
+      const { container } = render(<SharedRecipePage />);
+
+      await waitFor(() => {
+        const hardcodedColors = findAllHardcodedColors(container);
+        expect(
+          hardcodedColors.size,
+          `Found hardcoded colors in SharedRecipePage: ${JSON.stringify(Object.fromEntries(hardcodedColors))}`
+        ).toBe(0);
+      });
+    });
+
+    it('should use bg-primary token for page background', async () => {
+      const { container } = render(<SharedRecipePage />);
+
+      await waitFor(() => {
+        const pageContainer = container.querySelector('.min-h-screen');
+        // Should use bg-primary, not bg-neutral-50
+        expect(pageContainer?.className).toMatch(/\bbg-primary\b/);
+        expect(pageContainer?.className).not.toMatch(/\bbg-neutral-\d+\b/);
+      });
+    });
+
+    it('should use semantic info tokens for shared banner', async () => {
+      const { container } = render(<SharedRecipePage />);
+
+      await waitFor(() => {
+        // The shared banner should use semantic info tokens, not hardcoded blue
+        const banner = container.querySelector('[class*="border"]');
+        if (banner && banner.textContent?.includes('shared')) {
+          expect(banner.className).toMatch(/\bbg-info-subtle\b/);
+          expect(banner.className).not.toMatch(/\bbg-blue-\d+\b/);
+        }
+      });
+    });
+
+    it('should use bg-card token for recipe card containers', async () => {
+      const { container } = render(<SharedRecipePage />);
+
+      await waitFor(() => {
+        const cards = container.querySelectorAll('.shadow-soft');
+        cards.forEach((card) => {
+          // Should use bg-card, not bg-white
+          expect(card.className).toMatch(/\bbg-card\b/);
+          expect(card.className).not.toMatch(/\bbg-white\b/);
+        });
+      });
+    });
+
+    it('should use semantic difficulty badge tokens', async () => {
+      const { container } = render(<SharedRecipePage />);
+
+      await waitFor(() => {
+        // Check that difficulty colors use semantic tokens
+        const easyBadges = container.querySelectorAll('[class*="success"]');
+        easyBadges.forEach((badge) => {
+          // Should use bg-success, not bg-success-100
+          expect(badge.className).not.toMatch(/\bbg-success-\d+\b/);
+        });
+      });
+    });
+  });
+
+  describe('TopBar Component', () => {
+    it('should use semantic design tokens instead of hardcoded colors', () => {
+      const { container } = render(<TopBar />);
+
+      const hardcodedColors = findAllHardcodedColors(container);
+
+      expect(
+        hardcodedColors.size,
+        `Found hardcoded colors in TopBar: ${JSON.stringify(Object.fromEntries(hardcodedColors))}`
+      ).toBe(0);
+    });
+
+    it('should use bg-card token for header background', () => {
+      const { container } = render(<TopBar />);
+
+      const header = container.querySelector('header');
+      // Should use bg-card, not bg-white
+      expect(header?.className).toMatch(/\bbg-card\b/);
+      expect(header?.className).not.toMatch(/\bbg-white\b/);
+    });
+
+    it('should use border-default token for bottom border', () => {
+      const { container } = render(<TopBar />);
+
+      const header = container.querySelector('header');
+      // Should use border-default, not border-neutral-200
+      expect(header?.className).toMatch(/\bborder-default\b/);
+      expect(header?.className).not.toMatch(/\bborder-neutral-\d+\b/);
+    });
+
+    it('should use text-text-primary token for logo text', () => {
+      const { container } = render(<TopBar />);
+
+      const logoText = container.querySelector('[class*="font-display"]');
+      // Should use text-text-primary, not text-neutral-900
+      expect(logoText?.className).toMatch(/\btext-text-primary\b/);
+      expect(logoText?.className).not.toMatch(/\btext-neutral-\d+\b/);
+    });
+
+    it('should use bg-accent token for logo icon container', () => {
+      const { container } = render(<TopBar />);
+
+      const logoIcon = container.querySelector('[class*="rounded-lg"]');
+      if (logoIcon && logoIcon.querySelector('svg')) {
+        // Should use bg-accent, not bg-primary-500
+        expect(logoIcon.className).toMatch(/\bbg-accent\b/);
+        expect(logoIcon.className).not.toMatch(/\bbg-primary-\d+\b/);
+      }
+    });
+  });
+
+  describe('MainLayout Component', () => {
+    it('should use semantic design tokens instead of hardcoded colors', () => {
+      const { container } = render(
+        <MainLayout>
+          <div>Test content</div>
+        </MainLayout>
+      );
+
+      const hardcodedColors = findAllHardcodedColors(container);
+
+      expect(
+        hardcodedColors.size,
+        `Found hardcoded colors in MainLayout: ${JSON.stringify(Object.fromEntries(hardcodedColors))}`
+      ).toBe(0);
+    });
+
+    it('should use bg-primary token for main background', () => {
+      const { container } = render(
+        <MainLayout>
+          <div>Test content</div>
+        </MainLayout>
+      );
+
+      const mainContainer = container.querySelector('.min-h-screen');
+      expect(mainContainer?.className).toMatch(/\bbg-primary\b/);
+      expect(mainContainer?.className).not.toMatch(/\bbg-neutral-\d+\b/);
+    });
+  });
+
+  describe('RecipeForm Component', () => {
+    const mockFormData: RecipeFormData = {
+      ...DEFAULT_RECIPE_FORM_DATA,
+      title: 'Test Recipe',
+      description: 'Test description',
+    };
+
+    const mockFormProps = {
+      value: mockFormData,
+      onChange: () => {},
+      onSubmit: async () => {},
+      onCancel: () => {},
+      mode: 'create' as const,
+      isSubmitting: false,
+    };
+
+    it('should use semantic design tokens instead of hardcoded colors', () => {
+      const { container } = render(<RecipeForm {...mockFormProps} />);
+
+      const hardcodedColors = findAllHardcodedColors(container);
+
+      expect(
+        hardcodedColors.size,
+        `Found hardcoded colors in RecipeForm: ${JSON.stringify(Object.fromEntries(hardcodedColors))}`
+      ).toBe(0);
+    });
+
+    it('should use bg-card token for section backgrounds', () => {
+      const { container } = render(<RecipeForm {...mockFormProps} />);
+
+      const sections = container.querySelectorAll('.shadow-soft');
+      sections.forEach((section) => {
+        // Should use bg-card, not bg-white
+        expect(section.className).toMatch(/\bbg-card\b/);
+        expect(section.className).not.toMatch(/\bbg-white\b/);
+      });
+    });
+
+    it('should use text-text-primary token for section headings', () => {
+      const { container } = render(<RecipeForm {...mockFormProps} />);
+
+      const headings = container.querySelectorAll('h2');
+      headings.forEach((heading) => {
+        // Should use text-text-primary, not text-neutral-900
+        expect(heading.className).toMatch(/\btext-text-primary\b/);
+        expect(heading.className).not.toMatch(/\btext-neutral-\d+\b/);
+      });
+    });
+
+    it('should use text-text-secondary token for labels', () => {
+      const { container } = render(<RecipeForm {...mockFormProps} />);
+
+      const labels = container.querySelectorAll('label');
+      labels.forEach((label) => {
+        // Should use text-text-secondary, not text-neutral-700
+        expect(label.className).toMatch(/\btext-text-secondary\b/);
+        expect(label.className).not.toMatch(/\btext-neutral-\d+\b/);
+      });
+    });
+
+    it('should use border-default token for input borders', () => {
+      const { container } = render(<RecipeForm {...mockFormProps} />);
+
+      const inputs = container.querySelectorAll('input, textarea, select');
+      inputs.forEach((input) => {
+        // Should use border-default, not border-neutral-300
+        expect(input.className).toMatch(/\bborder-default\b/);
+        expect(input.className).not.toMatch(/\bborder-neutral-\d+\b/);
+      });
+    });
+
+    it('should use semantic tokens for add/remove buttons', () => {
+      const { container } = render(<RecipeForm {...mockFormProps} />);
+
+      // Check "Add Ingredient" and "Add Step" buttons
+      const addButtons = container.querySelectorAll('button');
+      addButtons.forEach((button) => {
+        const text = button.textContent || '';
+        if (text.includes('Add')) {
+          // Should use text-accent, not text-primary-500
+          expect(button.className).toMatch(/\btext-accent\b/);
+          expect(button.className).not.toMatch(/\btext-primary-\d+\b/);
+        }
+        if (text.includes('Remove')) {
+          // Should use text-error, not text-error-500
+          expect(button.className).toMatch(/\btext-error\b/);
+          expect(button.className).not.toMatch(/\btext-error-\d+\b/);
+        }
+      });
+    });
+
+    it('should use bg-accent token for submit button', () => {
+      render(<RecipeForm {...mockFormProps} />);
+
+      const submitButton = screen.getByRole('button', { name: /create recipe/i });
+      // Should use bg-accent, not bg-primary-500
+      expect(submitButton.className).toMatch(/\bbg-accent\b/);
+      expect(submitButton.className).not.toMatch(/\bbg-primary-\d+\b/);
+    });
+
+    it('should use semantic tokens for dietary tag buttons', () => {
+      const { container } = render(<RecipeForm {...mockFormProps} />);
+
+      // Find dietary tag buttons (they contain specific diet names)
+      const tagButtons = Array.from(container.querySelectorAll('button')).filter(
+        (btn) =>
+          btn.textContent?.includes('vegetarian') ||
+          btn.textContent?.includes('vegan') ||
+          btn.textContent?.includes('gluten-free')
+      );
+
+      tagButtons.forEach((button) => {
+        // Unselected should use bg-secondary, not bg-neutral-100
+        // Selected should use bg-accent, not bg-purple-600
+        const isSelected =
+          button.className.includes('text-white') ||
+          button.className.includes('text-text-on-accent');
+        if (isSelected) {
+          expect(button.className).toMatch(/\bbg-accent\b/);
+          expect(button.className).not.toMatch(/\bbg-purple-\d+\b/);
+        } else {
+          expect(button.className).toMatch(/\bbg-secondary\b/);
+          expect(button.className).not.toMatch(/\bbg-neutral-\d+\b/);
+        }
+      });
+    });
+
+    it('should use semantic step number indicator tokens', () => {
+      const { container } = render(<RecipeForm {...mockFormProps} />);
+
+      // Find step number indicators (they show instruction step numbers)
+      const stepIndicators = container.querySelectorAll(
+        '[data-testid="instruction-row"] > div:first-child'
+      );
+      stepIndicators.forEach((indicator) => {
+        // Should use bg-accent-subtle text-accent, not bg-primary-100 text-primary-700
+        expect(indicator.className).toMatch(/\bbg-accent-subtle\b/);
+        expect(indicator.className).not.toMatch(/\bbg-primary-\d+\b/);
+      });
+    });
+  });
+
+  describe('RecipeDetailPage', () => {
+    it('should use semantic design tokens instead of hardcoded colors', async () => {
+      const { container } = render(<RecipeDetailPage />);
+
+      await waitFor(() => {
+        const hardcodedColors = findAllHardcodedColors(container);
+        expect(
+          hardcodedColors.size,
+          `Found hardcoded colors in RecipeDetailPage: ${JSON.stringify(Object.fromEntries(hardcodedColors))}`
+        ).toBe(0);
+      });
+    });
+  });
+
+  describe('Complete Page Coverage - Theme Consistency', () => {
+    it('should render all additional pages without errors in dark theme', () => {
+      localStorage.setItem('theme', 'dark');
+
+      expect(() => {
+        render(<CreateRecipePage />);
+      }).not.toThrow();
+
+      expect(() => {
+        render(<EditRecipePage />);
+      }).not.toThrow();
+
+      expect(() => {
+        render(<LibrariesPage />);
+      }).not.toThrow();
+
+      expect(() => {
+        render(<LibraryDetailPage />);
+      }).not.toThrow();
+
+      expect(() => {
+        render(<SettingsPage />);
+      }).not.toThrow();
+
+      expect(() => {
+        render(<SharedRecipePage />);
+      }).not.toThrow();
+    });
+
+    it('should render all additional pages without errors in light theme', () => {
+      localStorage.setItem('theme', 'light');
+
+      expect(() => {
+        render(<CreateRecipePage />);
+      }).not.toThrow();
+
+      expect(() => {
+        render(<EditRecipePage />);
+      }).not.toThrow();
+
+      expect(() => {
+        render(<LibrariesPage />);
+      }).not.toThrow();
+
+      expect(() => {
+        render(<LibraryDetailPage />);
+      }).not.toThrow();
+
+      expect(() => {
+        render(<SettingsPage />);
+      }).not.toThrow();
+
+      expect(() => {
+        render(<SharedRecipePage />);
+      }).not.toThrow();
     });
   });
 });

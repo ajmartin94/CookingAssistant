@@ -5,7 +5,7 @@
  */
 
 import { Link } from 'react-router-dom';
-import { BookOpen, Calendar, ShoppingCart, ChevronRight } from 'lucide-react';
+import { ShoppingCart, Plus, MessageSquare, ArrowRight } from 'lucide-react';
 import type { ReactNode } from 'react';
 
 interface QuickAction {
@@ -17,22 +17,22 @@ interface QuickAction {
 
 const actions: QuickAction[] = [
   {
-    to: '/recipes',
-    icon: <BookOpen className="w-5 h-5" />,
-    label: 'Cookbook',
-    description: 'Browse your recipes',
-  },
-  {
-    to: '/planning',
-    icon: <Calendar className="w-5 h-5" />,
-    label: 'Meal Plan',
-    description: 'Plan your week',
-  },
-  {
     to: '/shopping',
     icon: <ShoppingCart className="w-5 h-5" />,
-    label: 'Shopping',
-    description: 'View shopping list',
+    label: 'Go Shopping',
+    description: '12 items across 2 stores',
+  },
+  {
+    to: '/recipes/create',
+    icon: <Plus className="w-5 h-5" />,
+    label: 'Add Recipe',
+    description: 'Import or create new',
+  },
+  {
+    to: '/reflections',
+    icon: <MessageSquare className="w-5 h-5" />,
+    label: 'Recent Reflection',
+    description: 'Pasta was too salty — noted',
   },
 ];
 
@@ -46,7 +46,7 @@ export function QuickActions() {
           aria-label={action.label}
           data-testid="quick-action"
           className="
-            bg-card border border-default rounded-xl p-4
+            card-animated bg-card border border-default rounded-xl p-4
             flex items-center gap-4
             hover:border-text-muted hover:bg-hover
             transition-all duration-200
@@ -60,7 +60,7 @@ export function QuickActions() {
             <div className="text-sm font-medium text-text-primary">{action.label}</div>
             <div className="text-xs text-text-muted">{action.description}</div>
           </div>
-          <ChevronRight className="w-4 h-4 text-text-muted group-hover:text-text-secondary transition-colors" />
+          <ArrowRight className="w-4 h-4 text-text-muted group-hover:text-text-secondary transition-colors" />
         </Link>
       ))}
     </div>

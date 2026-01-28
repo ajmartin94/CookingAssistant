@@ -14,7 +14,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, within } from '../test/test-utils';
 import userEvent from '@testing-library/user-event';
-import { MemoryRouter } from 'react-router-dom';
+
 import HomePage from './HomePage';
 
 // Mock the auth context to return an authenticated user
@@ -72,15 +72,33 @@ describe('HomePage Redesign', () => {
       expect(chatInput).toBeInTheDocument();
     });
 
-    it('should have submit button', () => {
+    it('should have Go submit button with send icon', () => {
       render(<HomePage />);
 
-      const submitButton = screen.getByRole('button', { name: /send|submit|ask/i });
+      const submitButton = screen.getByRole('button', { name: /go/i });
       expect(submitButton).toBeInTheDocument();
+      expect(submitButton.textContent).toMatch(/go/i);
     });
   });
 
   describe('Suggestion Chips', () => {
+    it('should render exactly 4 suggestion chips with correct text', () => {
+      render(<HomePage />);
+
+      const chipsContainer = screen.getByTestId('suggestion-chips');
+      const chips = within(chipsContainer).getAllByRole('button');
+      expect(chips).toHaveLength(4);
+
+      const expectedLabels = [
+        "Plan next week's meals",
+        'What can I make with chicken?',
+        'Find a quick dinner recipe',
+        'Add recipe from URL',
+      ];
+      const actualLabels = chips.map((chip) => chip.textContent);
+      expect(actualLabels).toEqual(expectedLabels);
+    });
+
     it('should render suggestion chips in horizontal list', () => {
       render(<HomePage />);
 
@@ -89,7 +107,7 @@ describe('HomePage Redesign', () => {
       expect(chipsContainer).toBeInTheDocument();
 
       // Should have multiple chips (chips have role="option")
-      const chips = within(chipsContainer).getAllByRole('option');
+      const chips = within(chipsContainer).getAllByRole('button');
       expect(chips.length).toBeGreaterThanOrEqual(3);
     });
 
@@ -147,35 +165,61 @@ describe('HomePage Redesign', () => {
     });
   });
 
+  describe("Tonight's Dinner Card", () => {
+    it('should display difficulty in metadata', () => {
+      render(<HomePage />);
+
+      expect(screen.getByText(/medium/i)).toBeInTheDocument();
+    });
+
+    it('should have a "View Recipe" button', () => {
+      render(<HomePage />);
+
+      const viewRecipeButton = screen.getByRole('button', { name: /view recipe/i });
+      expect(viewRecipeButton).toBeInTheDocument();
+    });
+
+    it('should have a "Start Cooking" button', () => {
+      render(<HomePage />);
+
+      const startCookingButton = screen.getByRole('button', { name: /start cooking/i });
+      expect(startCookingButton).toBeInTheDocument();
+    });
+
+    it('should show metadata with time, servings, and difficulty', () => {
+      render(<HomePage />);
+
+      expect(screen.getByText(/35 min/)).toBeInTheDocument();
+      expect(screen.getByText(/4 servings/)).toBeInTheDocument();
+      expect(screen.getByText(/medium/i)).toBeInTheDocument();
+    });
+  });
+
   describe('Quick Actions', () => {
-    it('should render quick action links', () => {
+    it('should render 3 quick action cards with correct labels and subtitles', () => {
       render(<HomePage />);
 
       const quickActions = screen.getByTestId('quick-actions');
       expect(quickActions).toBeInTheDocument();
 
-      // Should have links to main features
-      const cookbookLink = within(quickActions).getByRole('link', { name: /cookbook|recipes/i });
-      const planLink = within(quickActions).getByRole('link', { name: /plan|meal/i });
-      const shopLink = within(quickActions).getByRole('link', { name: /shop/i });
+      // Verify exact labels
+      expect(within(quickActions).getByText('Go Shopping')).toBeInTheDocument();
+      expect(within(quickActions).getByText('Add Recipe')).toBeInTheDocument();
+      expect(within(quickActions).getByText('Recent Reflection')).toBeInTheDocument();
 
-      expect(cookbookLink).toHaveAttribute('href', '/recipes');
-      expect(planLink).toHaveAttribute('href', '/planning');
-      expect(shopLink).toHaveAttribute('href', '/shopping');
+      // Verify subtitles
+      expect(within(quickActions).getByText('12 items across 2 stores')).toBeInTheDocument();
+      expect(within(quickActions).getByText('Import or create new')).toBeInTheDocument();
+      expect(within(quickActions).getByText(/pasta was too salty/i)).toBeInTheDocument();
     });
 
-    it('should navigate to correct pages', async () => {
-      render(<HomePage />, {
-        wrapper: ({ children }: { children: React.ReactNode }) => (
-          <MemoryRouter initialEntries={['/home']}>{children}</MemoryRouter>
-        ),
-      });
+    it('should render quick action links to correct pages', () => {
+      render(<HomePage />);
 
       const quickActions = screen.getByTestId('quick-actions');
-      const cookbookLink = within(quickActions).getByRole('link', { name: /cookbook|recipes/i });
 
-      // Link should have correct href
-      expect(cookbookLink).toHaveAttribute('href', '/recipes');
+      const shopLink = within(quickActions).getByRole('link', { name: /go shopping/i });
+      expect(shopLink).toHaveAttribute('href', '/shopping');
     });
   });
 

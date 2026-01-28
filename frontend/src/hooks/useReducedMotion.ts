@@ -1,53 +1,31 @@
 /**
  * useReducedMotion Hook
  *
- * Detects user's preference for reduced motion from the system settings.
- * Returns true when the user prefers reduced motion, false otherwise.
+ * Returns true when the user prefers reduced motion.
+ * Listens for changes to the prefers-reduced-motion media query.
  */
 
 import { useState, useEffect } from 'react';
 
-const REDUCED_MOTION_QUERY = '(prefers-reduced-motion: reduce)';
+const QUERY = '(prefers-reduced-motion: reduce)';
+
+function getInitialState(): boolean {
+  if (typeof window === 'undefined' || !window.matchMedia) return false;
+  return window.matchMedia(QUERY).matches;
+}
 
 export function useReducedMotion(): boolean {
-  const [prefersReducedMotion, setPrefersReducedMotion] = useState(() => {
-    // Check if window is available (SSR safety)
-    if (typeof window === 'undefined' || !window.matchMedia) {
-      return false;
-    }
-    try {
-      const mediaQuery = window.matchMedia(REDUCED_MOTION_QUERY);
-      return mediaQuery?.matches ?? false;
-    } catch {
-      return false;
-    }
-  });
+  const [reducedMotion, setReducedMotion] = useState(getInitialState);
 
   useEffect(() => {
-    if (typeof window === 'undefined' || !window.matchMedia) {
-      return;
-    }
+    if (typeof window === 'undefined' || !window.matchMedia) return;
 
-    try {
-      const mediaQuery = window.matchMedia(REDUCED_MOTION_QUERY);
-      if (!mediaQuery) {
-        return;
-      }
+    const mql = window.matchMedia(QUERY);
+    const handler = (e: MediaQueryListEvent) => setReducedMotion(e.matches);
 
-      const handleChange = (event: MediaQueryListEvent | { matches: boolean }) => {
-        setPrefersReducedMotion(event.matches);
-      };
-
-      // Add event listener for preference changes
-      mediaQuery.addEventListener('change', handleChange);
-
-      return () => {
-        mediaQuery.removeEventListener('change', handleChange);
-      };
-    } catch {
-      // Ignore errors in test environments without matchMedia
-    }
+    mql.addEventListener('change', handler);
+    return () => mql.removeEventListener('change', handler);
   }, []);
 
-  return prefersReducedMotion;
+  return reducedMotion;
 }

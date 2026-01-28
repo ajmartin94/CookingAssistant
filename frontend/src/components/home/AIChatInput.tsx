@@ -49,7 +49,7 @@ export function AIChatInput({ onSubmit, placeholder = 'What are we cooking?' }: 
         />
         <button
           type="submit"
-          aria-label="Send message"
+          aria-label="Go"
           data-testid="chat-submit"
           className="
             absolute right-3 top-1/2 -translate-y-1/2
@@ -63,8 +63,8 @@ export function AIChatInput({ onSubmit, placeholder = 'What are we cooking?' }: 
           "
           disabled={!message.trim()}
         >
+          Go
           <Send className="w-4 h-4" />
-          Send
         </button>
       </div>
     </form>

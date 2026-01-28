@@ -15,11 +15,10 @@ export interface SuggestionChipsProps {
 }
 
 const defaultSuggestions: SuggestionChip[] = [
-  { id: '1', label: 'Plan next week' },
-  { id: '2', label: 'Quick dinner recipe' },
-  { id: '3', label: 'What can I make with chicken?' },
-  { id: '4', label: 'Healthy breakfast ideas' },
-  { id: '5', label: 'Vegetarian options' },
+  { id: '1', label: "Plan next week's meals" },
+  { id: '2', label: 'What can I make with chicken?' },
+  { id: '3', label: 'Find a quick dinner recipe' },
+  { id: '4', label: 'Add recipe from URL' },
 ];
 
 export function SuggestionChips({
@@ -30,17 +29,15 @@ export function SuggestionChips({
     <div
       data-testid="suggestion-chips"
       className="flex gap-2 flex-wrap mt-3"
-      role="listbox"
       aria-label="Suggested prompts"
     >
       {suggestions.map((chip) => (
         <button
           key={chip.id}
           data-testid="suggestion-chip"
-          role="option"
           onClick={() => onChipClick?.(chip)}
           className="
-            bg-card border border-default
+            btn-animated bg-card border border-default
             px-4 py-2 rounded-full
             text-sm text-text-secondary
             hover:bg-hover hover:text-text-primary hover:border-text-muted

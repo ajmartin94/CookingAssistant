@@ -2,7 +2,7 @@
 
 **Issue:** #23 — Visual/UX overhaul
 **Date:** 2025-01-25
-**Status:** Complete
+**Status:** Revision Required (see Lessons Learned)
 
 ---
 
@@ -292,17 +292,78 @@ The coral accent appears only on buttons and highlights. Could be woven more sub
 
 ---
 
+## Lessons Learned (Post-Implementation Review)
+
+The initial TDD execution produced an implementation that diverged significantly from the prototypes. This section documents what went wrong to prevent recurrence.
+
+### Issues Found
+
+1. **Navigation structure not updated**
+   - Sidebar kept old structure (My Recipes, Libraries, Discover, Cook Mode) instead of prototype structure (Home, Cookbook, Meal Plan, Shopping)
+   - No "Home" link in sidebar — users couldn't navigate to the home page
+   - Logo linked to `/recipes` instead of `/home`
+
+2. **Home page built but not integrated**
+   - HomePage component exists with correct content
+   - But navigation doesn't route users there
+   - Layout differences from prototype (stacked vs 2-column quick actions)
+   - Missing "View Recipe" button, difficulty indicator
+
+3. **Recipe page ~60-70% complete**
+   - Missing: Servings adjuster, ingredient checkboxes, "Add to Shopping List", fixed "Start Cooking" bar, "Add a note" functionality, favorite button
+
+4. **Cookbook page ~50-60% complete**
+   - Missing: Collections section, Import button, view toggle (grid/list), active filter pills, favorite hearts on cards, time badge on card images
+
+5. **Theme/Season selector never placed**
+   - Plan mentioned "temporary location: header" but never specified permanent location
+   - Neither theme toggle nor season picker visible in the app
+
+6. **No visual verification process**
+   - Tests passed but didn't catch visual mismatches with prototypes
+   - Acceptance criteria were incomplete relative to prototype details
+
+### Root Causes
+
+1. **Incomplete acceptance criteria** — Plan extracted some features from prototypes but not all. TDD executed against incomplete criteria and called it done.
+
+2. **No visual verification step** — No process required implementer to compare against prototype HTML files.
+
+3. **Ambiguous placement** — Theme selector had no clear permanent location specified.
+
+### Process Improvements for Revision
+
+1. **Prototypes are binding** — Each screen feature must include explicit instruction to open prototype HTML side-by-side during implementation.
+
+2. **Exhaustive acceptance criteria** — Every visible element from prototype must be captured in acceptance criteria.
+
+3. **Visual verification checkpoint** — After implementation, manually verify against prototype before marking complete.
+
+---
+
 ## Decisions Made (Post-Review)
 
 ### Theme System
 - **Light mode + Dark mode** — both required, not dark-only
 - **Seasonal color themes**: Spring, Summer, Fall, Winter variations
 - User can select preferred theme; system adapts accent colors and subtle background tints
+- **Theme toggle location**: Settings page only
+- **Season picker location**: Settings page only
 
 ### Visual Language
 - **NO EMOJIS** — banned entirely from the application
 - Icons and imagery will be designed/selected over time
 - Use line icons, illustrated icons, or photography — never emoji
+
+### Collections Icons (Cookbook Page)
+Use Lucide icons for collection cards instead of emoji:
+| Collection | Icon |
+|------------|------|
+| Favorites | `Heart` |
+| Quick Meals | `Zap` |
+| Healthy | `Salad` |
+| Party Food | `PartyPopper` |
+| New Collection | `Plus` |
 
 ### Animation, Movement & Gamification
 - **Essential component** of the UX — not optional polish

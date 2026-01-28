@@ -18,7 +18,7 @@ export function TopBar() {
     <header
       className={`
         sticky top-0 z-30
-        h-16 bg-white border-b border-neutral-200
+        h-16 bg-card border-b border-default
         flex items-center justify-between px-4
         transition-all duration-200
 
@@ -39,10 +39,10 @@ export function TopBar() {
 
         {/* Mobile logo */}
         <Link to="/recipes" className="flex items-center gap-2 lg:hidden">
-          <div className="w-8 h-8 bg-primary-500 rounded-lg flex items-center justify-center">
-            <ChefHat className="w-5 h-5 text-white" />
+          <div className="w-8 h-8 bg-accent rounded-lg flex items-center justify-center">
+            <ChefHat className="w-5 h-5 text-text-on-accent" />
           </div>
-          <span className="font-display font-bold text-lg text-neutral-900">CookBook</span>
+          <span className="font-display font-bold text-lg text-text-primary">CookBook</span>
         </Link>
       </div>
 
@@ -50,7 +50,7 @@ export function TopBar() {
       <div className="flex items-center gap-4">
         {user && (
           <>
-            <div className="hidden sm:flex items-center gap-2 text-neutral-600">
+            <div className="hidden sm:flex items-center gap-2 text-text-secondary">
               <User className="w-4 h-4" />
               <span className="text-sm font-medium">{user.username}</span>
             </div>

@@ -34,7 +34,14 @@ export {
   Filter,
   Bookmark,
   Heart,
+  Upload,
+  Zap,
+  Salad,
+  PartyPopper,
 } from 'lucide-react';
+
+// View & Layout
+export { LayoutGrid, List } from 'lucide-react';
 
 // Planning & Shopping
 export { Calendar, ShoppingCart, ListTodo, CheckSquare } from 'lucide-react';
@@ -43,7 +50,7 @@ export { Calendar, ShoppingCart, ListTodo, CheckSquare } from 'lucide-react';
 export { Compass, Share2, ExternalLink, Link2, Copy, Check } from 'lucide-react';
 
 // Actions
-export { Edit, Trash2, MoreVertical, MoreHorizontal } from 'lucide-react';
+export { Edit, Trash2, MoreVertical, MoreHorizontal, Play, Minus } from 'lucide-react';
 
 // Alerts & Status
 export { AlertCircle, AlertTriangle, CheckCircle, Info, Loader2 } from 'lucide-react';

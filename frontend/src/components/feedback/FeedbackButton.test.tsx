@@ -2,7 +2,8 @@
  * FeedbackButton Component Tests
  *
  * Tests for the floating feedback button that opens the feedback modal.
- * The button should be visible in the bottom-right corner on all pages.
+ * The button should be visible in the bottom-left corner on all pages
+ * (moved from bottom-right to avoid overlap with other UI elements).
  */
 
 import { describe, it, expect } from 'vitest';
@@ -11,16 +12,16 @@ import userEvent from '@testing-library/user-event';
 import { FeedbackButton } from './FeedbackButton';
 
 describe('FeedbackButton', () => {
-  it('renders floating button in bottom-right corner', () => {
+  it('renders floating button in bottom-left corner', () => {
     render(<FeedbackButton />);
 
     const button = screen.getByRole('button', { name: /feedback/i });
     expect(button).toBeInTheDocument();
 
-    // Button should have fixed positioning styles for bottom-right corner
+    // Button should have fixed positioning styles for bottom-left corner
     expect(button).toHaveClass('fixed');
     expect(button).toHaveClass('bottom-4');
-    expect(button).toHaveClass('right-4');
+    expect(button).toHaveClass('left-4');
   });
 
   it('clicking button opens feedback modal', async () => {

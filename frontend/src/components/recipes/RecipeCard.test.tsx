@@ -72,7 +72,9 @@ describe('RecipeCard', () => {
     it('should display cook time', () => {
       render(<RecipeCard recipe={mockRecipe} />);
 
-      expect(screen.getByText('12 min')).toBeInTheDocument();
+      // Cook time appears in both the time badge overlay and metadata section
+      const timeElements = screen.getAllByText('12 min');
+      expect(timeElements.length).toBeGreaterThanOrEqual(1);
     });
 
     it('should display servings', () => {
@@ -180,7 +182,7 @@ describe('RecipeCard', () => {
       const { container } = render(<RecipeCard recipe={mockRecipe} />);
 
       const link = container.querySelector('a');
-      expect(link).toHaveClass('hover:shadow-soft-md');
+      expect(link).toHaveClass('card-animated');
     });
 
     it('should have rounded corners and shadow', () => {
@@ -304,6 +306,60 @@ describe('RecipeCard', () => {
       // Card should be findable by accessible name
       const link = screen.getByRole('link', { name: /chocolate chip cookies/i });
       expect(link).toBeInTheDocument();
+    });
+  });
+
+  /**
+   * ============================================================================
+   * COOKBOOK PAGE REDESIGN - OVERLAY FEATURES (Feature 7 - Phase 2)
+   * ============================================================================
+   * - Time badge overlay on card image (top-right)
+   * - Favorite heart overlay on card image (top-left)
+   */
+
+  describe('Time Badge Overlay', () => {
+    it('should display a time badge overlaid on the image area', () => {
+      render(<RecipeCard recipe={mockRecipe} />);
+
+      const timeBadge = screen.getByTestId('time-badge');
+      expect(timeBadge).toBeInTheDocument();
+      expect(timeBadge).toHaveTextContent(/12 min/);
+    });
+
+    it('should position the time badge in the top-right of the image', () => {
+      render(<RecipeCard recipe={mockRecipe} />);
+
+      const timeBadge = screen.getByTestId('time-badge');
+      // Should have absolute positioning classes
+      expect(timeBadge.className).toMatch(/absolute/);
+      expect(timeBadge.className).toMatch(/top-/);
+      expect(timeBadge.className).toMatch(/right-/);
+    });
+  });
+
+  describe('Favorite Heart Overlay', () => {
+    it('should display a favorite heart button overlaid on the image area', () => {
+      render(<RecipeCard recipe={mockRecipe} />);
+
+      const heartBtn = screen.getByTestId('favorite-heart');
+      expect(heartBtn).toBeInTheDocument();
+    });
+
+    it('should position the heart in the top-left of the image', () => {
+      render(<RecipeCard recipe={mockRecipe} />);
+
+      const heartBtn = screen.getByTestId('favorite-heart');
+      expect(heartBtn.className).toMatch(/absolute/);
+      expect(heartBtn.className).toMatch(/top-/);
+      expect(heartBtn.className).toMatch(/left-/);
+    });
+
+    it('should contain an SVG heart icon', () => {
+      render(<RecipeCard recipe={mockRecipe} />);
+
+      const heartBtn = screen.getByTestId('favorite-heart');
+      const svg = heartBtn.querySelector('svg');
+      expect(svg).toBeInTheDocument();
     });
   });
 });

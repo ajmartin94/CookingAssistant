@@ -346,4 +346,47 @@ describe('Input', () => {
       expect(input).toHaveValue('default value');
     });
   });
+
+  describe('strict plan requirements', () => {
+    it('should render with a label element when label prop is provided', () => {
+      render(<Input label="Email Address" />);
+
+      // Should render a visible label element
+      expect(screen.getByLabelText('Email Address')).toBeInTheDocument();
+    });
+
+    it('should support helper text below the input', () => {
+      render(<Input aria-label="Helper input" helperText="Enter your full name" />);
+
+      expect(screen.getByText('Enter your full name')).toBeInTheDocument();
+    });
+
+    it('should render left icon/adornment when provided', () => {
+      render(
+        <Input aria-label="Search input" leftIcon={<span data-testid="search-icon">🔍</span>} />
+      );
+
+      expect(screen.getByTestId('search-icon')).toBeInTheDocument();
+    });
+
+    it('should have aria-describedby pointing to helper text when no error', () => {
+      render(
+        <Input id="helper-input" aria-label="Helper described input" helperText="Helpful hint" />
+      );
+
+      const input = screen.getByRole('textbox', { name: 'Helper described input' });
+      const describedBy = input.getAttribute('aria-describedby');
+      expect(describedBy).toBeTruthy();
+      expect(document.getElementById(describedBy!)).toBeInTheDocument();
+      expect(document.getElementById(describedBy!)!.textContent).toBe('Helpful hint');
+    });
+
+    it('should support textarea variant via multiline prop', () => {
+      render(<Input aria-label="Multiline input" multiline rows={4} />);
+
+      // Should render a textarea element instead of input
+      const textarea = document.querySelector('textarea');
+      expect(textarea).toBeInTheDocument();
+    });
+  });
 });

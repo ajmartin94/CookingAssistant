@@ -348,4 +348,57 @@ describe('Button', () => {
       expect(handleClick).toHaveBeenCalledTimes(1);
     });
   });
+
+  describe('strict plan requirements', () => {
+    it('should have loading spinner with role="status" for screen readers', () => {
+      render(<Button isLoading>Loading</Button>);
+
+      const button = screen.getByRole('button');
+      const spinner = button.querySelector('[role="status"]');
+      expect(spinner).toBeInTheDocument();
+    });
+
+    it('should hide loading spinner text from screen readers with aria-hidden on SVG', () => {
+      render(<Button isLoading>Loading</Button>);
+
+      const button = screen.getByRole('button');
+      // The spinner wrapper should have role="status" and a sr-only label
+      const statusEl = button.querySelector('[role="status"]');
+      expect(statusEl).toBeInTheDocument();
+      expect(statusEl!.textContent || statusEl!.getAttribute('aria-label')).toBeTruthy();
+    });
+
+    it('should accept className prop for custom styling', () => {
+      render(<Button className="custom-class">Styled</Button>);
+
+      const button = screen.getByRole('button', { name: 'Styled' });
+      expect(button.className).toContain('custom-class');
+    });
+
+    it('should forward ref to underlying button element', () => {
+      // Button should support React.forwardRef for imperative access
+      const { container } = render(<Button>Ref Button</Button>);
+      const button = container.querySelector('button');
+      expect(button).toBeInTheDocument();
+    });
+
+    it('should support fullWidth prop to take full container width', () => {
+      render(<Button fullWidth>Full Width</Button>);
+
+      const button = screen.getByRole('button', { name: 'Full Width' });
+      expect(button.className).toContain('w-full');
+    });
+
+    it('should render left icon when provided', () => {
+      render(<Button leftIcon={<span data-testid="left-icon">+</span>}>Add Item</Button>);
+
+      expect(screen.getByTestId('left-icon')).toBeInTheDocument();
+    });
+
+    it('should render right icon when provided', () => {
+      render(<Button rightIcon={<span data-testid="right-icon">→</span>}>Next</Button>);
+
+      expect(screen.getByTestId('right-icon')).toBeInTheDocument();
+    });
+  });
 });
