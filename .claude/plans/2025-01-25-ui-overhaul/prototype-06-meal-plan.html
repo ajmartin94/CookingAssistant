@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cooking Assistant - Meal Plan</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --bg-primary: #1a1a1a;
+      --bg-secondary: #242424;
+      --bg-card: #2a2a2a;
+      --bg-hover: #333;
+      --text-primary: #f5f5f5;
+      --text-secondary: #a0a0a0;
+      --text-muted: #6b6b6b;
+      --accent: #e07850;
+      --accent-hover: #c96842;
+      --accent-subtle: rgba(224, 120, 80, 0.15);
+      --border: #3a3a3a;
+      --success: #4ade80;
+      --success-subtle: rgba(74, 222, 128, 0.15);
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      min-height: 100vh;
+      display: flex;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 220px;
+      background: var(--bg-secondary);
+      border-right: 1px solid var(--border);
+      padding: 24px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+
+    .sidebar-logo {
+      font-size: 18px;
+      font-weight: 600;
+      padding: 8px 12px;
+      margin-bottom: 24px;
+      color: var(--text-primary);
+    }
+
+    .sidebar-logo span {
+      color: var(--accent);
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px;
+      border-radius: 8px;
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-size: 14px;
+      transition: all 0.15s ease;
+      cursor: pointer;
+    }
+
+    .nav-item:hover {
+      background: var(--bg-hover);
+      color: var(--text-primary);
+    }
+
+    .nav-item.active {
+      background: var(--bg-card);
+      color: var(--text-primary);
+    }
+
+    .nav-item svg {
+      width: 18px;
+      height: 18px;
+      opacity: 0.7;
+    }
+
+    .nav-item.active svg {
+      opacity: 1;
+    }
+
+    .sidebar-footer {
+      margin-top: auto;
+      padding-top: 16px;
+      border-top: 1px solid var(--border);
+    }
+
+    /* Main Content */
+    .main {
+      flex: 1;
+      padding: 32px;
+      overflow-y: auto;
+    }
+
+    /* Header */
+    .page-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+    }
+
+    .page-title-section {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .page-title {
+      font-size: 26px;
+      font-weight: 600;
+    }
+
+    .week-nav {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .week-nav-btn {
+      width: 32px;
+      height: 32px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text-secondary);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .week-nav-btn:hover {
+      background: var(--bg-hover);
+      color: var(--text-primary);
+    }
+
+    .week-label {
+      font-size: 14px;
+      color: var(--text-secondary);
+      min-width: 140px;
+      text-align: center;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 12px;
+    }
+
+    .btn {
+      padding: 10px 18px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      border: none;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: var(--accent-hover);
+    }
+
+    .btn-secondary {
+      background: var(--bg-card);
+      color: var(--text-primary);
+      border: 1px solid var(--border);
+    }
+
+    .btn-secondary:hover {
+      background: var(--bg-hover);
+    }
+
+    /* Week Summary */
+    .week-summary {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .summary-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 16px 20px;
+      flex: 1;
+    }
+
+    .summary-label {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+    }
+
+    .summary-value {
+      font-size: 20px;
+      font-weight: 600;
+    }
+
+    .summary-value.warning {
+      color: var(--accent);
+    }
+
+    .summary-sub {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    /* Calendar Grid */
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 12px;
+      margin-bottom: 32px;
+    }
+
+    .day-column {
+      min-width: 0;
+    }
+
+    .day-header {
+      text-align: center;
+      padding: 12px 8px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 10px 10px 0 0;
+    }
+
+    .day-header.today {
+      background: var(--accent-subtle);
+      border-color: var(--accent);
+    }
+
+    .day-name {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-bottom: 2px;
+    }
+
+    .day-header.today .day-name {
+      color: var(--accent);
+    }
+
+    .day-date {
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    .day-content {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-top: none;
+      border-radius: 0 0 10px 10px;
+      padding: 12px;
+      min-height: 280px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .day-header.today + .day-content {
+      border-color: var(--accent);
+    }
+
+    /* Meal Slot */
+    .meal-slot {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .meal-slot:hover {
+      border-color: var(--text-muted);
+    }
+
+    .meal-slot.completed {
+      border-color: var(--success);
+      background: var(--success-subtle);
+    }
+
+    .meal-type {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+
+    .meal-slot.completed .meal-type {
+      color: var(--success);
+    }
+
+    .meal-name {
+      font-size: 13px;
+      font-weight: 500;
+      line-height: 1.3;
+      margin-bottom: 6px;
+    }
+
+    .meal-meta {
+      font-size: 11px;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .meal-slot-empty {
+      background: transparent;
+      border: 1px dashed var(--border);
+      border-radius: 8px;
+      padding: 16px 10px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .meal-slot-empty:hover {
+      border-color: var(--text-muted);
+      background: var(--bg-card);
+    }
+
+    .meal-slot-empty-text {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    /* AI Suggestion Banner */
+    .ai-banner {
+      background: linear-gradient(135deg, var(--bg-card) 0%, rgba(224, 120, 80, 0.1) 100%);
+      border: 1px solid var(--accent);
+      border-radius: 12px;
+      padding: 20px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 24px;
+    }
+
+    .ai-banner-content {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .ai-banner-icon {
+      width: 44px;
+      height: 44px;
+      background: var(--accent-subtle);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+    }
+
+    .ai-banner-text h4 {
+      font-size: 15px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .ai-banner-text p {
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
+
+    .ai-banner-actions {
+      display: flex;
+      gap: 10px;
+    }
+
+    /* Shopping Ready */
+    .shopping-ready {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+    }
+
+    .shopping-ready-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .shopping-ready-title {
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    .shopping-ready-items {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .shopping-item-preview {
+      background: var(--bg-hover);
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
+
+    .shopping-item-more {
+      color: var(--text-muted);
+    }
+  </style>
+</head>
+<body>
+  <!-- Sidebar -->
+  <nav class="sidebar">
+    <div class="sidebar-logo">Cooking<span>Assistant</span></div>
+
+    <a class="nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+        <polyline points="9 22 9 12 15 12 15 22"></polyline>
+      </svg>
+      Home
+    </a>
+
+    <a class="nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+      </svg>
+      Cookbook
+    </a>
+
+    <a class="nav-item active">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+        <line x1="16" y1="2" x2="16" y2="6"></line>
+        <line x1="8" y1="2" x2="8" y2="6"></line>
+        <line x1="3" y1="10" x2="21" y2="10"></line>
+      </svg>
+      Meal Plan
+    </a>
+
+    <a class="nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="9" cy="21" r="1"></circle>
+        <circle cx="20" cy="21" r="1"></circle>
+        <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+      </svg>
+      Shopping
+    </a>
+
+    <div class="sidebar-footer">
+      <a class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="3"></circle>
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+        </svg>
+        Settings
+      </a>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="main">
+    <!-- Header -->
+    <div class="page-header">
+      <div class="page-title-section">
+        <h1 class="page-title">Meal Plan</h1>
+        <div class="week-nav">
+          <button class="week-nav-btn">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="15 18 9 12 15 6"></polyline>
+            </svg>
+          </button>
+          <span class="week-label">Jan 20 - Jan 26</span>
+          <button class="week-nav-btn">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+          </button>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button class="btn btn-secondary">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+            <line x1="3" y1="9" x2="21" y2="9"></line>
+            <line x1="9" y1="21" x2="9" y2="9"></line>
+          </svg>
+          Templates
+        </button>
+        <button class="btn btn-primary">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+          </svg>
+          AI Plan Week
+        </button>
+      </div>
+    </div>
+
+    <!-- AI Suggestion Banner -->
+    <div class="ai-banner">
+      <div class="ai-banner-content">
+        <div class="ai-banner-icon">✨</div>
+        <div class="ai-banner-text">
+          <h4>3 days unplanned this week</h4>
+          <p>Want me to suggest meals based on your preferences and what's in your pantry?</p>
+        </div>
+      </div>
+      <div class="ai-banner-actions">
+        <button class="btn btn-secondary">Dismiss</button>
+        <button class="btn btn-primary">Fill with AI</button>
+      </div>
+    </div>
+
+    <!-- Week Summary -->
+    <div class="week-summary">
+      <div class="summary-card">
+        <div class="summary-label">Meals Planned</div>
+        <div class="summary-value">4 <span style="font-size: 14px; color: var(--text-muted);">/ 7</span></div>
+        <div class="summary-sub">dinners this week</div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-label">Cooked</div>
+        <div class="summary-value" style="color: var(--success);">2</div>
+        <div class="summary-sub">meals completed</div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-label">Shopping</div>
+        <div class="summary-value warning">12</div>
+        <div class="summary-sub">items needed</div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-label">Est. Spend</div>
+        <div class="summary-value">$85</div>
+        <div class="summary-sub">for ingredients</div>
+      </div>
+    </div>
+
+    <!-- Calendar Grid -->
+    <div class="calendar-grid">
+      <!-- Monday -->
+      <div class="day-column">
+        <div class="day-header">
+          <div class="day-name">Mon</div>
+          <div class="day-date">20</div>
+        </div>
+        <div class="day-content">
+          <div class="meal-slot completed">
+            <div class="meal-type">Dinner</div>
+            <div class="meal-name">Chicken Stir Fry</div>
+            <div class="meal-meta">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+              Cooked
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tuesday -->
+      <div class="day-column">
+        <div class="day-header">
+          <div class="day-name">Tue</div>
+          <div class="day-date">21</div>
+        </div>
+        <div class="day-content">
+          <div class="meal-slot completed">
+            <div class="meal-type">Dinner</div>
+            <div class="meal-name">Pasta Carbonara</div>
+            <div class="meal-meta">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+              Cooked
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Wednesday -->
+      <div class="day-column">
+        <div class="day-header">
+          <div class="day-name">Wed</div>
+          <div class="day-date">22</div>
+        </div>
+        <div class="day-content">
+          <div class="meal-slot-empty">
+            <div class="meal-slot-empty-text">+ Add meal</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Thursday -->
+      <div class="day-column">
+        <div class="day-header">
+          <div class="day-name">Thu</div>
+          <div class="day-date">23</div>
+        </div>
+        <div class="day-content">
+          <div class="meal-slot-empty">
+            <div class="meal-slot-empty-text">+ Add meal</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Friday -->
+      <div class="day-column">
+        <div class="day-header">
+          <div class="day-name">Fri</div>
+          <div class="day-date">24</div>
+        </div>
+        <div class="day-content">
+          <div class="meal-slot">
+            <div class="meal-type">Dinner</div>
+            <div class="meal-name">Beef Tacos</div>
+            <div class="meal-meta">45 min · 6 servings</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Saturday (Today) -->
+      <div class="day-column">
+        <div class="day-header today">
+          <div class="day-name">Today</div>
+          <div class="day-date">25</div>
+        </div>
+        <div class="day-content">
+          <div class="meal-slot" style="border-color: var(--accent);">
+            <div class="meal-type" style="color: var(--accent);">Dinner</div>
+            <div class="meal-name">Honey Garlic Salmon</div>
+            <div class="meal-meta">35 min · Ready to cook</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sunday -->
+      <div class="day-column">
+        <div class="day-header">
+          <div class="day-name">Sun</div>
+          <div class="day-date">26</div>
+        </div>
+        <div class="day-content">
+          <div class="meal-slot-empty">
+            <div class="meal-slot-empty-text">+ Add meal</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Shopping Ready -->
+    <div class="shopping-ready">
+      <div class="shopping-ready-header">
+        <h3 class="shopping-ready-title">Shopping List Ready</h3>
+        <button class="btn btn-secondary">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="9" cy="21" r="1"></circle>
+            <circle cx="20" cy="21" r="1"></circle>
+            <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+          </svg>
+          Go to Shopping
+        </button>
+      </div>
+      <div class="shopping-ready-items">
+        <span class="shopping-item-preview">Salmon (4 fillets)</span>
+        <span class="shopping-item-preview">Ground beef (1.5 lb)</span>
+        <span class="shopping-item-preview">Broccoli</span>
+        <span class="shopping-item-preview">Tortillas</span>
+        <span class="shopping-item-more">+8 more items</span>
+      </div>
+    </div>
+  </main>
+</body>
+</html>

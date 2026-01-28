@@ -15,6 +15,7 @@ export interface RecipeListParams {
   search?: string;
   page?: number;
   page_size?: number;
+  sort?: string;
 }
 
 export interface RecipeListResponse {

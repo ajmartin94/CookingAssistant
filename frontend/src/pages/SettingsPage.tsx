@@ -7,6 +7,8 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { getCurrentUser, updatePreferences } from '../services/authApi';
+import { ThemeToggle } from '../components/ui/ThemeToggle';
+import { SeasonPicker } from '../components/ui/SeasonPicker';
 
 const DIETARY_OPTIONS = [
   'vegetarian',
@@ -99,23 +101,40 @@ export default function SettingsPage() {
   if (loading) {
     return (
       <div className="flex justify-center items-center py-12">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-accent"></div>
       </div>
     );
   }
 
   return (
     <div className="max-w-2xl mx-auto">
-      <h1 className="text-3xl font-display font-bold text-neutral-900 mb-6">Settings</h1>
+      <h1 className="text-3xl font-display font-bold text-text-primary mb-6">Settings</h1>
 
       <form
         onSubmit={handleSubmit}
         noValidate
-        className="bg-white rounded-lg shadow-soft p-6 space-y-8"
+        className="bg-card rounded-lg shadow-soft p-6 space-y-8"
       >
+        {/* Favorite Cuisines */}
+        <div>
+          <label
+            htmlFor="favoriteCuisines"
+            className="block text-lg font-semibold text-text-primary mb-3"
+          >
+            Favorite Cuisines
+          </label>
+          <input
+            id="favoriteCuisines"
+            type="text"
+            placeholder="e.g., Italian, Mexican, Thai"
+            aria-label="Favorite Cuisines"
+            className="w-full px-3 py-2 border border-default rounded-lg bg-secondary text-text-primary focus:outline-none focus:ring-2 focus:ring-accent"
+          />
+        </div>
+
         {/* Dietary Restrictions */}
         <fieldset>
-          <legend className="text-lg font-semibold text-neutral-900 mb-3">
+          <legend className="text-lg font-semibold text-text-primary mb-3">
             Dietary Restrictions
           </legend>
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
@@ -125,9 +144,9 @@ export default function SettingsPage() {
                   type="checkbox"
                   checked={dietaryRestrictions.includes(option)}
                   onChange={() => handleDietaryChange(option)}
-                  className="w-4 h-4 rounded border-neutral-300 text-primary-500 focus:ring-primary-500"
+                  className="w-4 h-4 rounded border-default text-accent focus:ring-accent"
                 />
-                <span className="text-sm text-neutral-700 capitalize">{option}</span>
+                <span className="text-sm text-text-secondary capitalize">{option}</span>
               </label>
             ))}
           </div>
@@ -135,7 +154,10 @@ export default function SettingsPage() {
 
         {/* Skill Level */}
         <div>
-          <label htmlFor="skillLevel" className="block text-lg font-semibold text-neutral-900 mb-3">
+          <label
+            htmlFor="skillLevel"
+            className="block text-lg font-semibold text-text-primary mb-3"
+          >
             Skill Level
           </label>
           <select
@@ -143,7 +165,7 @@ export default function SettingsPage() {
             value={skillLevel}
             onChange={(e) => setSkillLevel(e.target.value)}
             aria-label="Skill Level"
-            className="w-48 px-3 py-2 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white"
+            className="w-48 px-3 py-2 border border-default rounded-lg bg-secondary text-text-primary focus:outline-none focus:ring-2 focus:ring-accent"
           >
             {SKILL_LEVELS.map((level) => (
               <option key={level} value={level}>
@@ -157,7 +179,7 @@ export default function SettingsPage() {
         <div>
           <label
             htmlFor="defaultServings"
-            className="block text-lg font-semibold text-neutral-900 mb-3"
+            className="block text-lg font-semibold text-text-primary mb-3"
           >
             Default Servings
           </label>
@@ -169,25 +191,38 @@ export default function SettingsPage() {
             value={servingsValue}
             onChange={handleServingsChange}
             aria-label="Default Servings"
-            className="w-24 px-3 py-2 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+            className="w-24 px-3 py-2 border border-default rounded-lg bg-secondary text-text-primary focus:outline-none focus:ring-2 focus:ring-accent"
           />
-          {validationError && <p className="mt-2 text-sm text-error-600">{validationError}</p>}
+          {validationError && <p className="mt-2 text-sm text-error">{validationError}</p>}
         </div>
 
-        {/* Feedback Messages */}
-        {successMessage && <p className="text-sm text-success-600 font-medium">{successMessage}</p>}
-        {errorMessage && <p className="text-sm text-error-600 font-medium">{errorMessage}</p>}
-
-        {/* Save Button */}
+        {/* Save Button + Feedback Messages */}
         <div>
           <button
             type="submit"
-            className="px-6 py-2 bg-primary-500 text-white rounded-lg font-semibold hover:bg-primary-600 transition"
+            className="px-6 py-2 bg-accent text-text-on-accent rounded-lg font-semibold hover:bg-accent-hover transition"
           >
             Save Preferences
           </button>
+          <div className="h-6 mt-2">
+            {successMessage && <p className="text-sm text-success font-medium">{successMessage}</p>}
+            {errorMessage && <p className="text-sm text-error font-medium">{errorMessage}</p>}
+          </div>
         </div>
       </form>
+
+      {/* Appearance Section */}
+      <div className="bg-card rounded-lg shadow-soft p-6 mt-6">
+        <h2 className="text-lg font-semibold text-text-primary mb-4">Appearance</h2>
+        <div className="flex items-center justify-between mb-4">
+          <span className="text-sm text-text-secondary">Theme</span>
+          <ThemeToggle />
+        </div>
+        <div className="space-y-2">
+          <span className="text-sm text-text-secondary">Season</span>
+          <SeasonPicker />
+        </div>
+      </div>
     </div>
   );
 }

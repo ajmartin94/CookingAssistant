@@ -40,21 +40,21 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary-50 to-secondary-50 flex items-center justify-center px-4">
-      <div className="bg-white p-8 rounded-lg shadow-soft-md max-w-md w-full">
-        <h2 className="text-3xl font-bold text-neutral-900 mb-6 text-center">
+    <div className="min-h-screen bg-primary flex items-center justify-center px-4">
+      <div className="bg-card p-8 rounded-lg shadow-soft-md max-w-md w-full">
+        <h2 className="text-3xl font-bold text-text-primary mb-6 text-center">
           {isLogin ? 'Welcome Back' : 'Create Account'}
         </h2>
 
         {error && (
-          <div className="bg-error-50 border border-error-200 rounded-lg p-4 mb-6" role="alert">
-            <p className="text-sm text-error-700">{error}</p>
+          <div className="bg-error-subtle border border-error rounded-lg p-4 mb-6" role="alert">
+            <p className="text-sm text-error">{error}</p>
           </div>
         )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label htmlFor="username" className="block text-sm font-medium text-neutral-700 mb-1">
+            <label htmlFor="username" className="block text-sm font-medium text-primary mb-1">
               Username
             </label>
             <input
@@ -63,7 +63,7 @@ export default function LoginPage() {
               name="username"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+              className="w-full px-4 py-2 border border-default rounded-lg focus:ring-2 focus:ring-accent focus:border-transparent bg-card text-text-primary"
               placeholder="your_username"
               required
             />
@@ -72,7 +72,7 @@ export default function LoginPage() {
           {!isLogin && (
             <>
               <div>
-                <label htmlFor="email" className="block text-sm font-medium text-neutral-700 mb-1">
+                <label htmlFor="email" className="block text-sm font-medium text-primary mb-1">
                   Email
                 </label>
                 <input
@@ -81,17 +81,14 @@ export default function LoginPage() {
                   name="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  className="w-full px-4 py-2 border border-default rounded-lg focus:ring-2 focus:ring-accent focus:border-transparent bg-card text-text-primary"
                   placeholder="you@example.com"
                   required
                 />
               </div>
 
               <div>
-                <label
-                  htmlFor="fullName"
-                  className="block text-sm font-medium text-neutral-700 mb-1"
-                >
+                <label htmlFor="fullName" className="block text-sm font-medium text-primary mb-1">
                   Full Name (Optional)
                 </label>
                 <input
@@ -100,7 +97,7 @@ export default function LoginPage() {
                   name="full_name"
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
-                  className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  className="w-full px-4 py-2 border border-default rounded-lg focus:ring-2 focus:ring-accent focus:border-transparent bg-card text-text-primary"
                   placeholder="John Doe"
                 />
               </div>
@@ -108,7 +105,7 @@ export default function LoginPage() {
           )}
 
           <div>
-            <label htmlFor="password" className="block text-sm font-medium text-neutral-700 mb-1">
+            <label htmlFor="password" className="block text-sm font-medium text-primary mb-1">
               Password
             </label>
             <input
@@ -117,31 +114,31 @@ export default function LoginPage() {
               name="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+              className="w-full px-4 py-2 border border-default rounded-lg focus:ring-2 focus:ring-accent focus:border-transparent bg-card text-text-primary"
               placeholder="••••••••"
               required
               minLength={8}
             />
-            {!isLogin && <p className="text-xs text-neutral-500 mt-1">Minimum 8 characters</p>}
+            {!isLogin && <p className="text-xs text-text-muted mt-1">Minimum 8 characters</p>}
           </div>
 
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full bg-primary-500 text-white py-2 rounded-lg font-semibold hover:bg-primary-600 transition disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full bg-accent text-text-primary py-2 rounded-lg font-semibold hover:bg-accent-hover transition disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isLoading ? 'Please wait...' : isLogin ? 'Login' : 'Register'}
           </button>
         </form>
 
-        <p className="mt-6 text-center text-sm text-neutral-600">
+        <p className="mt-6 text-center text-sm text-text-secondary">
           {isLogin ? "Don't have an account? " : 'Already have an account? '}
           <button
             onClick={() => {
               setIsLogin(!isLogin);
               setError('');
             }}
-            className="text-primary-500 hover:text-primary-600 font-semibold"
+            className="text-accent hover:text-accent-hover font-semibold"
           >
             {isLogin ? 'Sign up' : 'Sign in'}
           </button>

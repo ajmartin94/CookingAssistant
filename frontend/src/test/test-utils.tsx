@@ -6,6 +6,8 @@ import type { RenderOptions } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { BrowserRouter } from 'react-router-dom';
 import { AuthProvider } from '../contexts/AuthContext';
+import { ThemeProvider } from '../contexts/ThemeContext';
+import { SidebarProvider } from '../contexts/SidebarContext';
 
 interface AllTheProvidersProps {
   children: React.ReactNode;
@@ -14,15 +16,23 @@ interface AllTheProvidersProps {
 const AllTheProviders: React.FC<AllTheProvidersProps> = ({ children }) => {
   return (
     <BrowserRouter>
-      <AuthProvider>{children}</AuthProvider>
+      <ThemeProvider>
+        <AuthProvider>
+          <SidebarProvider>{children}</SidebarProvider>
+        </AuthProvider>
+      </ThemeProvider>
     </BrowserRouter>
   );
 };
 
-const customRender = (ui: ReactElement, options?: Omit<RenderOptions, 'wrapper'>) => {
+const customRender = (ui: ReactElement, options?: RenderOptions) => {
+  const { wrapper: CustomWrapper, ...restOptions } = options || {};
   return {
     user: userEvent.setup(),
-    ...render(ui, { wrapper: AllTheProviders, ...options }),
+    ...render(ui, {
+      wrapper: CustomWrapper || AllTheProviders,
+      ...restOptions,
+    }),
   };
 };
 

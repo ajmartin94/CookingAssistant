@@ -258,8 +258,8 @@ test.describe('Network Error Handling', () => {
 
     await recipesPage.goto();
 
-    // Should show appropriate error message
-    const errorMessage = authenticatedPage.locator('.bg-error-50, [role="alert"]').first();
+    // Should show appropriate error message (uses semantic token bg-error-subtle)
+    const errorMessage = authenticatedPage.locator('.bg-error-subtle, .bg-error-50, [role="alert"]').first();
     await expect(errorMessage).toBeVisible({ timeout: 10000 });
   });
 });
