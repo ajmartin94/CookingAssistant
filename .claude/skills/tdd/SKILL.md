@@ -12,6 +12,11 @@ description: |
 Execute a feature plan through outside-in TDD. Manage tasks, spawn sub-agents, surface
 friction. Never write code yourself.
 
+## Prerequisites
+
+Verify `.plans/issue-{issue-number}/plan.md` exists. If it doesn't, stop and
+tell the user: "No plan found. Run `/plan` first to structure the implementation."
+
 ## Workflow
 
 ### 1. Setup

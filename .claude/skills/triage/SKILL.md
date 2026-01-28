@@ -224,38 +224,15 @@ Branch naming:
 - `chore/<number>-<slug>` for chores
 - `spike/<number>-<slug>` for spikes
 
-4. **Begin the first workflow step** — invoke the next skill in the workflow.
+4. **Create `.plans/` folder** (if workflow includes `/brainstorm`, `/plan`, or `/tdd`):
 
-## Spike Workflow
-
-Spikes are different — they produce knowledge, not code.
-
-### Spike Process
-
-1. **Define the question**: What are we trying to learn?
-2. **Research**: Read code, docs, test approaches, prototype if needed
-3. **Document findings**: Post to issue as structured comment
-4. **Recommend**: Create follow-up issues for actionable work
-5. **Close**: Close the spike issue
-
-### Spike Output Format
-
-```markdown
-## Spike: Findings
-
-### Question
-[What we were investigating]
-
-### Findings
-[What we learned]
-
-### Recommendation
-[What to do next]
-
-### Follow-up Issues
-- #XX — [description]
-- #YY — [description]
+```bash
+mkdir -p .plans/issue-<number>
 ```
+
+This folder is always at the repo root. Downstream skills expect it to exist.
+
+5. **Begin the first workflow step** — invoke the next skill in the workflow.
 
 ## Principles
 

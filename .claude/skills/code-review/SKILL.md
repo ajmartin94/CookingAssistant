@@ -16,13 +16,16 @@ and conformance issues. This is the final gate before PR.
 
 ### 1. Gather Context
 
-- Read the plan: `.claude/plans/YYYY-MM-DD-{feature-slug}/plan.md`
+- Check for plan: `.plans/issue-{issue-number}/plan.md`
+  - If it exists → use it as review baseline (normal flow)
+  - If it doesn't exist (e.g., chore) → use the issue description as baseline instead
+    (`gh issue view <number> --json body`). Skip the plan conformance reviewer in step 2.
 - Get the full diff: `git diff main...HEAD`
 - List all changed files: `git diff main...HEAD --name-only`
 
 ### 2. Spawn Review Agents
 
-Spawn 3 independent review sub-agents (Task tool, `subagent_type="general-purpose"`):
+Spawn 4 independent review sub-agents (Task tool, `subagent_type="general-purpose"`):
 
 **Plan conformance reviewer:**
 ```
@@ -86,6 +89,35 @@ Read the changed files and evaluate:
 - Performance concerns (N+1 queries, unnecessary re-renders)?
 
 Report only concrete issues, not style preferences.
+```
+
+**Docs-update reviewer:**
+```
+Review these code changes for documentation impact.
+
+Changed files:
+[file list]
+
+Read ALL durable context files:
+- CLAUDE.md (root)
+- backend/CLAUDE.md
+- frontend/CLAUDE.md
+- e2e/CLAUDE.md
+- All files in docs/
+
+For each changed file, evaluate:
+- Does it introduce a new pattern, convention, or architectural decision
+  that should be recorded in a CLAUDE.md or docs/ file?
+- Does it change existing behavior that is currently documented?
+- Does it add a new dependency, command, or configuration that should
+  be mentioned in setup/quick-start docs?
+
+Report:
+- STALE: existing documentation that no longer matches the code
+- MISSING: new patterns or conventions that should be documented
+- OK: no documentation impact
+
+Only flag concrete gaps. Do not suggest adding docs for trivial changes.
 ```
 
 ### 3. Present Findings

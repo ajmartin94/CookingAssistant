@@ -10,7 +10,7 @@ This document defines the three categories of context used in development workfl
 
 | Category | Lifespan | Location | Contains | Does NOT Contain |
 |----------|----------|----------|----------|------------------|
-| Durable Context | Indefinite | `docs/`, `AGENTS.md`, `CLAUDE.md` | Standards, conventions, architecture | Active tasks, roadmaps, session state |
+| Durable Context | Indefinite | `docs/`, `CLAUDE.md` | Standards, conventions, architecture | Active tasks, roadmaps, session state |
 | Task Context | Task lifetime | Issue tracker, task management system | Work items, acceptance criteria, decision log | Completed work, architectural decisions |
 | Session Context | Single session | Conversation, working memory | Immediate reasoning, exploration | Anything that must survive session end |
 | Handoff Artifact | Task lifetime | Attached to task | Session-end status, recommendations | Permanent decisions (those graduate) |
@@ -86,7 +86,7 @@ TODO: Update the auth tests after Sarah's PR merges.
 1. **Changes require process**: Durable Context changes should flow through the Architecture Decision Workflow (or a lighter process for minor corrections)
 2. **No temporal language**: Avoid "currently", "recently", "soon", "TODO"
 3. **No task references**: No issue numbers, PR references, or sprint mentions in the body text (ADRs may reference their triggering issue)
-4. **Agent instructions are constraints**: AGENTS.md describes what agents MUST or MUST NOT do, not what they're working on
+4. **Agent instructions are constraints**: Agent definitions (`.claude/agents/`) describe what agents MUST or MUST NOT do, not what they're working on
 
 ---
 
@@ -151,7 +151,7 @@ A well-formed task provides:
 
 ## Relevant Documentation
 - [Link to relevant doc in docs/]
-- [Link to relevant AGENTS.md section]
+- [Link to relevant CLAUDE.md section]
 
 ## Decision Log
 [Append decisions as they're made during task execution]
@@ -338,7 +338,7 @@ Session Context exists in a processing zone. Valuable insights discovered during
                                          ┌─────────────────────────────┐
                                          │  DURABLE CONTEXT            │
                                          │                             │
-                                         │  docs/, AGENTS.md updated   │
+                                         │  docs/, CLAUDE.md updated    │
                                          │  via completed ADR          │
                                          └─────────────────────────────┘
 ```
