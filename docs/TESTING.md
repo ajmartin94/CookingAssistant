@@ -118,16 +118,22 @@ If you can't answer these, the test isn't protecting anything meaningful.
 
 **Key Dependencies:**
 - `@playwright/test` - Test framework and browser automation
-- `playwright` - Cross-browser support (Chromium, Firefox, WebKit)
+- `playwright` - Chromium-only (Firefox/WebKit removed for speed)
 
 **Test Environment:**
 - **Real Backend:** FastAPI server on port 8000
 - **Real Frontend:** Vite dev server on port 5173
 - **Test Database:** SQLite (`cooking_assistant_test_e2e.db`)
-- **Browsers:** Chromium, Firefox, WebKit (Safari)
+- **Browser:** Chromium only
+
+**3-Tier Test Structure:**
+- **Smoke** (`e2e/tests/smoke/`) - Critical path verification; runs first, blocks all others
+- **Core** (`e2e/tests/core/`) - Essential feature tests (auth, recipes, libraries, chat, etc.)
+- **Comprehensive** (`e2e/tests/comprehensive/`) - Edge cases, error handling, responsive, feedback
 
 **Configuration (playwright.config.ts):**
-- **Smoke tests run first** - All browser projects depend on smoke tests passing
+- **Smoke tests run first** - Core and comprehensive tiers depend on smoke tests passing
+- Chromium-only for faster execution
 - Parallel execution with workers
 - Automatic server startup via `webServer` configuration
 - Screenshots and videos on failure
@@ -137,6 +143,15 @@ If you can't answer these, the test isn't protecting anything meaningful.
 **Smoke Tests (e2e/tests/smoke/):**
 - `app-health.spec.ts` - Critical path verification that blocks all other tests
 - Verifies: Frontend loads, CSS applies, backend healthy, login works, auth tokens valid
+
+**Core Tests (e2e/tests/core/):**
+- `auth.spec.ts`, `chat.spec.ts`, `home.spec.ts`, `libraries.spec.ts`
+- `navigation.spec.ts`, `recipe-crud.spec.ts`, `settings.spec.ts`
+- `sharing.spec.ts`, `workflows.spec.ts`
+
+**Comprehensive Tests (e2e/tests/comprehensive/):**
+- `chat-edge-cases.spec.ts`, `error-handling.spec.ts`, `feedback.spec.ts`
+- `recipe-edge-cases.spec.ts`, `responsive.spec.ts`
 
 **Page Object Model:**
 - `BasePage` - Common functionality (navigation, auth)
@@ -160,9 +175,15 @@ If you can't answer these, the test isn't protecting anything meaningful.
 
 **CI/CD Integration:**
 - GitHub Actions workflow (`.github/workflows/e2e-tests.yml`)
-- Matrix testing across browsers
+- Chromium-only (no browser matrix)
 - Artifact uploads (reports, videos, traces)
 - 7-day retention for debugging
+
+**NPM Scripts (from project root):**
+- `npm run test:e2e:smoke` - Run smoke tests only
+- `npm run test:e2e:core` - Run core tests only
+- `npm run test:e2e:full` - Run all tiers (smoke + core + comprehensive)
+- `npm run test:e2e` - Alias for full suite
 
 ---
 
@@ -209,24 +230,25 @@ frontend/src/
 
 ```
 e2e/
-├── tests/                           # Test files
+├── tests/                           # Test files (3-tier structure)
 │   ├── smoke/                       # ⚠️ RUNS FIRST - blocks all others
 │   │   └── app-health.spec.ts       # CSS, login, auth verification
-│   ├── auth/                        # Authentication
-│   │   ├── register.spec.ts
-│   │   ├── login.spec.ts
-│   │   └── logout.spec.ts
-│   ├── recipes/                     # Recipe CRUD
-│   │   ├── create.spec.ts
-│   │   ├── list.spec.ts
-│   │   ├── detail.spec.ts
-│   │   ├── edit.spec.ts
-│   │   └── delete.spec.ts
-│   ├── workflows/                   # User journeys
-│   │   └── complete-recipe-journey.spec.ts
-│   └── errors/                      # Error handling
-│       ├── network-errors.spec.ts
-│       └── validation-errors.spec.ts
+│   ├── core/                        # Essential feature tests
+│   │   ├── auth.spec.ts
+│   │   ├── chat.spec.ts
+│   │   ├── home.spec.ts
+│   │   ├── libraries.spec.ts
+│   │   ├── navigation.spec.ts
+│   │   ├── recipe-crud.spec.ts
+│   │   ├── settings.spec.ts
+│   │   ├── sharing.spec.ts
+│   │   └── workflows.spec.ts
+│   └── comprehensive/               # Edge cases & non-critical paths
+│       ├── chat-edge-cases.spec.ts
+│       ├── error-handling.spec.ts
+│       ├── feedback.spec.ts
+│       ├── recipe-edge-cases.spec.ts
+│       └── responsive.spec.ts
 ├── pages/                           # Page Object Models
 │   ├── base.page.ts
 │   ├── login.page.ts

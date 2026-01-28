@@ -1,3 +1,10 @@
+/**
+ * Core Tier: Workflows
+ * Consolidated from: workflows/complete-recipe-journey.spec.ts
+ *
+ * All 3 tests kept as-is (full journey tests per audit).
+ */
+
 import { test, expect } from '@playwright/test';
 import { RegisterPage } from '../../pages/register.page';
 import { LoginPage } from '../../pages/login.page';
@@ -6,9 +13,8 @@ import { CreateRecipePage } from '../../pages/create-recipe.page';
 import { RecipeDetailPage } from '../../pages/recipe-detail.page';
 import { generateUniqueUsername, generateUniqueEmail, generateRecipeData } from '../../utils/test-data';
 
-test.describe('Complete Recipe Journey', () => {
-  test('should complete full user journey: register → create → view → edit → delete → logout', async ({ page, context }) => {
-    // Generate unique user credentials
+test.describe('Core: Complete Recipe Journey', () => {
+  test('should complete full user journey: register, create, view, edit, delete, logout', async ({ page, context }) => {
     const username = generateUniqueUsername();
     const email = generateUniqueEmail();
     const password = 'TestPassword123!';
@@ -19,10 +25,8 @@ test.describe('Complete Recipe Journey', () => {
 
     await registerPage.register(username, email, password);
 
-    // Should redirect to recipes page
     await expect(page).toHaveURL(/\/recipes/, { timeout: 10000 });
 
-    // Should have auth token
     const token = await registerPage.getAuthToken();
     expect(token).toBeTruthy();
 
@@ -30,11 +34,9 @@ test.describe('Complete Recipe Journey', () => {
     const recipesPage = new RecipesPage(page);
     const createRecipePage = new CreateRecipePage(page);
 
-    // Navigate to create recipe page
     await recipesPage.createRecipeButton.click();
     await expect(page).toHaveURL(/\/recipes\/create/);
 
-    // Fill in recipe data
     const recipeData = generateRecipeData({
       title: 'My Journey Test Recipe',
       description: 'A recipe created during the complete user journey test',
@@ -53,7 +55,6 @@ test.describe('Complete Recipe Journey', () => {
       recipeData.servings
     );
 
-    // Add ingredients
     for (const ingredient of recipeData.ingredients) {
       await createRecipePage.addIngredient(
         ingredient.name,
@@ -63,7 +64,6 @@ test.describe('Complete Recipe Journey', () => {
       );
     }
 
-    // Add instructions
     for (const instruction of recipeData.instructions) {
       await createRecipePage.addInstruction(
         instruction.instruction,
@@ -71,20 +71,16 @@ test.describe('Complete Recipe Journey', () => {
       );
     }
 
-    // Set additional info
     await createRecipePage.fillAdditionalInfo(
       recipeData.cuisine_type,
       recipeData.difficulty_level,
       recipeData.dietary_tags
     );
 
-    // Submit the recipe
     await createRecipePage.submit();
 
-    // Should redirect to recipe detail page
     await expect(page).toHaveURL(/\/recipes\/[0-9a-f-]{36}/, { timeout: 10000 });
 
-    // Get the recipe ID from URL
     const url = page.url();
     const recipeId = url.match(/\/recipes\/([^/]+)/)?.[1];
     expect(recipeId).toBeTruthy();
@@ -92,14 +88,11 @@ test.describe('Complete Recipe Journey', () => {
     // === STEP 3: VIEW RECIPE ===
     const recipeDetailPage = new RecipeDetailPage(page);
 
-    // Verify recipe details are displayed correctly
     await expect(recipeDetailPage.recipeTitle).toHaveText('My Journey Test Recipe');
     await expect(recipeDetailPage.recipeDescription).toContainText('complete user journey test');
 
-    // Verify ingredients are shown
     await expect(page.getByText(recipeData.ingredients[0].name)).toBeVisible();
 
-    // Verify instructions are shown
     await expect(page.getByText(recipeData.instructions[0].instruction)).toBeVisible();
 
     // === STEP 4: EDIT RECIPE ===
@@ -108,62 +101,47 @@ test.describe('Complete Recipe Journey', () => {
 
     const editRecipePage = new CreateRecipePage(page);
 
-    // Update the title
     await editRecipePage.titleInput.clear();
     await editRecipePage.titleInput.fill('My Updated Journey Recipe');
 
-    // Add another ingredient
     await editRecipePage.addIngredient('additional ingredient', '1', 'piece', 'optional');
 
-    // Submit changes
     await editRecipePage.submit();
 
-    // Should return to detail page
     await expect(page).toHaveURL(`/recipes/${recipeId}`);
 
-    // Verify changes were saved
     await expect(recipeDetailPage.recipeTitle).toHaveText('My Updated Journey Recipe');
     await expect(page.getByText('additional ingredient')).toBeVisible();
 
     // === STEP 5: NAVIGATE TO LIST AND VERIFY ===
     await recipesPage.goto();
 
-    // Should see the recipe in the list
     await expect(page.getByText('My Updated Journey Recipe')).toBeVisible();
 
     // === STEP 6: SEARCH FOR RECIPE ===
     await recipesPage.search('Updated');
 
-    // Should still see the recipe
     const recipeCards = page.locator('[data-testid="recipe-card"]');
     await expect(recipeCards).toHaveCount(1);
     await expect(page.getByText('My Updated Journey Recipe')).toBeVisible();
 
-    // Clear search
     await recipesPage.searchInput.clear();
     await page.waitForTimeout(500);
 
     // === STEP 7: DELETE RECIPE ===
-    // Navigate back to recipe detail
     await recipeDetailPage.goto(recipeId!);
 
-    // Set up dialog handler
     page.on('dialog', dialog => dialog.accept());
 
-    // Delete the recipe
     await recipeDetailPage.deleteButton.click();
 
-    // Should redirect to recipes list
     await expect(page).toHaveURL(/\/recipes$/, { timeout: 10000 });
 
-    // Recipe should not be visible
     await expect(page.getByText('My Updated Journey Recipe')).not.toBeVisible();
 
     // === STEP 8: VERIFY DELETION ===
-    // Try to access deleted recipe directly
     await page.goto(`/recipes/${recipeId}`);
 
-    // Should show error message
     const errorMessage = page.getByText(/not found|doesn't exist|404|error/i);
     await expect(errorMessage).toBeVisible({ timeout: 10000 });
 
@@ -171,44 +149,35 @@ test.describe('Complete Recipe Journey', () => {
     await recipesPage.goto();
     await recipesPage.logout();
 
-    // Should redirect to login page
     await expect(page).toHaveURL(/\/login/);
 
-    // Auth token should be removed
     const tokenAfterLogout = await page.evaluate(() => localStorage.getItem('auth_token'));
     expect(tokenAfterLogout).toBeNull();
 
     // === STEP 10: VERIFY LOGGED OUT STATE ===
-    // Try to access protected route
     await page.goto('/recipes');
 
-    // Should redirect back to login
     await expect(page).toHaveURL(/\/login/);
 
     // === STEP 11: LOGIN AGAIN ===
     const loginPage = new LoginPage(page);
     await loginPage.login(username, password);
 
-    // Should be able to log back in
     await expect(page).toHaveURL(/\/recipes/);
 
-    // Should have new auth token
     const newToken = await page.evaluate(() => localStorage.getItem('auth_token'));
     expect(newToken).toBeTruthy();
 
     // === STEP 12: VERIFY NO RECIPES (deleted earlier) ===
-    // Should see empty state or no recipes
     const remainingCards = page.locator('[data-testid="recipe-card"]');
     await expect(remainingCards).toHaveCount(0);
   });
 
   test('should handle complete journey with multiple recipes', async ({ page }) => {
-    // Generate unique user
     const username = generateUniqueUsername();
     const email = generateUniqueEmail();
     const password = 'TestPassword123!';
 
-    // Register
     const registerPage = new RegisterPage(page);
     await registerPage.goto();
     await registerPage.register(username, email, password);
@@ -218,7 +187,6 @@ test.describe('Complete Recipe Journey', () => {
     const createRecipePage = new CreateRecipePage(page);
     const recipeDetailPage = new RecipeDetailPage(page);
 
-    // Create 3 recipes
     const recipeIds: string[] = [];
 
     for (let i = 1; i <= 3; i++) {
@@ -258,31 +226,25 @@ test.describe('Complete Recipe Journey', () => {
       await recipesPage.goto();
     }
 
-    // Verify all 3 recipes are in list
     const recipeCards = page.locator('[data-testid="recipe-card"]');
     await expect(recipeCards).toHaveCount(3);
 
-    // Delete middle recipe
     await recipeDetailPage.goto(recipeIds[1]);
     page.on('dialog', dialog => dialog.accept());
     await recipeDetailPage.deleteButton.click();
     await expect(page).toHaveURL(/\/recipes$/, { timeout: 10000 });
 
-    // Should have 2 recipes now
     await expect(recipeCards).toHaveCount(2);
 
-    // Verify correct recipes remain
     await expect(page.getByText('Recipe Number 1')).toBeVisible();
     await expect(page.getByText('Recipe Number 2')).not.toBeVisible();
     await expect(page.getByText('Recipe Number 3')).toBeVisible();
 
-    // Logout
     await recipesPage.logout();
     await expect(page).toHaveURL(/\/login/);
   });
 
   test('should persist data across page refreshes during journey', async ({ page }) => {
-    // Register
     const username = generateUniqueUsername();
     const email = generateUniqueEmail();
     const password = 'TestPassword123!';
@@ -292,7 +254,6 @@ test.describe('Complete Recipe Journey', () => {
     await registerPage.register(username, email, password);
     await expect(page).toHaveURL(/\/recipes/, { timeout: 10000 });
 
-    // Create a recipe
     const recipesPage = new RecipesPage(page);
     const createRecipePage = new CreateRecipePage(page);
 
@@ -325,23 +286,17 @@ test.describe('Complete Recipe Journey', () => {
     const url = page.url();
     const recipeId = url.match(/\/recipes\/([^/]+)/)?.[1];
 
-    // Refresh the page
     await page.reload();
 
-    // Should still be authenticated and on the same page
     await expect(page).toHaveURL(`/recipes/${recipeId}`);
 
-    // Recipe data should still be there
     const recipeDetailPage = new RecipeDetailPage(page);
     await expect(recipeDetailPage.recipeTitle).toHaveText('Persistence Test Recipe');
 
-    // Navigate to list
     await recipesPage.goto();
 
-    // Refresh again
     await page.reload();
 
-    // Should still see the recipe
     await expect(page.getByText('Persistence Test Recipe')).toBeVisible();
   });
 });

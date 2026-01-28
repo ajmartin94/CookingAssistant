@@ -4,7 +4,10 @@
   "private": true,
   "description": "Cooking Assistant - E2E Testing",
   "scripts": {
-    "test:e2e": "playwright test",
+    "test:e2e:smoke": "npx playwright test --project=smoke",
+    "test:e2e:core": "npx playwright test --project=smoke --project=core",
+    "test:e2e:full": "npx playwright test",
+    "test:e2e": "npx playwright test --project=smoke --project=core",
     "test:e2e:ui": "playwright test --ui",
     "test:e2e:headed": "playwright test --headed",
     "test:e2e:debug": "playwright test --debug",
