@@ -232,5 +232,8 @@ cooking_assistant_test_e2e.db-journal
 test-results/
 .playwright/
 
+# Plans and brainstorms (local working artifacts, summaries posted to GitHub issues)
+.plans/
+
 # Session artifacts (temp files, screenshots, ideation)
 temp/

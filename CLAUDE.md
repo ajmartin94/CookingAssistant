@@ -14,19 +14,13 @@
 
 ## Development Workflow
 
-### Feature Pipeline
+### Issue Workflow
 
-```
-/brainstorm → /plan → /tdd → /migrate → /code-review → PR
-```
+All work is tracked through GitHub Issues. Every issue goes through `/triage` before any implementation begins. Triage analyzes the issue, gathers context, determines type and size, and enforces the correct workflow.
 
-1. **`/brainstorm`** — Collaborative Q&A to explore the idea, produces `brainstorm.md`. Post summary comment on the GitHub issue.
-2. **`/plan`** — Structure the brainstorm into TDD-ready plan with acceptance criteria. Post summary comment on the issue.
-3. **`/tdd`** — Execute the plan through outside-in TDD (impl/review sub-agents). Post summary comment on the issue.
-4. **`/migrate`** — Interactive cleanup of broken tests + DB migrations. Post summary comment on the issue.
-5. **`/code-review`** — Verify implementation matches plan + code standards. Post summary comment on the issue.
+**No skipping triage.** Do not jump to implementation, planning, or brainstorming without triaging first.
 
-**Issue tracking**: Each pipeline step must post a concise summary comment on the linked GitHub issue (`gh issue comment <number> --body "..."`). This keeps stakeholders informed of progress without needing to read plan files.
+Every workflow step must post a concise summary comment on the linked GitHub issue (`gh issue comment <number> --body "..."`). The issue is the single source of truth for progress.
 
 ### TDD-Enforced
 
@@ -48,9 +42,10 @@ Every AI feature should support:
 
 ### Issue Management
 
-- **Never close issues manually** — let PR merges close them via `Closes #123`
-- Labels: `bug`, `enhancement`, `idea`, `chore`, `ready`
-- See [docs/CONTRIBUTING.md](docs/CONTRIBUTING.md#backlog--issues) for full workflow
+- **Never close issues manually** — let PR merges close them via `Closes #123` (exception: spikes close directly after posting findings)
+- **Labels**: `bug`, `enhancement`, `idea`, `chore`, `spike`, `ready`, `size:S`, `size:M`, `size:L`
+- Every issue gets one type label and a size label (assigned during triage)
+- See [docs/CONTRIBUTING.md](docs/CONTRIBUTING.md#backlog--issues) for how to create and manage issues
 
 ---
 
@@ -71,6 +66,20 @@ CookingAssistant/
 ## Quick Start
 
 ```bash
+# One-command setup (backend + frontend + database)
+make setup
+
+# Start dev servers (separate terminals)
+make dev-backend    # http://localhost:8000
+make dev-frontend   # http://localhost:5173
+
+# Run all targets: make help
+```
+
+<details>
+<summary>Manual setup (without Make)</summary>
+
+```bash
 # Backend
 cd backend && python -m venv venv && source venv/bin/activate
 pip install -r requirements.txt
@@ -80,6 +89,7 @@ uvicorn app.main:app --reload --port 8000
 # Frontend (separate terminal)
 cd frontend && npm install && npm run dev
 ```
+</details>
 
 ---
 

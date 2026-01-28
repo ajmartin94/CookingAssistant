@@ -20,11 +20,16 @@ is independently executable by `/tdd`.
 If a brainstorm is too large for one TDD session, split it into features that can
 be executed sequentially. Note dependencies between features where order matters.
 
+## Prerequisites
+
+Verify `.plans/issue-{issue-number}/brainstorm.md` exists. If it doesn't, stop and
+tell the user: "No brainstorm found. Run `/brainstorm` first to design the feature."
+
 ## Process
 
 ### 1. Read the Brainstorm
 
-Read `.claude/plans/YYYY-MM-DD-{feature-slug}/brainstorm.md` to understand what
+Read `.plans/issue-{issue-number}/brainstorm.md` to understand what
 was designed.
 
 ### 2. Draft the Plan Structure
@@ -149,7 +154,7 @@ Iterate until the user approves.
 
 ### 6. Save
 
-Save to: `.claude/plans/YYYY-MM-DD-{feature-slug}/plan.md`
+Save to: `.plans/issue-{issue-number}/plan.md`
 
 Tell the user: "Plan saved. Run `/tdd` to execute the first feature, or specify
 which feature to start with."

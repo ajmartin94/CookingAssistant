@@ -12,6 +12,11 @@ description: |
 Execute a feature plan through outside-in TDD. Manage tasks, spawn sub-agents, surface
 friction. Never write code yourself.
 
+## Prerequisites
+
+Verify `.plans/issue-{issue-number}/plan.md` exists. If it doesn't, stop and
+tell the user: "No plan found. Run `/plan` first to structure the implementation."
+
 ## Workflow
 
 ### 1. Setup
@@ -34,74 +39,62 @@ Skip layers not relevant to the plan. Use plan's acceptance criteria for E2E pha
 For each ready task (pending, not blocked):
 
 1. Mark task `in_progress`
-2. Spawn **impl sub-agent** (`Task` tool, `subagent_type="general-purpose"`)
+2. Spawn **impl sub-agent** using custom agent type:
+   - RED phase: `Task` tool with `subagent_type="tdd-red-impl"`
+   - GREEN phase: `Task` tool with `subagent_type="tdd-green-impl"`
 3. Run verification (RED: new tests must FAIL; GREEN: ALL tests must PASS)
-4. Spawn **review sub-agent** (`Task` tool, `subagent_type="general-purpose"`)
+4. Spawn **review sub-agent** (`Task` tool, `subagent_type="tdd-review"`)
 5. Review PASS → mark task `completed`, summarize to user
 6. Review FAIL → retry from step 2 (max 3 attempts)
 7. After 3 failures → mark task `completed`, create LEARNING task, continue to next
 
+**Agent Definitions:**
+- `tdd-red-impl`: Has Read/Write/Edit/Bash - writes failing tests (Opus model)
+- `tdd-green-impl`: Has Read/Write/Edit/Bash - implements code (Opus model)
+- `tdd-review`: Has Read/Bash only - cannot edit, reviews artifacts (Sonnet model)
+
 ### 3. Sub-Agent Prompts
 
-#### Impl — RED phase
+The agent definitions (`.claude/agents/tdd-*.md`) provide behavioral rules and required reading.
+Your prompts provide task-specific context only.
+
+#### Impl — RED phase (tdd-red-impl agent)
 
 ```
 Write failing tests for: [task description]
 
+Layer: [E2E/backend/frontend]
+
 Context from the plan:
-[relevant plan section]
+[relevant plan section - acceptance criteria, expected behavior]
 
-Follow project conventions (CLAUDE.md). Tests must fail against current codebase.
-Run the tests yourself to confirm they fail.
-
-Report:
-- Files created/modified
-- Test names and what each verifies
-- Test output showing failures
+Files to understand:
+[existing related files the agent should read first]
 ```
 
-#### Impl — GREEN phase
+#### Impl — GREEN phase (tdd-green-impl agent)
 
 ```
 Make the failing tests pass for: [task description]
 
-These tests currently fail:
+Layer: [E2E/backend/frontend]
+
+Failing test files:
 [test file paths from RED phase]
 
-Write minimal implementation. Follow project conventions (CLAUDE.md).
-Run ALL tests (not just new ones) to confirm the full suite passes.
-
-If existing tests fail because this feature intentionally changes behavior,
-update those tests to reflect the new behavior. Do NOT weaken assertions
-or delete tests — update them to test the new correct behavior.
-
-Report:
-- Files created/modified
-- Implementation approach (brief)
-- New tests now passing: [list]
-- Existing tests updated: [list + why each changed]
-- Full test output
+Related implementation files:
+[existing files in the area being modified]
 ```
 
-#### Review — any phase
+#### Review — any phase (tdd-review agent)
 
 ```
-Review the code written for: [task description]
+Review the [RED/GREEN] phase output for: [task description]
 
-Phase: [RED/GREEN]
-Files changed: [file paths from impl output]
+Layer: [E2E/backend/frontend]
 
-Evaluate against project standards (follow CLAUDE.md references to testing standards).
-You have not seen the implementation reasoning — evaluate the artifact only.
-
-For GREEN phases with existing test modifications:
-- Verify each change is legitimate (behavior intentionally changed)
-- FAIL if tests were weakened, assertions removed, or tests deleted without replacement
-
-Report:
-- PASS or FAIL
-- Specific reasons (what meets or violates standards)
-- If FAIL: what needs to change
+Files changed:
+[file paths from impl output]
 ```
 
 ### 4. Friction Detection

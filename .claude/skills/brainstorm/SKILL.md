@@ -11,6 +11,11 @@ description: |
 Turn ideas into designs through collaborative Q&A. Output is an unstructured record
 of the conversation — not a structured plan.
 
+## Prerequisites
+
+Verify `.plans/issue-{issue-number}/` exists (created by `/triage`). If it doesn't,
+stop and tell the user: "Run `/triage` first — it sets up the workspace for this issue."
+
 ## Process
 
 ### 1. Understand Context
@@ -61,11 +66,19 @@ If the reviewer surfaces new questions, present them to the user:
 Use `AskUserQuestion` to present the reviewer's questions. Incorporate answers
 into the brainstorm doc.
 
-### 6. Save
+### 6. Check with User
 
-Create directory: `.claude/plans/YYYY-MM-DD-{feature-slug}/`
+After the independent review (and any follow-up questions), ask the user via
+`AskUserQuestion`: "Are you happy with this brainstorm, or is there more to explore?"
 
-Save to: `.claude/plans/YYYY-MM-DD-{feature-slug}/brainstorm.md`
+- Done — save and move on
+- More to explore — continue from step 2
+
+The user decides when the brainstorm is complete, not a round limit or checklist.
+
+### 7. Save
+
+Save to: `.plans/issue-{issue-number}/brainstorm.md`
 
 The brainstorm doc should capture:
 - The problem / motivation
