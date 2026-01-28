@@ -286,7 +286,8 @@ export class CreateRecipePage extends BasePage {
   }
 
   async hasValidationErrors(): Promise<boolean> {
-    const errorMessages = this.page.locator('.error, .validation-error, [role="alert"], .text-red-500, .text-error-500');
+    // Check for error messages using design token classes and common patterns
+    const errorMessages = this.page.locator('.text-error, [class*="text-error"], .error, .validation-error, [role="alert"], p:has-text("required")');
     return (await errorMessages.count()) > 0;
   }
 

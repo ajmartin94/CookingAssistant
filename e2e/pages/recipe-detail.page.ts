@@ -16,8 +16,8 @@ export class RecipeDetailPage extends BasePage {
     this.recipeDescription = page.locator('[data-testid="recipe-description"]').or(page.locator('p').first());
     this.ingredientsList = page.locator('[data-testid="ingredients-list"]');
     this.instructionsList = page.locator('[data-testid="instructions-list"]');
-    this.editButton = page.locator('a:has-text("Edit"), button:has-text("Edit")');
-    this.deleteButton = page.locator('button:has-text("Delete")');
+    this.editButton = page.locator('[data-testid="edit-button"], button[aria-label="Edit recipe"]');
+    this.deleteButton = page.locator('button[aria-label="Delete recipe"]');
     this.backButton = page.locator('a:has-text("Back"), button:has-text("Back")');
   }
 

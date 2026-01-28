@@ -100,9 +100,9 @@ test.describe('Core: Complete Recipe Journey', () => {
     await expect(page).toHaveURL(/\/edit/);
 
     const editRecipePage = new CreateRecipePage(page);
+    await editRecipePage.waitForFormLoaded();
 
-    await editRecipePage.titleInput.clear();
-    await editRecipePage.titleInput.fill('My Updated Journey Recipe');
+    await editRecipePage.fillControlledInput(editRecipePage.titleInput, 'My Updated Journey Recipe');
 
     await editRecipePage.addIngredient('additional ingredient', '1', 'piece', 'optional');
 

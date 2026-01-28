@@ -60,7 +60,7 @@ test.describe('Comprehensive: Network Error Handling', () => {
     await createRecipePage.submit();
 
     // Should show error message and stay on create page
-    const errorMessage = authenticatedPage.locator('.bg-error-50, [role="alert"]').first();
+    const errorMessage = authenticatedPage.locator('.bg-error-subtle, [role="alert"], [class*="border-error"]').first();
     await expect(errorMessage).toBeVisible({ timeout: 10000 });
     await expect(authenticatedPage).toHaveURL(/\/create/);
   });
@@ -99,7 +99,7 @@ test.describe('Comprehensive: Network Error Handling', () => {
 
     await createRecipePage.submit();
 
-    const errorMessage = authenticatedPage.locator('.bg-error-50, [role="alert"]').first();
+    const errorMessage = authenticatedPage.locator('.bg-error-subtle, [role="alert"], [class*="border-error"]').first();
     await expect(errorMessage).toBeVisible({ timeout: 10000 });
 
     const errorText = await errorMessage.textContent();

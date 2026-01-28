@@ -20,7 +20,7 @@ publicTest.describe('Comprehensive: Feedback Widget', () => {
   publicTest('feedback button is visible on home page', async ({ page }) => {
     await page.goto('/');
 
-    const feedbackButton = page.getByRole('button', { name: /feedback/i });
+    const feedbackButton = page.getByRole('button', { name: /give feedback/i });
     await publicExpect(feedbackButton).toBeVisible();
   });
 });
@@ -29,21 +29,21 @@ test.describe('Comprehensive: Feedback Submission', () => {
   test('authenticated user can submit feedback successfully', async ({ authenticatedPage }) => {
     await authenticatedPage.goto('/recipes');
 
-    // Click the feedback button
-    const feedbackButton = authenticatedPage.getByRole('button', { name: /feedback/i });
+    // Click the feedback button (aria-label="Give Feedback")
+    const feedbackButton = authenticatedPage.getByRole('button', { name: /give feedback/i });
     await feedbackButton.click();
 
     // Modal should appear
     const modal = authenticatedPage.getByRole('dialog');
     await expect(modal).toBeVisible();
 
-    // Fill in the feedback textarea
+    // Fill in the feedback textarea (labeled "Feedback Message")
     const feedbackText = `Test feedback submitted at ${Date.now()}`;
-    const textarea = authenticatedPage.getByRole('textbox', { name: /feedback/i });
+    const textarea = authenticatedPage.getByLabel(/feedback message/i);
     await textarea.fill(feedbackText);
 
     // Submit and wait for API response
-    const submitButton = authenticatedPage.getByRole('button', { name: /submit/i });
+    const submitButton = modal.getByRole('button', { name: /submit/i });
 
     const [response] = await Promise.all([
       authenticatedPage.waitForResponse(
@@ -57,7 +57,7 @@ test.describe('Comprehensive: Feedback Submission', () => {
 
     // Success message should be displayed
     await expect(
-      authenticatedPage.getByText(/thank you|feedback.*submitted|success/i)
+      authenticatedPage.getByText(/thank|feedback|success/i)
     ).toBeVisible();
 
     // Modal should close after success

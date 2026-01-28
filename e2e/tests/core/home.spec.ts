@@ -38,26 +38,21 @@ test.describe('Core: Home Page', () => {
     await expect(toast).toBeVisible({ timeout: 5000 });
   });
 
-  test('user navigates to cookbook via quick action', async ({ authenticatedPage }) => {
+  test('user navigates to add recipe via quick action', async ({ authenticatedPage }) => {
     await authenticatedPage.goto('/home');
 
-    const cookbookAction = authenticatedPage.locator('[data-testid="quick-actions"]').getByRole('link', { name: /cookbook/i });
-    await cookbookAction.click();
+    const addRecipeAction = authenticatedPage.locator('[data-testid="quick-actions"]').getByRole('link', { name: /add recipe/i });
+    await addRecipeAction.click();
 
-    await expect(authenticatedPage).toHaveURL(/\/recipes/);
+    await expect(authenticatedPage).toHaveURL(/\/recipes\/create/);
   });
 
-  test('user navigates to meal plan and shopping via quick actions', async ({ authenticatedPage }) => {
+  test('user navigates to shopping via quick action', async ({ authenticatedPage }) => {
     await authenticatedPage.goto('/home');
 
     const quickActions = authenticatedPage.locator('[data-testid="quick-actions"]');
 
-    // Meal Plan -> /planning
-    await quickActions.getByRole('link', { name: /meal plan/i }).click();
-    await expect(authenticatedPage).toHaveURL(/\/planning/);
-
-    // Go back and navigate to shopping
-    await authenticatedPage.goto('/home');
+    // Shopping -> /shopping
     await quickActions.getByRole('link', { name: /shopping/i }).click();
     await expect(authenticatedPage).toHaveURL(/\/shopping/);
   });
