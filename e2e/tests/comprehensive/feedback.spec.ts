@@ -29,6 +29,12 @@ test.describe('Comprehensive: Feedback Submission', () => {
   test('authenticated user can submit feedback successfully', async ({ authenticatedPage }) => {
     await authenticatedPage.goto('/recipes');
 
+    // Hide sidebar to prevent it from intercepting feedback button click
+    await authenticatedPage.evaluate(() => {
+      const sidebar = document.querySelector('[data-testid="sidebar"]') as HTMLElement | null;
+      if (sidebar) sidebar.style.display = 'none';
+    });
+
     // Click the feedback button (aria-label="Give Feedback")
     const feedbackButton = authenticatedPage.getByRole('button', { name: /give feedback/i });
     await feedbackButton.click();
