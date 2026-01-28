@@ -6,7 +6,6 @@
 
 # Paths (relative from repo root)
 VENV    = backend/venv
-PYTHON  = $(VENV)/bin/python
 PIP     = $(VENV)/bin/pip
 DB      = backend/cooking_assistant.db
 
@@ -103,4 +102,7 @@ migrate: ## Run pending migrations
 	cd backend && $(BPYTHON) -m alembic upgrade head
 
 migration: ## Create new migration (usage: make migration MSG="description")
+ifndef MSG
+	$(error MSG is required. Usage: make migration MSG="description")
+endif
 	cd backend && $(BPYTHON) -m alembic revision --autogenerate -m "$(MSG)"

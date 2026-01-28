@@ -66,6 +66,20 @@ CookingAssistant/
 ## Quick Start
 
 ```bash
+# One-command setup (backend + frontend + database)
+make setup
+
+# Start dev servers (separate terminals)
+make dev-backend    # http://localhost:8000
+make dev-frontend   # http://localhost:5173
+
+# Run all targets: make help
+```
+
+<details>
+<summary>Manual setup (without Make)</summary>
+
+```bash
 # Backend
 cd backend && python -m venv venv && source venv/bin/activate
 pip install -r requirements.txt
@@ -75,6 +89,7 @@ uvicorn app.main:app --reload --port 8000
 # Frontend (separate terminal)
 cd frontend && npm install && npm run dev
 ```
+</details>
 
 ---
 

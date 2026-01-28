@@ -49,7 +49,18 @@ If any check fails, the merge button is disabled.
 - Node.js 20+
 - Git
 
-### Backend Setup
+### Quick Setup (Recommended)
+
+```bash
+make setup            # Backend venv + deps + DB + frontend deps + Playwright
+make dev-backend      # Terminal 1: http://localhost:8000
+make dev-frontend     # Terminal 2: http://localhost:5173
+```
+
+<details>
+<summary>Manual Setup</summary>
+
+#### Backend
 
 ```bash
 cd backend
@@ -58,14 +69,14 @@ source venv/bin/activate  # Windows: venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
-### Frontend Setup
+#### Frontend
 
 ```bash
 cd frontend
 npm install
 ```
 
-### Running Locally
+#### Running Locally
 
 ```bash
 # Terminal 1: Backend
@@ -76,6 +87,7 @@ uvicorn app.main:app --reload --port 8000
 cd frontend
 npm run dev
 ```
+</details>
 
 ---
 
@@ -130,6 +142,19 @@ git checkout -b feature/your-feature-name
 ### 3. Run Local Checks (Optional)
 
 ```bash
+# All checks at once (from project root)
+make check
+
+# Or individually
+make lint        # All linters
+make typecheck   # mypy + tsc
+make test        # Backend + frontend tests
+```
+
+<details>
+<summary>Manual commands</summary>
+
+```bash
 # Backend
 cd backend
 ruff check .
@@ -141,6 +166,7 @@ cd frontend
 npm run lint
 npm test -- --run
 ```
+</details>
 
 ### 4. Push and Create PR
 
