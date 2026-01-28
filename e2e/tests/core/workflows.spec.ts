@@ -133,7 +133,7 @@ test.describe('Core: Complete Recipe Journey', () => {
 
     page.on('dialog', dialog => dialog.accept());
 
-    await recipeDetailPage.deleteButton.click();
+    await recipeDetailPage.clickDeleteButton();
 
     await expect(page).toHaveURL(/\/recipes$/, { timeout: 10000 });
 
@@ -231,7 +231,7 @@ test.describe('Core: Complete Recipe Journey', () => {
 
     await recipeDetailPage.goto(recipeIds[1]);
     page.on('dialog', dialog => dialog.accept());
-    await recipeDetailPage.deleteButton.click();
+    await recipeDetailPage.clickDeleteButton();
     await expect(page).toHaveURL(/\/recipes$/, { timeout: 10000 });
 
     await expect(recipeCards).toHaveCount(2);

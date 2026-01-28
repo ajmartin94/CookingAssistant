@@ -151,12 +151,12 @@ test.describe('Comprehensive: Delete Edge Cases', () => {
 
     // Delete recipe 1
     await recipeDetailPage.goto(recipe1.id);
-    await recipeDetailPage.deleteButton.click();
+    await recipeDetailPage.clickDeleteButton();
     await expect(authenticatedPage).toHaveURL(/\/recipes$/, { timeout: 10000 });
 
     // Delete recipe 2
     await recipeDetailPage.goto(recipe2.id);
-    await recipeDetailPage.deleteButton.click();
+    await recipeDetailPage.clickDeleteButton();
     await expect(authenticatedPage).toHaveURL(/\/recipes$/, { timeout: 10000 });
 
     // Verify only recipe 3 remains
@@ -192,7 +192,7 @@ test.describe('Comprehensive: Delete Edge Cases', () => {
     await recipeDetailPage.goto(recipe.id);
 
     authenticatedPage.on('dialog', dialog => dialog.accept());
-    await recipeDetailPage.deleteButton.click();
+    await recipeDetailPage.clickDeleteButton();
 
     await expect(authenticatedPage).toHaveURL(/\/recipes$/, { timeout: 10000 });
     await expect(authenticatedPage.getByText('Complex Recipe to Delete')).not.toBeVisible();

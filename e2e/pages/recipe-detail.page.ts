@@ -101,9 +101,28 @@ export class RecipeDetailPage extends BasePage {
     await this.page.waitForURL(/\/recipes\/[a-f0-9-]+\/edit/);
   }
 
+  /**
+   * Hide StartCookingBar to prevent it from intercepting clicks on bottom-positioned buttons.
+   * Should be called before clicking delete or other fixed-bottom buttons.
+   */
+  async hideStartCookingBar() {
+    await this.page.evaluate(() => {
+      const bar = document.querySelector('[data-testid="start-cooking-bar"]');
+      if (bar) (bar as HTMLElement).style.display = 'none';
+    });
+  }
+
+  /**
+   * Click the delete button. Automatically hides StartCookingBar to prevent interception.
+   */
+  async clickDeleteButton() {
+    await this.hideStartCookingBar();
+    await this.deleteButton.click();
+  }
+
   async deleteRecipe() {
     this.page.on('dialog', dialog => dialog.accept());
-    await this.deleteButton.click();
+    await this.clickDeleteButton();
     await this.page.waitForURL(/\/recipes$/);
   }
 

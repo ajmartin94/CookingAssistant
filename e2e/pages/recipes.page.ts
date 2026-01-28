@@ -13,7 +13,8 @@ export class RecipesPage extends BasePage {
 
   constructor(page: Page) {
     super(page);
-    this.createRecipeButton = page.locator('a[href="/recipes/create"], button:has-text("New Recipe")');
+    // Use first() to avoid matching both header button and empty state CTA
+    this.createRecipeButton = page.locator('a[href="/recipes/create"]:not([data-testid="empty-state-cta"])').first();
     this.searchInput = page.locator('input[placeholder*="Search"]');
     this.recipeCards = page.locator('[data-testid="recipe-card"]');
     this.logoutButton = page.locator('button[aria-label="Logout"]');

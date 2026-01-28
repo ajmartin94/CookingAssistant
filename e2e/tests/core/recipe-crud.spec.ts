@@ -579,7 +579,7 @@ test.describe('Core: Recipe Deletion', () => {
 
     authenticatedPage.on('dialog', dialog => dialog.accept());
 
-    await recipeDetailPage.deleteButton.click();
+    await recipeDetailPage.clickDeleteButton();
 
     await expect(authenticatedPage).toHaveURL(/\/recipes$/, { timeout: 10000 });
 
@@ -603,7 +603,7 @@ test.describe('Core: Recipe Deletion', () => {
       dialog.dismiss();
     });
 
-    await recipeDetailPage.deleteButton.click();
+    await recipeDetailPage.clickDeleteButton();
 
     await authenticatedPage.waitForTimeout(500);
 
@@ -624,7 +624,7 @@ test.describe('Core: Recipe Deletion', () => {
 
     authenticatedPage.on('dialog', dialog => dialog.dismiss());
 
-    await recipeDetailPage.deleteButton.click();
+    await recipeDetailPage.clickDeleteButton();
     await authenticatedPage.waitForTimeout(500);
 
     await expect(authenticatedPage).toHaveURL(`/recipes/${recipe.id}`);
@@ -643,7 +643,7 @@ test.describe('Core: Recipe Deletion', () => {
     await recipeDetailPage.goto(recipe.id);
 
     authenticatedPage.on('dialog', dialog => dialog.accept());
-    await recipeDetailPage.deleteButton.click();
+    await recipeDetailPage.clickDeleteButton();
     await expect(authenticatedPage).toHaveURL(/\/recipes$/, { timeout: 10000 });
 
     await authenticatedPage.goto(`/recipes/${recipe.id}`);
@@ -670,7 +670,7 @@ test.describe('Core: Recipe Deletion', () => {
     await recipeDetailPage.goto(recipeC.id);
 
     authenticatedPage.on('dialog', dialog => dialog.accept());
-    await recipeDetailPage.deleteButton.click();
+    await recipeDetailPage.clickDeleteButton();
 
     await expect(authenticatedPage).toHaveURL(/\/recipes$/, { timeout: 10000 });
 
