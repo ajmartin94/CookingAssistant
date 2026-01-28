@@ -49,19 +49,19 @@ export default function CreateRecipePage() {
       <div className="mb-6">
         <button
           onClick={handleCancel}
-          className="text-primary-500 hover:text-primary-600 font-medium mb-4 flex items-center gap-1"
+          className="text-accent hover:text-accent-hover font-medium mb-4 flex items-center gap-1"
         >
           <ChevronLeft className="w-5 h-5" />
           Back to Recipes
         </button>
-        <h1 className="text-4xl font-bold text-neutral-900">Create New Recipe</h1>
-        <p className="text-neutral-600 mt-2">Add a new recipe to your collection</p>
+        <h1 className="text-4xl font-bold text-text-primary">Create New Recipe</h1>
+        <p className="text-text-secondary mt-2">Add a new recipe to your collection</p>
       </div>
 
       {/* Error Message */}
       {error && (
-        <div className="bg-error-50 border border-error-200 rounded-lg p-4 mb-6">
-          <p className="text-error-700">
+        <div className="bg-error-subtle border border-error rounded-lg p-4 mb-6">
+          <p className="text-error">
             <strong>Error:</strong> {error}
           </p>
         </div>
@@ -71,7 +71,7 @@ export default function CreateRecipePage() {
       <div className="mb-4">
         <button
           onClick={() => setIsChatOpen(!isChatOpen)}
-          className="px-4 py-2 bg-primary-100 text-primary-700 rounded-lg font-medium hover:bg-primary-200 transition"
+          className="px-4 py-2 bg-accent-subtle text-accent rounded-lg font-medium hover:bg-accent-subtle/80 transition"
         >
           AI Chat
         </button>

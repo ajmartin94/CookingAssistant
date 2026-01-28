@@ -324,19 +324,19 @@ describe('RecipeForm', () => {
       const veganButton = screen.getByRole('button', { name: /^vegan$/i });
       await user.click(veganButton);
 
-      expect(veganButton).toHaveClass('bg-purple-600');
+      expect(veganButton).toHaveClass('bg-accent');
     });
 
     it('should toggle dietary tag off', async () => {
       const { user } = renderRecipeForm({ value: mockInitialData });
 
       const vegetarianButton = screen.getByRole('button', { name: /^vegetarian$/i });
-      expect(vegetarianButton).toHaveClass('bg-purple-600');
+      expect(vegetarianButton).toHaveClass('bg-accent');
 
       await user.click(vegetarianButton);
 
-      expect(vegetarianButton).not.toHaveClass('bg-purple-600');
-      expect(vegetarianButton).toHaveClass('bg-neutral-100');
+      expect(vegetarianButton).not.toHaveClass('bg-accent');
+      expect(vegetarianButton).toHaveClass('bg-secondary');
     });
 
     it('should handle multiple dietary tags', async () => {
@@ -345,8 +345,8 @@ describe('RecipeForm', () => {
       await user.click(screen.getByRole('button', { name: /^vegan$/i }));
       await user.click(screen.getByRole('button', { name: /^gluten-free$/i }));
 
-      expect(screen.getByRole('button', { name: /^vegan$/i })).toHaveClass('bg-purple-600');
-      expect(screen.getByRole('button', { name: /^gluten-free$/i })).toHaveClass('bg-purple-600');
+      expect(screen.getByRole('button', { name: /^vegan$/i })).toHaveClass('bg-accent');
+      expect(screen.getByRole('button', { name: /^gluten-free$/i })).toHaveClass('bg-accent');
     });
   });
 

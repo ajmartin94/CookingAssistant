@@ -78,10 +78,10 @@ export default function LibrariesPage() {
     <div>
       {/* Header */}
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-display font-bold text-neutral-900">My Libraries</h1>
+        <h1 className="text-3xl font-display font-bold text-text-primary">My Libraries</h1>
         <button
           onClick={() => setShowCreateForm(true)}
-          className="px-4 py-2 bg-primary-500 text-white rounded-lg font-semibold hover:bg-primary-600 transition"
+          className="px-4 py-2 bg-accent text-text-on-accent rounded-lg font-semibold hover:bg-accent-hover transition"
         >
           + New Library
         </button>
@@ -90,13 +90,13 @@ export default function LibrariesPage() {
       {/* Create Form Modal */}
       {showCreateForm && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg shadow-soft-lg p-6 w-full max-w-md mx-4">
-            <h2 className="text-2xl font-bold text-neutral-900 mb-4">Create New Library</h2>
+          <div className="bg-card rounded-lg shadow-soft-lg p-6 w-full max-w-md mx-4">
+            <h2 className="text-2xl font-bold text-text-primary mb-4">Create New Library</h2>
             <form onSubmit={handleCreateLibrary}>
               <div className="mb-4">
                 <label
                   htmlFor="library-name"
-                  className="block text-sm font-medium text-neutral-700 mb-1"
+                  className="block text-sm font-medium text-text-secondary mb-1"
                 >
                   Name *
                 </label>
@@ -106,14 +106,14 @@ export default function LibrariesPage() {
                   value={newLibraryName}
                   onChange={(e) => setNewLibraryName(e.target.value)}
                   placeholder="My Recipe Collection"
-                  className="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  className="w-full px-3 py-2 border border-default rounded-lg focus:outline-none focus:ring-2 focus:ring-accent"
                   required
                 />
               </div>
               <div className="mb-4">
                 <label
                   htmlFor="library-description"
-                  className="block text-sm font-medium text-neutral-700 mb-1"
+                  className="block text-sm font-medium text-text-secondary mb-1"
                 >
                   Description
                 </label>
@@ -123,7 +123,7 @@ export default function LibrariesPage() {
                   onChange={(e) => setNewLibraryDescription(e.target.value)}
                   placeholder="A collection of my favorite recipes..."
                   rows={3}
-                  className="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  className="w-full px-3 py-2 border border-default rounded-lg focus:outline-none focus:ring-2 focus:ring-accent"
                 />
               </div>
               <div className="mb-6">
@@ -132,9 +132,9 @@ export default function LibrariesPage() {
                     type="checkbox"
                     checked={newLibraryIsPublic}
                     onChange={(e) => setNewLibraryIsPublic(e.target.checked)}
-                    className="w-4 h-4 text-primary-500 focus:ring-primary-500 border-neutral-300 rounded"
+                    className="w-4 h-4 text-accent focus:ring-accent border-default rounded"
                   />
-                  <span className="text-sm text-neutral-700">Make this library public</span>
+                  <span className="text-sm text-text-secondary">Make this library public</span>
                 </label>
               </div>
               <div className="flex justify-end gap-3">
@@ -146,7 +146,7 @@ export default function LibrariesPage() {
                     setNewLibraryDescription('');
                     setNewLibraryIsPublic(false);
                   }}
-                  className="px-4 py-2 text-neutral-700 hover:text-neutral-900 font-medium"
+                  className="px-4 py-2 text-text-secondary hover:text-text-primary font-medium"
                   disabled={creating}
                 >
                   Cancel
@@ -154,7 +154,7 @@ export default function LibrariesPage() {
                 <button
                   type="submit"
                   disabled={creating || !newLibraryName.trim()}
-                  className="px-4 py-2 bg-primary-500 text-white rounded-lg font-semibold hover:bg-primary-600 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="px-4 py-2 bg-accent text-text-on-accent rounded-lg font-semibold hover:bg-accent-hover transition disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {creating ? 'Creating...' : 'Create Library'}
                 </button>
@@ -167,14 +167,14 @@ export default function LibrariesPage() {
       {/* Loading State */}
       {loading && (
         <div className="flex justify-center items-center py-12">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-accent"></div>
         </div>
       )}
 
       {/* Error State */}
       {error && (
-        <div className="bg-error-50 border border-error-200 rounded-lg p-4 mb-6">
-          <p className="text-error-700">
+        <div className="bg-error-subtle border border-error rounded-lg p-4 mb-6">
+          <p className="text-error">
             <strong>Error:</strong> {error}
           </p>
         </div>
@@ -192,13 +192,13 @@ export default function LibrariesPage() {
       {/* Empty State */}
       {!loading && !error && libraries.length === 0 && (
         <div className="text-center py-12">
-          <Archive className="mx-auto h-12 w-12 text-neutral-400" />
-          <h3 className="mt-2 text-sm font-medium text-neutral-900">No libraries yet</h3>
-          <p className="mt-1 text-sm text-neutral-500">Create a library to organize your recipes</p>
+          <Archive className="mx-auto h-12 w-12 text-text-muted" />
+          <h3 className="mt-2 text-sm font-medium text-text-primary">No libraries yet</h3>
+          <p className="mt-1 text-sm text-text-muted">Create a library to organize your recipes</p>
           <div className="mt-6">
             <button
               onClick={() => setShowCreateForm(true)}
-              className="px-4 py-2 bg-primary-500 text-white rounded-lg font-semibold hover:bg-primary-600 transition"
+              className="px-4 py-2 bg-accent text-text-on-accent rounded-lg font-semibold hover:bg-accent-hover transition"
             >
               + New Library
             </button>

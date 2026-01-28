@@ -98,7 +98,7 @@ export default function EditRecipePage() {
   if (loading) {
     return (
       <div className="flex justify-center items-center min-h-[50vh]">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-accent"></div>
       </div>
     );
   }
@@ -106,16 +106,21 @@ export default function EditRecipePage() {
   // Error state
   if (error && !recipe) {
     return (
-      <div className="bg-error-50 border border-error-200 rounded-lg p-6">
-        <p className="text-error-700">
-          <strong>Error:</strong> {error}
-        </p>
-        <button
-          onClick={() => navigate('/recipes')}
-          className="mt-4 px-4 py-2 bg-primary-500 text-white rounded-lg font-semibold hover:bg-primary-600 transition"
-        >
-          Back to Recipes
-        </button>
+      <div>
+        <div className="hidden">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-accent"></div>
+        </div>
+        <div className="bg-error-subtle border border-error rounded-lg p-6">
+          <p className="text-error">
+            <strong>Error:</strong> {error}
+          </p>
+          <button
+            onClick={() => navigate('/recipes')}
+            className="mt-4 px-4 py-2 bg-accent text-text-on-accent rounded-lg font-semibold hover:bg-accent-hover transition"
+          >
+            Back to Recipes
+          </button>
+        </div>
       </div>
     );
   }
@@ -130,19 +135,19 @@ export default function EditRecipePage() {
       <div className="mb-6">
         <button
           onClick={handleCancel}
-          className="text-primary-500 hover:text-primary-600 font-medium mb-4 flex items-center gap-1"
+          className="text-accent hover:text-accent-hover font-medium mb-4 flex items-center gap-1"
         >
           <ChevronLeft className="w-5 h-5" />
           Back to Recipe
         </button>
-        <h1 className="text-3xl font-display font-bold text-neutral-900">Edit Recipe</h1>
-        <p className="text-neutral-600 mt-2">Update your recipe details</p>
+        <h1 className="text-3xl font-display font-bold text-text-primary">Edit Recipe</h1>
+        <p className="text-text-secondary mt-2">Update your recipe details</p>
       </div>
 
       {/* Error Message */}
       {error && (
-        <div className="bg-error-50 border border-error-200 rounded-lg p-4 mb-6">
-          <p className="text-error-700">
+        <div className="bg-error-subtle border border-error rounded-lg p-4 mb-6">
+          <p className="text-error">
             <strong>Error:</strong> {error}
           </p>
         </div>
@@ -152,7 +157,7 @@ export default function EditRecipePage() {
       <div className="mb-4">
         <button
           onClick={() => setIsChatOpen(!isChatOpen)}
-          className="px-4 py-2 bg-primary-100 text-primary-700 rounded-lg font-medium hover:bg-primary-200 transition"
+          className="px-4 py-2 bg-accent-subtle text-accent rounded-lg font-medium hover:bg-accent-subtle/80 transition"
         >
           AI Chat
         </button>

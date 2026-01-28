@@ -77,7 +77,8 @@ describe('RecipeDetailPage', () => {
       render(<RecipeDetailPage />);
 
       await waitFor(() => {
-        expect(screen.getByText(/4 servings/i)).toBeInTheDocument();
+        expect(screen.getByTestId('servings')).toHaveTextContent('4');
+        expect(screen.getByText(/servings/i)).toBeInTheDocument();
       });
     });
 
@@ -94,7 +95,7 @@ describe('RecipeDetailPage', () => {
 
       await waitFor(() => {
         const difficultyBadge = screen.getByText(/easy/i); // mockRecipe has difficultyLevel: 'easy'
-        expect(difficultyBadge).toHaveClass('bg-success-100', 'text-success-700');
+        expect(difficultyBadge).toHaveClass('bg-success', 'text-text-primary');
       });
     });
 
@@ -315,6 +316,181 @@ describe('RecipeDetailPage', () => {
       await user.click(backButton);
 
       expect(mockNavigate).toHaveBeenCalledWith('/recipes');
+    });
+  });
+
+  describe('Servings Adjuster', () => {
+    it('should display servings adjuster with +/- buttons', async () => {
+      render(<RecipeDetailPage />);
+
+      await waitFor(() => {
+        expect(screen.getByRole('button', { name: /decrease servings/i })).toBeInTheDocument();
+        expect(screen.getByRole('button', { name: /increase servings/i })).toBeInTheDocument();
+      });
+    });
+
+    it('should increase servings when + button is clicked', async () => {
+      const { user } = render(<RecipeDetailPage />);
+
+      await waitFor(() => {
+        expect(screen.getByRole('button', { name: /increase servings/i })).toBeInTheDocument();
+      });
+
+      await user.click(screen.getByRole('button', { name: /increase servings/i }));
+
+      expect(screen.getByTestId('servings-adjuster-value')).toHaveTextContent('5');
+    });
+
+    it('should decrease servings when - button is clicked', async () => {
+      const { user } = render(<RecipeDetailPage />);
+
+      await waitFor(() => {
+        expect(screen.getByRole('button', { name: /decrease servings/i })).toBeInTheDocument();
+      });
+
+      await user.click(screen.getByRole('button', { name: /decrease servings/i }));
+
+      expect(screen.getByTestId('servings-adjuster-value')).toHaveTextContent('3');
+    });
+
+    it('should not decrease servings below 1', async () => {
+      server.use(
+        http.get(`${BASE_URL}/api/v1/recipes/:id`, () => {
+          return HttpResponse.json(mockBackendRecipe({ servings: 1 }));
+        })
+      );
+
+      const { user } = render(<RecipeDetailPage />);
+
+      await waitFor(() => {
+        expect(screen.getByRole('button', { name: /decrease servings/i })).toBeInTheDocument();
+      });
+
+      await user.click(screen.getByRole('button', { name: /decrease servings/i }));
+
+      expect(screen.getByTestId('servings-adjuster-value')).toHaveTextContent('1');
+    });
+  });
+
+  describe('Ingredient Checkboxes', () => {
+    it('should render ingredients with checkboxes', async () => {
+      render(<RecipeDetailPage />);
+
+      await waitFor(() => {
+        const checkboxes = screen.getAllByRole('checkbox');
+        expect(checkboxes.length).toBeGreaterThanOrEqual(2);
+      });
+    });
+
+    it('should toggle checkbox when ingredient is clicked', async () => {
+      const { user } = render(<RecipeDetailPage />);
+
+      await waitFor(() => {
+        expect(screen.getAllByRole('checkbox').length).toBeGreaterThanOrEqual(1);
+      });
+
+      const checkbox = screen.getAllByRole('checkbox')[0];
+      expect(checkbox).not.toBeChecked();
+
+      await user.click(checkbox);
+      expect(checkbox).toBeChecked();
+
+      await user.click(checkbox);
+      expect(checkbox).not.toBeChecked();
+    });
+
+    it('should apply visual strikethrough to checked ingredients', async () => {
+      const { user } = render(<RecipeDetailPage />);
+
+      await waitFor(() => {
+        expect(screen.getAllByRole('checkbox').length).toBeGreaterThanOrEqual(1);
+      });
+
+      const checkbox = screen.getAllByRole('checkbox')[0];
+      await user.click(checkbox);
+
+      const ingredientItem = checkbox.closest('[data-testid="ingredient"]');
+      expect(ingredientItem?.className).toMatch(/line-through/);
+    });
+  });
+
+  describe('Add to Shopping List', () => {
+    it('should display "Add to Shopping List" button in ingredients panel', async () => {
+      render(<RecipeDetailPage />);
+
+      await waitFor(() => {
+        expect(screen.getByRole('button', { name: /add to shopping list/i })).toBeInTheDocument();
+      });
+    });
+  });
+
+  describe('Favorite Button', () => {
+    it('should display a favorite/heart button in the hero section', async () => {
+      render(<RecipeDetailPage />);
+
+      await waitFor(() => {
+        expect(screen.getByRole('button', { name: /favorite/i })).toBeInTheDocument();
+      });
+    });
+
+    it('should place the favorite button in the hero area', async () => {
+      render(<RecipeDetailPage />);
+
+      await waitFor(() => {
+        const favoriteBtn = screen.getByRole('button', { name: /favorite/i });
+        const hero = screen.getByTestId('recipe-hero');
+        expect(hero.contains(favoriteBtn)).toBe(true);
+      });
+    });
+  });
+
+  describe('Add a Note', () => {
+    it('should display "Add a note" button', async () => {
+      render(<RecipeDetailPage />);
+
+      await waitFor(() => {
+        expect(screen.getByRole('button', { name: /add a note/i })).toBeInTheDocument();
+      });
+    });
+
+    it('should render the "Add a note" button with dashed border styling', async () => {
+      render(<RecipeDetailPage />);
+
+      await waitFor(() => {
+        const addNoteBtn = screen.getByRole('button', { name: /add a note/i });
+        expect(addNoteBtn.className).toMatch(/border-dashed/);
+      });
+    });
+  });
+
+  describe('Start Cooking Bar', () => {
+    it('should display a fixed "Start Cooking" bar at the bottom', async () => {
+      render(<RecipeDetailPage />);
+
+      await waitFor(() => {
+        expect(screen.getByRole('button', { name: /start cooking/i })).toBeInTheDocument();
+      });
+    });
+
+    it('should show description text in the Start Cooking bar', async () => {
+      render(<RecipeDetailPage />);
+
+      await waitFor(() => {
+        expect(screen.getByText(/ready to cook/i)).toBeInTheDocument();
+        expect(
+          screen.getByText(/guided mode will walk you through each step/i)
+        ).toBeInTheDocument();
+      });
+    });
+
+    it('should have fixed positioning on the Start Cooking bar', async () => {
+      render(<RecipeDetailPage />);
+
+      await waitFor(() => {
+        const bar = screen.getByTestId('start-cooking-bar');
+        expect(bar.className).toMatch(/fixed/);
+        expect(bar.className).toMatch(/bottom-0/);
+      });
     });
   });
 });

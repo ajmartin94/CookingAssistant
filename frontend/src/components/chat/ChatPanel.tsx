@@ -74,14 +74,14 @@ export function ChatPanel({ isOpen, onClose, currentRecipe, onApply, recipeId }:
     <div
       role="complementary"
       aria-label="AI Recipe Chat"
-      className="fixed inset-0 md:right-0 md:left-auto md:w-96 h-full bg-white shadow-xl md:border-l border-neutral-200 flex flex-col z-50"
+      className="fixed inset-0 md:right-0 md:left-auto md:w-96 h-full bg-card shadow-xl md:border-l border-default flex flex-col z-50"
     >
       {/* Header */}
-      <div className="flex items-center justify-between p-4 border-b border-neutral-200">
-        <h2 className="text-lg font-semibold text-neutral-900">AI Recipe Chat</h2>
+      <div className="flex items-center justify-between p-4 border-b border-default">
+        <h2 className="text-lg font-semibold text-text-primary">AI Recipe Chat</h2>
         <button
           onClick={onClose}
-          className="text-neutral-500 hover:text-neutral-700 transition"
+          className="text-text-muted hover:text-text-secondary transition"
           aria-label="Close chat"
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -110,8 +110,8 @@ export function ChatPanel({ isOpen, onClose, currentRecipe, onApply, recipeId }:
         ))}
         {isLoading && (
           <div role="status" className="flex justify-start mb-3">
-            <div className="bg-neutral-100 rounded-lg p-3">
-              <p className="text-sm text-neutral-500">Thinking...</p>
+            <div className="bg-secondary rounded-lg p-3">
+              <p className="text-sm text-text-muted">Thinking...</p>
             </div>
           </div>
         )}
@@ -120,13 +120,13 @@ export function ChatPanel({ isOpen, onClose, currentRecipe, onApply, recipeId }:
 
       {/* Error display */}
       {error && (
-        <div role="alert" className="px-4 py-2 bg-error-50 border-t border-error-200">
-          <p className="text-sm text-error-700">{error}</p>
+        <div role="alert" className="px-4 py-2 bg-error-subtle border-t border-error">
+          <p className="text-sm text-error">{error}</p>
         </div>
       )}
 
       {/* Input area */}
-      <div className="p-4 border-t border-neutral-200">
+      <div className="p-4 border-t border-default">
         <div className="flex gap-2">
           <input
             ref={inputRef}
@@ -137,13 +137,13 @@ export function ChatPanel({ isOpen, onClose, currentRecipe, onApply, recipeId }:
             disabled={isLoading}
             placeholder="Type a message..."
             aria-label="Message"
-            className="flex-1 px-3 py-2 border border-neutral-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 disabled:opacity-50 disabled:bg-neutral-100"
+            className="flex-1 px-3 py-2 border border-default rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent disabled:opacity-50 disabled:bg-secondary bg-card text-text-primary"
           />
           <button
             onClick={handleSend}
             disabled={!inputValue.trim() || isLoading}
             aria-label="Send"
-            className="px-4 py-2 bg-primary-500 text-white rounded-lg text-sm font-medium hover:bg-primary-600 transition disabled:opacity-50 disabled:cursor-not-allowed"
+            className="px-4 py-2 bg-accent text-text-primary rounded-lg text-sm font-medium hover:bg-accent-hover transition disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Send
           </button>

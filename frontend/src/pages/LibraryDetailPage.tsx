@@ -95,19 +95,19 @@ export default function LibraryDetailPage() {
   if (loading) {
     return (
       <div className="flex justify-center items-center min-h-[50vh]">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-accent"></div>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="bg-error-50 border border-error-200 rounded-lg p-6 max-w-md">
-        <h2 className="text-xl font-bold text-error-700 mb-2">Error</h2>
-        <p className="text-error-600">{error}</p>
+      <div className="bg-error-subtle border border-error rounded-lg p-6 max-w-md">
+        <h2 className="text-xl font-bold text-error mb-2">Error</h2>
+        <p className="text-error">{error}</p>
         <Link
           to="/libraries"
-          className="mt-4 inline-block text-primary-500 hover:text-primary-600 font-medium"
+          className="mt-4 inline-block text-accent hover:text-accent-hover font-medium"
         >
           Back to Libraries
         </Link>
@@ -118,8 +118,8 @@ export default function LibraryDetailPage() {
   if (!library) {
     return (
       <div className="text-center py-12">
-        <h2 className="text-2xl font-bold text-neutral-900 mb-2">Library not found</h2>
-        <Link to="/libraries" className="text-primary-500 hover:text-primary-600 font-medium">
+        <h2 className="text-2xl font-bold text-text-primary mb-2">Library not found</h2>
+        <Link to="/libraries" className="text-accent hover:text-accent-hover font-medium">
           Back to Libraries
         </Link>
       </div>
@@ -130,21 +130,21 @@ export default function LibraryDetailPage() {
     <div>
       {/* Breadcrumb */}
       <nav className="mb-4">
-        <Link to="/libraries" className="text-primary-500 hover:text-primary-600 font-medium">
+        <Link to="/libraries" className="text-accent hover:text-accent-hover font-medium">
           Libraries
         </Link>
-        <span className="mx-2 text-neutral-400">/</span>
-        <span className="text-neutral-600">{library.name}</span>
+        <span className="mx-2 text-text-muted">/</span>
+        <span className="text-text-secondary">{library.name}</span>
       </nav>
 
       {/* Header */}
-      <div className="bg-white rounded-lg shadow-soft p-6 mb-6">
+      <div className="bg-card rounded-lg shadow-soft p-6 mb-6">
         {isEditing ? (
           <form onSubmit={handleUpdate}>
             <div className="mb-4">
               <label
                 htmlFor="edit-name"
-                className="block text-sm font-medium text-neutral-700 mb-1"
+                className="block text-sm font-medium text-text-secondary mb-1"
               >
                 Name *
               </label>
@@ -153,14 +153,14 @@ export default function LibraryDetailPage() {
                 type="text"
                 value={editName}
                 onChange={(e) => setEditName(e.target.value)}
-                className="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                className="w-full px-3 py-2 border border-default rounded-lg focus:outline-none focus:ring-2 focus:ring-accent"
                 required
               />
             </div>
             <div className="mb-4">
               <label
                 htmlFor="edit-description"
-                className="block text-sm font-medium text-neutral-700 mb-1"
+                className="block text-sm font-medium text-text-secondary mb-1"
               >
                 Description
               </label>
@@ -169,7 +169,7 @@ export default function LibraryDetailPage() {
                 value={editDescription}
                 onChange={(e) => setEditDescription(e.target.value)}
                 rows={3}
-                className="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                className="w-full px-3 py-2 border border-default rounded-lg focus:outline-none focus:ring-2 focus:ring-accent"
               />
             </div>
             <div className="mb-4">
@@ -178,9 +178,9 @@ export default function LibraryDetailPage() {
                   type="checkbox"
                   checked={editIsPublic}
                   onChange={(e) => setEditIsPublic(e.target.checked)}
-                  className="w-4 h-4 text-primary-500 focus:ring-primary-500 border-neutral-300 rounded"
+                  className="w-4 h-4 text-accent focus:ring-accent border-default rounded"
                 />
-                <span className="text-sm text-neutral-700">Public library</span>
+                <span className="text-sm text-text-secondary">Public library</span>
               </label>
             </div>
             <div className="flex justify-end gap-3">
@@ -192,7 +192,7 @@ export default function LibraryDetailPage() {
                   setEditDescription(library.description || '');
                   setEditIsPublic(library.isPublic);
                 }}
-                className="px-4 py-2 text-neutral-700 hover:text-neutral-900 font-medium"
+                className="px-4 py-2 text-text-secondary hover:text-text-primary font-medium"
                 disabled={saving}
               >
                 Cancel
@@ -200,7 +200,7 @@ export default function LibraryDetailPage() {
               <button
                 type="submit"
                 disabled={saving || !editName.trim()}
-                className="px-4 py-2 bg-primary-500 text-white rounded-lg font-semibold hover:bg-primary-600 transition disabled:opacity-50"
+                className="px-4 py-2 bg-accent text-text-on-accent rounded-lg font-semibold hover:bg-accent-hover transition disabled:opacity-50"
               >
                 {saving ? 'Saving...' : 'Save Changes'}
               </button>
@@ -211,39 +211,39 @@ export default function LibraryDetailPage() {
             <div className="flex justify-between items-start mb-4">
               <div>
                 <div className="flex items-center gap-3">
-                  <h1 className="text-3xl font-bold text-neutral-900">{library.name}</h1>
+                  <h1 className="text-3xl font-bold text-text-primary">{library.name}</h1>
                   {library.isPublic && (
-                    <span className="text-xs bg-success-100 text-success-700 px-2 py-1 rounded">
+                    <span className="text-xs bg-success text-text-primary px-2 py-1 rounded">
                       Public
                     </span>
                   )}
                 </div>
                 {library.description && (
-                  <p className="text-neutral-600 mt-2">{library.description}</p>
+                  <p className="text-text-secondary mt-2">{library.description}</p>
                 )}
               </div>
               <div className="flex gap-2">
                 <button
                   onClick={() => setShowShareModal(true)}
-                  className="px-4 py-2 border border-primary-500 text-primary-500 rounded-lg font-medium hover:bg-primary-50 transition"
+                  className="px-4 py-2 border border-accent text-accent rounded-lg font-medium hover:bg-accent-subtle transition"
                 >
                   Share
                 </button>
                 <button
                   onClick={() => setIsEditing(true)}
-                  className="px-4 py-2 border border-neutral-300 rounded-lg font-medium text-neutral-700 hover:bg-neutral-50 transition"
+                  className="px-4 py-2 border border-default rounded-lg font-medium text-text-secondary hover:bg-hover transition"
                 >
                   Edit
                 </button>
                 <button
                   onClick={handleDelete}
-                  className="px-4 py-2 border border-error-300 rounded-lg font-medium text-error-500 hover:bg-error-50 transition"
+                  className="px-4 py-2 border border-error rounded-lg font-medium text-error hover:bg-error-subtle transition"
                 >
                   Delete
                 </button>
               </div>
             </div>
-            <div className="text-sm text-neutral-500">
+            <div className="text-sm text-text-muted">
               Created {new Date(library.createdAt).toLocaleDateString()} &bull;{' '}
               {library.recipes?.length || 0} recipes
             </div>
@@ -253,7 +253,7 @@ export default function LibraryDetailPage() {
 
       {/* Recipes Section */}
       <div className="mb-4 flex justify-between items-center">
-        <h2 className="text-2xl font-bold text-neutral-900">Recipes</h2>
+        <h2 className="text-2xl font-bold text-text-primary">Recipes</h2>
       </div>
 
       {/* Recipes Grid */}
@@ -264,10 +264,10 @@ export default function LibraryDetailPage() {
           ))}
         </div>
       ) : (
-        <div className="text-center py-12 bg-white rounded-lg shadow-soft">
-          <FileText className="mx-auto h-12 w-12 text-neutral-400" />
-          <h3 className="mt-2 text-sm font-medium text-neutral-900">No recipes in this library</h3>
-          <p className="mt-1 text-sm text-neutral-500">
+        <div className="text-center py-12 bg-card rounded-lg shadow-soft">
+          <FileText className="mx-auto h-12 w-12 text-text-muted" />
+          <h3 className="mt-2 text-sm font-medium text-text-primary">No recipes in this library</h3>
+          <p className="mt-1 text-sm text-text-muted">
             Add recipes to this library by editing them and selecting this library
           </p>
         </div>

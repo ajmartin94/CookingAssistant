@@ -17,10 +17,10 @@ export interface IconButtonProps extends ButtonHTMLAttributes<HTMLButtonElement>
 }
 
 const variantStyles = {
-  primary: 'bg-primary-500 text-white hover:bg-primary-600 focus:ring-primary-500',
-  secondary: 'bg-neutral-200 text-neutral-700 hover:bg-neutral-300 focus:ring-neutral-500',
-  ghost: 'text-neutral-600 hover:bg-neutral-100 focus:ring-neutral-500',
-  outline: 'border border-neutral-300 text-neutral-700 hover:bg-neutral-50 focus:ring-neutral-500',
+  primary: 'bg-accent text-text-on-accent hover:bg-accent-hover focus:ring-accent',
+  secondary: 'bg-secondary text-text-secondary hover:bg-hover focus:ring-accent',
+  ghost: 'text-text-secondary hover:bg-hover focus:ring-accent',
+  outline: 'border border-default text-text-secondary hover:bg-hover focus:ring-accent',
 };
 
 const sizeStyles = {
@@ -53,7 +53,7 @@ export const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(
       <button
         ref={ref}
         className={`
-          inline-flex items-center justify-center rounded-lg
+          inline-flex items-center justify-center rounded-md
           transition-colors duration-200
           focus:outline-none focus:ring-2 focus:ring-offset-2
           disabled:opacity-50 disabled:cursor-not-allowed

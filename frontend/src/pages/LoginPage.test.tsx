@@ -257,10 +257,11 @@ describe('LoginPage', () => {
   });
 
   describe('Layout', () => {
-    it('should have gradient background', () => {
+    it('should have semantic background color', () => {
       const { container } = render(<LoginPage />);
 
-      const mainDiv = container.querySelector('.bg-gradient-to-br');
+      // Uses semantic design token bg-primary for theme-aware background
+      const mainDiv = container.querySelector('.bg-primary');
       expect(mainDiv).toBeInTheDocument();
     });
 

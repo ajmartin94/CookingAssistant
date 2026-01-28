@@ -42,6 +42,20 @@ repos:
         files: ^frontend/.*\.(ts|tsx|js|jsx)$
         pass_filenames: false
 
+      - id: frontend-typecheck
+        name: Frontend typecheck (tsc)
+        entry: bash -c 'cd frontend && npx tsc -b'
+        language: system
+        files: ^frontend/.*\.(ts|tsx)$
+        pass_filenames: false
+
+      - id: frontend-stylelint
+        name: Frontend lint CSS (stylelint)
+        entry: bash -c 'cd frontend && npm run lint:css'
+        language: system
+        files: ^frontend/.*\.css$
+        pass_filenames: false
+
       - id: frontend-prettier
         name: Frontend format (prettier)
         entry: bash -c 'cd frontend && npx prettier --check "src/**/*.{ts,tsx,css}"'

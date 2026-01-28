@@ -1,0 +1,277 @@
+/**
+ * Theme CSS Variables
+ *
+ * Defines CSS custom properties for light and dark modes.
+ * Theme is applied via data-theme attribute on the document root.
+ */
+
+/* Dark mode (default) */
+:root,
+[data-theme='dark'] {
+  --bg-primary: #1a1918;
+  --bg-secondary: #242321;
+  --bg-card: #2a2927;
+  --bg-hover: #353432;
+  --text-primary: #f5f5f5;
+  --text-secondary: #a0a0a0;
+  --text-muted: #6b6b6b;
+  --text-placeholder: #555;
+  --border: #3a3a3a;
+  --border-focus: #555;
+  --accent: #e07850;
+  --accent-hover: #c96842;
+  --accent-subtle: rgb(224 120 80 / 15%);
+  --text-on-accent: #fff;
+
+  /* Semantic status colors */
+  --success: #539557;
+  --success-subtle: rgb(83 149 87 / 15%);
+  --warning: #eab308;
+  --warning-subtle: rgb(234 179 8 / 15%);
+  --error: #dc4545;
+  --error-subtle: rgb(220 69 69 / 15%);
+
+  /* Animation timing variables */
+  --duration-fast: 150ms;
+  --duration-normal: 200ms;
+  --duration-slow: 300ms;
+  --easing-default: cubic-bezier(0.4, 0, 0.2, 1);
+  --easing-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+/* Light mode */
+[data-theme='light'] {
+  --bg-primary: #faf9f7;
+  --bg-secondary: #f5f4f2;
+  --bg-card: #fff;
+  --bg-hover: #f0efed;
+  --text-primary: #1a1918;
+  --text-secondary: #5a5a5a;
+  --text-muted: #8a8a8a;
+  --text-placeholder: #b0b0b0;
+  --border: #e5e4e2;
+  --border-focus: #c0c0c0;
+  --accent: #e07850;
+  --accent-hover: #c96842;
+  --accent-subtle: rgb(224 120 80 / 10%);
+  --text-on-accent: #fff;
+
+  /* Semantic status colors */
+  --success: #539557;
+  --success-subtle: rgb(83 149 87 / 10%);
+  --warning: #eab308;
+  --warning-subtle: rgb(234 179 8 / 10%);
+  --error: #dc4545;
+  --error-subtle: rgb(220 69 69 / 10%);
+
+  /* Animation timing variables (same as dark mode) */
+  --duration-fast: 150ms;
+  --duration-normal: 200ms;
+  --duration-slow: 300ms;
+  --easing-default: cubic-bezier(0.4, 0, 0.2, 1);
+  --easing-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+/* Animation Keyframes */
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slide-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+
+  10%,
+  30%,
+  50%,
+  70%,
+  90% {
+    transform: translateX(-4px);
+  }
+
+  20%,
+  40%,
+  60%,
+  80% {
+    transform: translateX(4px);
+  }
+}
+
+@keyframes burst {
+  0% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.2);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Animation utility classes */
+.animate-shimmer {
+  background: linear-gradient(
+    90deg,
+    var(--bg-hover) 0%,
+    var(--bg-secondary) 50%,
+    var(--bg-hover) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+}
+
+.animate-fade-in {
+  animation: fade-in var(--duration-normal) var(--easing-default);
+}
+
+.animate-slide-in {
+  animation: slide-in var(--duration-normal) var(--easing-default);
+}
+
+.animate-scale-in {
+  animation: scale-in var(--duration-normal) var(--easing-default);
+}
+
+.animate-shake {
+  animation: shake 0.5s var(--easing-default);
+}
+
+.animate-burst {
+  animation: burst var(--duration-slow) var(--easing-bounce);
+}
+
+/* Button animation class */
+.btn-animated {
+  transition:
+    transform var(--duration-fast) var(--easing-default),
+    box-shadow var(--duration-fast) var(--easing-default);
+}
+
+.btn-animated:hover {
+  transform: scale(1.02);
+}
+
+.btn-animated:active {
+  transform: scale(0.98);
+}
+
+/* Card animation class */
+.card-animated {
+  transition:
+    box-shadow var(--duration-normal) var(--easing-default),
+    border-color var(--duration-normal) var(--easing-default);
+}
+
+.card-animated:hover {
+  box-shadow: 0 0 0 2px var(--accent-subtle);
+  border-color: var(--accent);
+}
+
+/* Toggle animation */
+.toggle-animated {
+  transition: background-color var(--duration-fast) var(--easing-bounce);
+}
+
+.toggle-animated .toggle-thumb {
+  transition: transform var(--duration-fast) var(--easing-bounce);
+}
+
+/* Checkbox animation */
+.checkbox-animated {
+  transition: transform var(--duration-fast) var(--easing-bounce);
+}
+
+.checkbox-animated:checked {
+  animation: burst var(--duration-fast) var(--easing-bounce);
+}
+
+/* Page transition classes */
+.page-enter {
+  opacity: 0;
+}
+
+.page-enter-active {
+  opacity: 1;
+  transition: opacity var(--duration-normal) var(--easing-default);
+}
+
+.page-transition {
+  transition:
+    opacity var(--duration-normal) var(--easing-default),
+    transform var(--duration-normal) var(--easing-default);
+}
+
+/* Motion preference classes */
+.motion-reduced {
+  --duration-fast: 0.01ms;
+  --duration-normal: 0.01ms;
+  --duration-slow: 0.01ms;
+}
+
+.motion-enabled {
+  /* Use default durations */
+}
+
+/* Reduced motion support */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Skeleton base styles */
+.skeleton {
+  min-height: 1rem;
+  min-width: 1rem;
+}
