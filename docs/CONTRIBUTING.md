@@ -181,42 +181,116 @@ PR cannot merge until all checks pass.
 
 ## Backlog & Issues
 
-We use GitHub Issues to track bugs, features, and ideas.
+GitHub Issues are the single source of truth for all work. Every bug, feature, idea, and task lives as an issue. Progress is tracked through issue comments — not local files, not chat history.
+
+### Creating Issues
+
+Write issues so that someone (or Claude) picking them up has enough context to begin.
+
+**A good issue includes:**
+- **Title**: What's wrong or what's needed (not how to fix it)
+- **Description**: What you observe, what you expect, and any relevant context
+- **Type label**: One of the labels below
+
+**Don't worry about:**
+- Specifying the solution — that's determined during triage
+- Estimating size — triage handles that
+- Assigning to someone — pick up issues when ready
+
+#### Bug Issues
+
+```markdown
+**What happens:** [describe the broken behavior]
+**What should happen:** [describe the expected behavior]
+**Steps to reproduce:** [if known]
+**Context:** [browser, environment, recent changes — anything relevant]
+```
+
+#### Enhancement Issues
+
+```markdown
+**Current behavior:** [what exists today]
+**Desired behavior:** [what should change]
+**Why:** [what user problem this solves]
+```
+
+#### Idea Issues
+
+Ideas are intentionally vague — that's fine. Just capture enough to start a conversation.
+
+```markdown
+**The idea:** [rough concept]
+**Problem it solves:** [why this matters]
+```
+
+#### Chore Issues
+
+```markdown
+**What:** [what needs to change]
+**Why:** [what's wrong with the current state]
+```
+
+#### Spike Issues
+
+Spikes are research tasks — they produce knowledge, not code.
+
+```markdown
+**Question:** [what we need to learn]
+**Why:** [what decision this informs]
+**Timebox:** [how much effort before we stop and decide with what we have]
+```
 
 ### Labels
 
+#### Type Labels (one per issue)
+
 | Label | When to use |
 |-------|-------------|
-| `bug` | Something is broken |
+| `bug` | Something is broken that was working |
 | `enhancement` | Improvement to existing functionality |
-| `idea` | Future possibility, needs scoping |
+| `idea` | Future possibility, needs exploration |
 | `chore` | Refactoring, docs, deps, CI changes |
-| `ready` | Scoped and ready to be picked up |
+| `spike` | Research or investigation, no code merged |
 
-Every issue gets **one type label** (`bug`, `enhancement`, `idea`, or `chore`).
-Add `ready` when the issue is scoped and ready for implementation.
+#### Status Labels
 
-### Workflow
+| Label | When to use |
+|-------|-------------|
+| `ready` | Triaged, scoped, and ready to be picked up |
 
-1. **Create an issue** — capture the idea with a type label
-2. **Discuss** — use comments to refine scope; run `/brainstorm` for bigger features
-3. **Add `ready`** — when scoped (usually after brainstorm completes)
-4. **Implement** — reference the issue in your PR with `Closes #123`
-5. **Auto-close** — issue closes when PR merges
+#### Size Labels (assigned during triage)
+
+| Label | Meaning |
+|-------|---------|
+| `size:S` | Single layer, no breaking changes, clear scope |
+| `size:M` | Multiple layers or breaking changes |
+| `size:L` | Multiple layers, breaking changes, unclear scope |
+
+### Issue Lifecycle
+
+1. **Create** — Capture the problem or idea with a type label
+2. **Triage** — `/triage #N` analyzes the issue, asks clarifying questions, assigns size and workflow. Triage posts its assessment as a comment on the issue.
+3. **Execute** — Work follows the workflow assigned by triage. Each step posts progress as issue comments.
+4. **Close** — PR merges with `Closes #123` in the commit/PR body. Spikes close directly after posting findings.
+
+**Never close issues manually** (except spikes). Let PR merges handle it.
 
 ### Finding Work
 
 ```
-is:issue is:open label:ready              # Ready to pick up
-is:issue is:open label:bug                # All open bugs
-is:issue is:open label:idea -label:ready  # Unscoped ideas for brainstorming
+is:issue is:open label:ready              # Triaged and ready to pick up
+is:issue is:open label:ready label:size:S  # Small, ready issues
+is:issue is:open label:bug                 # All open bugs
+is:issue is:open label:idea -label:ready   # Unscoped ideas
+is:issue is:open label:spike               # Open research tasks
 ```
 
 ### Conventions
 
-- **Brainstorm docs**: Include `GitHub Issue: #123` at the top
+- **Issue comments are the record** — all triage results, progress updates, and decisions are posted to the issue
 - **PR titles**: Use conventional commits (`feat:`, `fix:`, `chore:`, etc.)
-- **Branches**: Optionally include issue number (e.g., `feature/123-recipe-chat`)
+- **PR body**: Include `Closes #123` to auto-close the issue on merge
+- **Branches**: `fix/<number>-<slug>`, `feature/<number>-<slug>`, `chore/<number>-<slug>`, `spike/<number>-<slug>`
 
 ---
 
