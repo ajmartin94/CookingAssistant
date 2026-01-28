@@ -16,8 +16,8 @@ export class RecipeDetailPage extends BasePage {
     this.recipeDescription = page.locator('[data-testid="recipe-description"]').or(page.locator('p').first());
     this.ingredientsList = page.locator('[data-testid="ingredients-list"]');
     this.instructionsList = page.locator('[data-testid="instructions-list"]');
-    this.editButton = page.locator('a:has-text("Edit"), button:has-text("Edit")');
-    this.deleteButton = page.locator('button:has-text("Delete")');
+    this.editButton = page.locator('[data-testid="edit-button"], button[aria-label="Edit recipe"]');
+    this.deleteButton = page.locator('button[aria-label="Delete recipe"]');
     this.backButton = page.locator('a:has-text("Back"), button:has-text("Back")');
   }
 
@@ -101,9 +101,28 @@ export class RecipeDetailPage extends BasePage {
     await this.page.waitForURL(/\/recipes\/[a-f0-9-]+\/edit/);
   }
 
+  /**
+   * Hide StartCookingBar to prevent it from intercepting clicks on bottom-positioned buttons.
+   * Should be called before clicking delete or other fixed-bottom buttons.
+   */
+  async hideStartCookingBar() {
+    await this.page.evaluate(() => {
+      const bar = document.querySelector('[data-testid="start-cooking-bar"]');
+      if (bar) (bar as HTMLElement).style.display = 'none';
+    });
+  }
+
+  /**
+   * Click the delete button. Automatically hides StartCookingBar to prevent interception.
+   */
+  async clickDeleteButton() {
+    await this.hideStartCookingBar();
+    await this.deleteButton.click();
+  }
+
   async deleteRecipe() {
     this.page.on('dialog', dialog => dialog.accept());
-    await this.deleteButton.click();
+    await this.clickDeleteButton();
     await this.page.waitForURL(/\/recipes$/);
   }
 

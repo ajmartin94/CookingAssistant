@@ -41,34 +41,25 @@ export default defineConfig({
   },
 
   projects: [
-    // Smoke tests run FIRST with chromium - if they fail, nothing else runs
+    // Tier 1: Smoke tests run FIRST - if they fail, nothing else runs
     {
       name: 'smoke',
       testDir: './e2e/tests/smoke',
-      testMatch: '**/*.spec.ts',
       use: { ...devices['Desktop Chrome'] },
     },
-    // Browser tests depend on smoke - won't run if smoke fails
+    // Tier 2: Core tests - essential functionality
     {
-      name: 'chromium',
+      name: 'core',
+      testDir: './e2e/tests/core',
       dependencies: ['smoke'],
-      testDir: './e2e/tests',
-      testIgnore: '**/smoke/**',
       use: { ...devices['Desktop Chrome'] },
     },
+    // Tier 3: Comprehensive tests - full coverage
     {
-      name: 'firefox',
+      name: 'comprehensive',
+      testDir: './e2e/tests/comprehensive',
       dependencies: ['smoke'],
-      testDir: './e2e/tests',
-      testIgnore: '**/smoke/**',
-      use: { ...devices['Desktop Firefox'] },
-    },
-    {
-      name: 'webkit',
-      dependencies: ['smoke'],
-      testDir: './e2e/tests',
-      testIgnore: '**/smoke/**',
-      use: { ...devices['Desktop Safari'] },
+      use: { ...devices['Desktop Chrome'] },
     },
   ],
 

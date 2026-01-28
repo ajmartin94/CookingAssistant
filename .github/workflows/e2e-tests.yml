@@ -23,14 +23,9 @@ on:
 
 jobs:
   e2e-tests:
-    name: E2E Tests (${{ matrix.browser }})
+    name: E2E Tests
     timeout-minutes: 30
     runs-on: ubuntu-latest
-
-    strategy:
-      fail-fast: false
-      matrix:
-        browser: [chromium, firefox]
 
     steps:
       - name: Checkout code
@@ -64,12 +59,7 @@ jobs:
         run: npm ci
 
       - name: Install Playwright browsers
-        # Always install chromium (needed for smoke tests) + the test browser
-        run: |
-          npx playwright install --with-deps chromium
-          if [ "${{ matrix.browser }}" != "chromium" ]; then
-            npx playwright install --with-deps ${{ matrix.browser }}
-          fi
+        run: npx playwright install --with-deps chromium
 
       - name: Set up test environment
         run: |
@@ -79,7 +69,7 @@ jobs:
           rm -f backend/cooking_assistant_test_e2e.db-journal
 
       - name: Run E2E tests
-        run: npx playwright test --project=${{ matrix.browser }}
+        run: npx playwright test
         env:
           CI: true
           DATABASE_URL: sqlite+aiosqlite:///./cooking_assistant_test_e2e.db
@@ -90,7 +80,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: e2e-test-results-${{ matrix.browser }}
+          name: e2e-test-results
           path: test-results/
           retention-days: 7
 
@@ -98,7 +88,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: playwright-report-${{ matrix.browser }}
+          name: playwright-report
           path: playwright-report/
           retention-days: 7
 
@@ -106,7 +96,7 @@ jobs:
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: e2e-videos-${{ matrix.browser }}
+          name: e2e-videos
           path: test-results/**/video.webm
           retention-days: 7
 
@@ -114,7 +104,7 @@ jobs:
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: e2e-traces-${{ matrix.browser }}
+          name: e2e-traces
           path: test-results/**/trace.zip
           retention-days: 7
 

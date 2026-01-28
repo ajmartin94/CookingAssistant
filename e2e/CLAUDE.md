@@ -17,7 +17,24 @@ e2e/
 │   ├── api.ts                # APIHelper for direct API calls
 │   └── test-data.ts          # Test data generators
 ├── tests/
-│   └── {feature}/*.spec.ts   # Test files
+│   ├── smoke/                # ⚠️ Critical path - runs first, blocks all others
+│   │   └── app-health.spec.ts
+│   ├── core/                 # Essential feature tests
+│   │   ├── auth.spec.ts
+│   │   ├── chat.spec.ts
+│   │   ├── home.spec.ts
+│   │   ├── libraries.spec.ts
+│   │   ├── navigation.spec.ts
+│   │   ├── recipe-crud.spec.ts
+│   │   ├── settings.spec.ts
+│   │   ├── sharing.spec.ts
+│   │   └── workflows.spec.ts
+│   └── comprehensive/        # Edge cases, error handling, responsive
+│       ├── chat-edge-cases.spec.ts
+│       ├── error-handling.spec.ts
+│       ├── feedback.spec.ts
+│       ├── recipe-edge-cases.spec.ts
+│       └── responsive.spec.ts
 ├── global-setup.ts           # Setup before all tests
 ├── global-teardown.ts        # Cleanup after all tests
 └── reports/                  # Test reports
@@ -38,21 +55,26 @@ e2e/
 ## Running Tests
 
 ```bash
-# All tests
-cd e2e && npx playwright test
+# From project root (preferred):
+npm run test:e2e:smoke        # Smoke tests only (fastest)
+npm run test:e2e:core         # Core tests only
+npm run test:e2e:full         # All tiers (smoke + core + comprehensive)
+npm run test:e2e              # Alias for full suite
 
-# Specific file
-npx playwright test tests/chat/create-recipe-via-chat.spec.ts
+# From e2e directory:
+cd e2e && npx playwright test                              # All tests
+npx playwright test tests/smoke/                           # Smoke tier
+npx playwright test tests/core/                            # Core tier
+npx playwright test tests/comprehensive/                   # Comprehensive tier
+npx playwright test tests/core/auth.spec.ts                # Specific file
 
-# With UI (debug)
-npx playwright test --debug
-
-# Multiple runs (check flakiness)
-npx playwright test path/to/test.spec.ts --repeat-each=3
-
-# Show report
-npx playwright show-report
+# Debugging:
+npx playwright test --debug                                # Playwright Inspector
+npx playwright test path/to/test.spec.ts --repeat-each=3   # Check flakiness
+npx playwright show-report                                 # View HTML report
 ```
+
+**Browser:** Chromium only (Firefox/WebKit removed for speed).
 
 ---
 
@@ -172,14 +194,18 @@ test.describe('Feature: User Story Name', () => {
 
 ## File Location
 
-```
-e2e/tests/{feature}/{story}.spec.ts
+Tests are organized into three tiers, not by feature:
 
-Examples:
-- e2e/tests/chat/create-recipe-via-chat.spec.ts
-- e2e/tests/recipes/edit-recipe.spec.ts
-- e2e/tests/libraries/add-recipe-to-library.spec.ts
 ```
+e2e/tests/smoke/          # App loads, CSS renders, auth works
+e2e/tests/core/           # Essential feature flows (one file per feature area)
+e2e/tests/comprehensive/  # Edge cases, error handling, non-critical paths
+```
+
+When adding new tests, choose the appropriate tier:
+- **smoke/** - Only for critical path checks that should block everything
+- **core/** - For standard feature tests (add to existing file or create new one)
+- **comprehensive/** - For edge cases, error scenarios, responsive checks
 
 ---
 
@@ -282,14 +308,11 @@ page.on('response', res => console.log('<<', res.status(), res.url()));
 If tests fail mysteriously locally but pass in CI, check if dev servers are running on 8000/5173.
 Playwright's `reuseExistingServer` can silently reuse a dev server that lacks `E2E_TESTING=true`.
 
-### Cross-Browser Network Patterns
+### Network Patterns
 
 ```typescript
-// Works in all browsers (Chromium, Firefox, WebKit)
 await page.route('**/api/**', route => route.abort('timedout'));
 await page.route('**/api/**', route => route.abort('connectionrefused'));
-
-// DON'T hold requests with setTimeout — WebKit won't trigger client-side timeouts
 ```
 
 ### SPA Navigation
@@ -336,8 +359,9 @@ When adding UI elements: check if similar elements exist elsewhere on the page.
 
 ## Test Enforcement
 
-All PRs must pass `e2e-ci` before merge. This includes:
-- **Smoke tests**: Critical path verification
-- **Full E2E suite**: All feature tests
+All PRs must pass `E2E Tests (chromium)` before merge. This runs:
+1. **Smoke tier** - Must pass before core/comprehensive run
+2. **Core tier** - Essential feature tests
+3. **Comprehensive tier** - Edge cases and non-critical paths
 
 See [docs/TESTING.md](../docs/TESTING.md#enforcement-policy) for full enforcement policy.

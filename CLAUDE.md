@@ -20,11 +20,13 @@
 /brainstorm → /plan → /tdd → /migrate → /code-review → PR
 ```
 
-1. **`/brainstorm`** — Collaborative Q&A to explore the idea, produces `brainstorm.md`
-2. **`/plan`** — Structure the brainstorm into TDD-ready plan with acceptance criteria
-3. **`/tdd`** — Execute the plan through outside-in TDD (impl/review sub-agents)
-4. **`/migrate`** — Interactive cleanup of broken tests + DB migrations
-5. **`/code-review`** — Verify implementation matches plan + code standards
+1. **`/brainstorm`** — Collaborative Q&A to explore the idea, produces `brainstorm.md`. Post summary comment on the GitHub issue.
+2. **`/plan`** — Structure the brainstorm into TDD-ready plan with acceptance criteria. Post summary comment on the issue.
+3. **`/tdd`** — Execute the plan through outside-in TDD (impl/review sub-agents). Post summary comment on the issue.
+4. **`/migrate`** — Interactive cleanup of broken tests + DB migrations. Post summary comment on the issue.
+5. **`/code-review`** — Verify implementation matches plan + code standards. Post summary comment on the issue.
+
+**Issue tracking**: Each pipeline step must post a concise summary comment on the linked GitHub issue (`gh issue comment <number> --body "..."`). This keeps stakeholders informed of progress without needing to read plan files.
 
 ### TDD-Enforced
 
