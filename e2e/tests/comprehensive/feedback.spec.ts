@@ -29,11 +29,9 @@ test.describe('Comprehensive: Feedback Submission', () => {
   test('authenticated user can submit feedback successfully', async ({ authenticatedPage }) => {
     await authenticatedPage.goto('/recipes');
 
-    // Hide sidebar to prevent it from intercepting feedback button click
-    await authenticatedPage.evaluate(() => {
-      const sidebar = document.querySelector('[data-testid="sidebar"]') as HTMLElement | null;
-      if (sidebar) sidebar.style.display = 'none';
-    });
+    // Use mobile viewport to avoid sidebar overlap with feedback button
+    await authenticatedPage.setViewportSize({ width: 375, height: 667 });
+    await authenticatedPage.waitForTimeout(300); // Let viewport change settle
 
     // Click the feedback button (aria-label="Give Feedback")
     const feedbackButton = authenticatedPage.getByRole('button', { name: /give feedback/i });
@@ -61,9 +59,9 @@ test.describe('Comprehensive: Feedback Submission', () => {
 
     expect(response.status()).toBe(201);
 
-    // Success message should be displayed
+    // Success message should be displayed (specific text to avoid matching other "feedback" elements)
     await expect(
-      authenticatedPage.getByText(/thank|feedback|success/i)
+      authenticatedPage.getByText('Thanks for your feedback!')
     ).toBeVisible();
 
     // Modal should close after success
