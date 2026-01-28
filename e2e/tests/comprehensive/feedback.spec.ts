@@ -29,13 +29,10 @@ test.describe('Comprehensive: Feedback Submission', () => {
   test('authenticated user can submit feedback successfully', async ({ authenticatedPage }) => {
     await authenticatedPage.goto('/recipes');
 
-    // Use mobile viewport to avoid sidebar overlap with feedback button
-    await authenticatedPage.setViewportSize({ width: 375, height: 667 });
-    await authenticatedPage.waitForTimeout(300); // Let viewport change settle
-
-    // Click the feedback button (aria-label="Give Feedback")
+    // Click the feedback button - use force:true because the fixed-position button
+    // overlaps with sidebar (desktop) or bottom tab bar (mobile)
     const feedbackButton = authenticatedPage.getByRole('button', { name: /give feedback/i });
-    await feedbackButton.click();
+    await feedbackButton.click({ force: true });
 
     // Modal should appear
     const modal = authenticatedPage.getByRole('dialog');
