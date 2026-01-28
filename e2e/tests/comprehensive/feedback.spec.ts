@@ -29,10 +29,12 @@ test.describe('Comprehensive: Feedback Submission', () => {
   test('authenticated user can submit feedback successfully', async ({ authenticatedPage }) => {
     await authenticatedPage.goto('/recipes');
 
-    // Click the feedback button - use force:true because the fixed-position button
-    // overlaps with sidebar (desktop) or bottom tab bar (mobile)
-    const feedbackButton = authenticatedPage.getByRole('button', { name: /give feedback/i });
-    await feedbackButton.click({ force: true });
+    // Click the feedback button using JavaScript dispatch since it overlaps
+    // with sidebar (desktop) or bottom tab bar (mobile)
+    await authenticatedPage.evaluate(() => {
+      const button = document.querySelector('button[aria-label="Give Feedback"]') as HTMLElement;
+      if (button) button.click();
+    });
 
     // Modal should appear
     const modal = authenticatedPage.getByRole('dialog');
