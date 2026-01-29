@@ -12,7 +12,8 @@ e2e/
 ├── fixtures/
 │   └── auth.fixture.ts       # Authenticated page fixture
 ├── pages/
-│   └── *.page.ts             # Page objects
+│   ├── *.page.ts             # Page objects
+│   └── meal-plan.page.ts
 ├── utils/
 │   ├── api.ts                # APIHelper for direct API calls
 │   └── test-data.ts          # Test data generators
@@ -28,7 +29,10 @@ e2e/
 │   │   ├── recipe-crud.spec.ts
 │   │   ├── settings.spec.ts
 │   │   ├── sharing.spec.ts
-│   │   └── workflows.spec.ts
+│   │   ├── workflows.spec.ts
+│   │   ├── meal-plan.spec.ts
+│   │   ├── meal-plan-recipes.spec.ts
+│   │   └── meal-plan-week-nav.spec.ts
 │   └── comprehensive/        # Edge cases, error handling, responsive
 │       ├── chat-edge-cases.spec.ts
 │       ├── error-handling.spec.ts

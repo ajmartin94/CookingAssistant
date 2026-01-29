@@ -242,7 +242,10 @@ e2e/
 │   │   ├── recipe-crud.spec.ts
 │   │   ├── settings.spec.ts
 │   │   ├── sharing.spec.ts
-│   │   └── workflows.spec.ts
+│   │   ├── workflows.spec.ts
+│   │   ├── meal-plan.spec.ts
+│   │   ├── meal-plan-recipes.spec.ts
+│   │   └── meal-plan-week-nav.spec.ts
 │   └── comprehensive/               # Edge cases & non-critical paths
 │       ├── chat-edge-cases.spec.ts
 │       ├── error-handling.spec.ts
@@ -255,7 +258,8 @@ e2e/
 │   ├── register.page.ts
 │   ├── recipes.page.ts
 │   ├── create-recipe.page.ts
-│   └── recipe-detail.page.ts
+│   ├── recipe-detail.page.ts
+│   └── meal-plan.page.ts
 ├── fixtures/                        # Test fixtures
 │   └── auth.fixture.ts
 ├── utils/                           # Test utilities

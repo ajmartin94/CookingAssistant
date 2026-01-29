@@ -6,6 +6,7 @@ import {
   mockShareTokenResponse,
   mockLoginResponse,
 } from './data';
+import { mockMealPlanWeek } from './mealPlanData';
 
 const BASE_URL = 'http://localhost:8000';
 
@@ -257,6 +258,17 @@ export const handlers = [
       message: body.message,
       created_at: new Date().toISOString(),
     });
+  }),
+
+  // Meal plan endpoints
+  http.get(`${BASE_URL}/api/v1/meal-plans/current`, () => {
+    return HttpResponse.json(mockMealPlanWeek());
+  }),
+
+  http.get(`${BASE_URL}/api/v1/meal-plans`, ({ request }) => {
+    const url = new URL(request.url);
+    const weekStart = url.searchParams.get('week_start');
+    return HttpResponse.json(mockMealPlanWeek(weekStart ? { week_start: weekStart } : undefined));
   }),
 
   // Chat endpoint
