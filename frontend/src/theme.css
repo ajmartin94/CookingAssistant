@@ -186,6 +186,22 @@
   animation: burst var(--duration-slow) var(--easing-bounce);
 }
 
+/* Global cursor for interactive elements */
+button,
+[role='button'],
+a,
+select,
+summary,
+[type='checkbox'],
+[type='radio'] {
+  cursor: pointer;
+}
+
+button:disabled,
+[role='button'][aria-disabled='true'] {
+  cursor: not-allowed;
+}
+
 /* Button animation class */
 .btn-animated {
   transition:

@@ -34,15 +34,22 @@ export function MealSlot({
 
   if (!entry) {
     return (
-      <div className="border border-dashed border-border rounded-lg p-3" data-testid="meal-slot">
+      <div
+        className="border border-dashed border-border rounded-lg p-3 hover:border-accent hover:bg-hover transition cursor-pointer"
+        data-testid="meal-slot"
+        onClick={onAddClick}
+        role="button"
+        tabIndex={0}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            onAddClick?.();
+          }
+        }}
+        aria-label={`Add ${label}`}
+      >
         <span className="text-text-secondary text-sm">{label}</span>
-        <button
-          type="button"
-          className="text-text-muted text-sm mt-1 block cursor-pointer"
-          onClick={onAddClick}
-        >
-          + Add
-        </button>
+        <span className="text-text-muted text-sm mt-1 block">+ Add</span>
       </div>
     );
   }

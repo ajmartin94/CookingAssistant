@@ -69,7 +69,7 @@ export function Sidebar({ children }: SidebarProps) {
               <ChefHat className="w-5 h-5 text-text-primary" />
             </div>
             {!isCollapsed && (
-              <span className="font-display font-bold text-lg text-text-primary truncate">
+              <span className="font-display font-bold text-base text-text-primary whitespace-nowrap">
                 CookingAssistant
               </span>
             )}
