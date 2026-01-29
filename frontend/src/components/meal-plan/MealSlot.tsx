@@ -35,7 +35,7 @@ export function MealSlot({
   if (!entry) {
     return (
       <div
-        className="border border-dashed border-border rounded-lg p-3 hover:border-accent hover:bg-hover transition cursor-pointer"
+        className="border border-dashed border-border rounded-lg p-3 hover:border-accent hover:bg-hover transition"
         data-testid="meal-slot"
         onClick={onAddClick}
         role="button"
@@ -73,18 +73,10 @@ export function MealSlot({
         <p className="text-text-muted text-xs mt-0.5">{entry.recipe.cookTimeMinutes} min</p>
       )}
       <div className="flex gap-2 mt-1">
-        <button
-          type="button"
-          className="text-accent text-xs cursor-pointer"
-          onClick={onChangeClick}
-        >
+        <button type="button" className="text-accent text-xs" onClick={onChangeClick}>
           Change
         </button>
-        <button
-          type="button"
-          className="text-text-muted text-xs cursor-pointer"
-          onClick={onRemoveClick}
-        >
+        <button type="button" className="text-text-muted text-xs" onClick={onRemoveClick}>
           Remove
         </button>
       </div>

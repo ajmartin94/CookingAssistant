@@ -127,6 +127,35 @@ npm run lint
 - **Global UI elements**: Components that should appear on ALL pages (including unauthenticated routes like `/login`) belong in `App.tsx`, not inside layouts
 - **Class components**: Acceptable only for Error Boundaries (React has no hooks API for `componentDidCatch`)
 
+### Global Cursor Behavior (Automatic)
+
+Interactive elements receive cursor styles via global CSS in `theme.css`:
+- **pointer**: `button`, `[role='button']`, `a`, `select`, `summary`, checkboxes, radios
+- **not-allowed**: `button:disabled`, `[role='button'][aria-disabled='true']`
+
+Do **not** add `cursor-pointer` or `cursor-not-allowed` in Tailwind classes — the global CSS handles it.
+
+### Clickable Divs (Use Sparingly)
+
+When a `<button>` isn't appropriate (e.g., a styled card slot), use this pattern:
+
+```tsx
+<div
+  onClick={handleClick}
+  role="button"
+  tabIndex={0}
+  onKeyDown={(e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      handleClick?.();
+    }
+  }}
+  aria-label="Descriptive action"
+>
+```
+
+Required: `role="button"`, `tabIndex={0}`, Enter/Space key handler, `aria-label`. Prefer `<button>` when possible.
+
 ---
 
 <!-- Per AD-0100 -->
