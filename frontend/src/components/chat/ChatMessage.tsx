@@ -31,7 +31,7 @@ export function ChatMessage({
     <div className={`flex ${isUser ? 'justify-end' : 'justify-start'} mb-3`} data-testid={testId}>
       <div
         className={`max-w-[80%] rounded-lg p-3 ${
-          isUser ? 'bg-primary-500 text-white' : 'bg-neutral-100 text-neutral-900'
+          isUser ? 'bg-accent text-text-on-accent' : 'bg-secondary text-text-primary'
         }`}
       >
         <p className="text-sm">{content}</p>

@@ -58,17 +58,32 @@ export function WeekNavigation({ weekStart, onWeekChange }: WeekNavigationProps)
   };
 
   return (
-    <nav className="flex items-center gap-2">
-      <button onClick={handlePrev} aria-label="Previous week">
+    <nav className="flex items-center gap-3">
+      <button
+        onClick={handlePrev}
+        aria-label="Previous week"
+        className="px-3 py-1.5 text-sm font-medium rounded-lg border border-border bg-card text-text-primary hover:bg-hover transition btn-animated"
+      >
         Prev
       </button>
-      <button onClick={handleToday} disabled={isCurrentWeek} aria-label="Today">
+      <button
+        onClick={handleToday}
+        disabled={isCurrentWeek}
+        aria-label="Today"
+        className="px-3 py-1.5 text-sm font-medium rounded-lg bg-accent text-text-on-accent hover:bg-accent-hover transition btn-animated disabled:opacity-50"
+      >
         Today
       </button>
-      <button onClick={handleNext} aria-label="Next week">
+      <button
+        onClick={handleNext}
+        aria-label="Next week"
+        className="px-3 py-1.5 text-sm font-medium rounded-lg border border-border bg-card text-text-primary hover:bg-hover transition btn-animated"
+      >
         Next
       </button>
-      <span data-testid="week-date-range">{formatDateLabel(weekStart)}</span>
+      <span data-testid="week-date-range" className="text-sm text-text-secondary ml-1">
+        {formatDateLabel(weekStart)}
+      </span>
     </nav>
   );
 }

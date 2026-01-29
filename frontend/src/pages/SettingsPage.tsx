@@ -214,7 +214,7 @@ export default function SettingsPage() {
       {/* Appearance Section */}
       <div className="bg-card rounded-lg shadow-soft p-6 mt-6">
         <h2 className="text-lg font-semibold text-text-primary mb-4">Appearance</h2>
-        <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center gap-3 mb-4">
           <span className="text-sm text-text-secondary">Theme</span>
           <ThemeToggle />
         </div>
