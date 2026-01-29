@@ -23,6 +23,7 @@ import LibrariesPage from './pages/LibrariesPage';
 import LibraryDetailPage from './pages/LibraryDetailPage';
 import SharedRecipePage from './pages/SharedRecipePage';
 import SettingsPage from './pages/SettingsPage';
+import MealPlanPage from './pages/MealPlanPage';
 
 function App() {
   return (
@@ -47,7 +48,7 @@ function App() {
                 <Route path="/libraries" element={<LibrariesPage />} />
                 <Route path="/libraries/:id" element={<LibraryDetailPage />} />
                 <Route path="/discover" element={<ComingSoonPage title="Discover" />} />
-                <Route path="/planning" element={<ComingSoonPage title="Meal Planning" />} />
+                <Route path="/planning" element={<MealPlanPage />} />
                 <Route path="/shopping" element={<ComingSoonPage title="Shopping List" />} />
                 <Route path="/cooking" element={<ComingSoonPage title="Cooking Mode" />} />
                 <Route path="/settings" element={<SettingsPage />} />

@@ -9,6 +9,7 @@ from app.models.recipe import Recipe, DifficultyLevel
 from app.models.library import RecipeLibrary
 from app.models.share import RecipeShare, SharePermission
 from app.models.feedback import Feedback
+from app.models.meal_plan import MealPlan, MealPlanEntry
 
 __all__ = [
     "User",
@@ -18,4 +19,6 @@ __all__ = [
     "RecipeShare",
     "SharePermission",
     "Feedback",
+    "MealPlan",
+    "MealPlanEntry",
 ]

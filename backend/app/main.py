@@ -16,7 +16,7 @@ import logging
 import traceback
 
 from app.config import settings
-from app.api import users, recipes, libraries, sharing, chat, feedback
+from app.api import users, recipes, libraries, sharing, chat, feedback, meal_plans
 
 # Initialize Sentry if DSN is configured
 if settings.sentry_dsn:
@@ -97,6 +97,7 @@ app.include_router(libraries.router, prefix="/api/v1")
 app.include_router(sharing.router, prefix="/api/v1")
 app.include_router(chat.router, prefix="/api/v1")
 app.include_router(feedback.router, prefix="/api/v1")
+app.include_router(meal_plans.router, prefix="/api/v1")
 
 
 # Mount static files for frontend assets (JS, CSS, images)
