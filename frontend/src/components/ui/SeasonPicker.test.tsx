@@ -28,12 +28,20 @@ import type { ReactNode } from 'react';
 import { SeasonPicker } from './SeasonPicker';
 import { ThemeProvider } from '../../contexts/ThemeContext';
 
-// Season accent colors as defined in the plan
+// Season accent colors as defined in the plan (dark mode values used as default)
 const SEASON_COLORS = {
   spring: '#66bb6a',
   summer: '#ffa726',
   fall: '#e07850',
   winter: '#5c9dc4',
+} as const;
+
+// Light mode accent colors differ for some seasons
+const SEASON_COLORS_LIGHT = {
+  spring: '#4caf50',
+  summer: '#f57c00',
+  fall: '#e07850',
+  winter: '#4a8ab4',
 } as const;
 
 // Wrapper that provides ThemeProvider for season tests
@@ -303,12 +311,12 @@ describe('SeasonPicker', () => {
 
       rtlRender(<SeasonPicker />, { wrapper: SeasonTestWrapper });
 
-      // Select Winter season
+      // Select Winter season (in light mode, accent is the light variant)
       await user.click(screen.getByRole('radio', { name: /winter/i }));
 
       await waitFor(() => {
         expect(document.documentElement.style.getPropertyValue('--accent')).toBe(
-          SEASON_COLORS.winter
+          SEASON_COLORS_LIGHT.winter
         );
       });
 
@@ -316,9 +324,9 @@ describe('SeasonPicker', () => {
       localStorage.setItem('theme', 'dark');
       document.documentElement.setAttribute('data-theme', 'dark');
 
-      // Season accent should still be Winter blue
+      // Season accent should still be Winter blue (light mode value persists since context didn't re-render)
       expect(document.documentElement.style.getPropertyValue('--accent')).toBe(
-        SEASON_COLORS.winter
+        SEASON_COLORS_LIGHT.winter
       );
     });
 
@@ -341,11 +349,80 @@ describe('SeasonPicker', () => {
 
       rtlRender(<SeasonPicker />, { wrapper: SeasonTestWrapper });
 
-      // Winter should be selected and applied
+      // Winter should be selected and applied (light mode uses light accent variant)
       expect(screen.getByRole('radio', { name: /winter/i })).toBeChecked();
       expect(document.documentElement.style.getPropertyValue('--accent')).toBe(
-        SEASON_COLORS.winter
+        SEASON_COLORS_LIGHT.winter
       );
+    });
+  });
+
+  describe('Expanded variable set (14 CSS variables per season)', () => {
+    it('should update --bg-primary CSS variable when season changes', async () => {
+      const user = userEvent.setup();
+      rtlRender(<SeasonPicker />, { wrapper: SeasonTestWrapper });
+
+      await user.click(screen.getByRole('radio', { name: /spring/i }));
+
+      await waitFor(() => {
+        const bgPrimary = document.documentElement.style.getPropertyValue('--bg-primary');
+        expect(bgPrimary, 'Expected --bg-primary to be set when season changes').not.toBe('');
+      });
+    });
+
+    it('should update --text-primary CSS variable when season changes', async () => {
+      const user = userEvent.setup();
+      rtlRender(<SeasonPicker />, { wrapper: SeasonTestWrapper });
+
+      await user.click(screen.getByRole('radio', { name: /winter/i }));
+
+      await waitFor(() => {
+        const textPrimary = document.documentElement.style.getPropertyValue('--text-primary');
+        expect(textPrimary, 'Expected --text-primary to be set when season changes').not.toBe('');
+      });
+    });
+
+    it('should update --card-shadow CSS variable when season changes', async () => {
+      const user = userEvent.setup();
+      rtlRender(<SeasonPicker />, { wrapper: SeasonTestWrapper });
+
+      await user.click(screen.getByRole('radio', { name: /summer/i }));
+
+      await waitFor(() => {
+        const cardShadow = document.documentElement.style.getPropertyValue('--card-shadow');
+        expect(cardShadow, 'Expected --card-shadow to be set when season changes').not.toBe('');
+      });
+    });
+
+    it('should update all 14 CSS variables when season changes (not just --accent)', async () => {
+      const user = userEvent.setup();
+      rtlRender(<SeasonPicker />, { wrapper: SeasonTestWrapper });
+
+      await user.click(screen.getByRole('radio', { name: /spring/i }));
+
+      const allVars = [
+        '--accent',
+        '--accent-hover',
+        '--accent-subtle',
+        '--bg-primary',
+        '--bg-secondary',
+        '--bg-card',
+        '--bg-hover',
+        '--border',
+        '--text-primary',
+        '--text-secondary',
+        '--text-muted',
+        '--card-shadow',
+        '--card-border',
+        '--season-gradient',
+      ];
+
+      await waitFor(() => {
+        for (const varName of allVars) {
+          const value = document.documentElement.style.getPropertyValue(varName);
+          expect(value, `Expected ${varName} to be set but it was empty`).not.toBe('');
+        }
+      });
     });
   });
 

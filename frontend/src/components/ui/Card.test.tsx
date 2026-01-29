@@ -298,6 +298,32 @@ describe('Card', () => {
     });
   });
 
+  describe('seasonal card shadow', () => {
+    it('should use var(--card-shadow) for box-shadow styling', () => {
+      render(
+        <Card>
+          <p data-testid="card-child">Seasonal shadow card</p>
+        </Card>
+      );
+
+      const cardChild = screen.getByTestId('card-child');
+      const card = cardChild.parentElement;
+
+      // Card should reference var(--card-shadow) in its style or class
+      const style = card!.getAttribute('style') || '';
+      const className = card!.className || '';
+
+      // Either inline style with var(--card-shadow) or a class that maps to it
+      const usesCardShadow =
+        style.includes('var(--card-shadow)') || className.includes('shadow-season');
+
+      expect(
+        usesCardShadow,
+        'Card should use var(--card-shadow) for its box-shadow (via inline style or shadow-season class)'
+      ).toBe(true);
+    });
+  });
+
   describe('strict plan requirements', () => {
     it('should have card-animated class when hoverable for glow border effect', () => {
       render(
