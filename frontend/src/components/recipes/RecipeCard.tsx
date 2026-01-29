@@ -30,7 +30,8 @@ const RecipeCard: React.FC<RecipeCardProps> = ({ recipe }) => {
   return (
     <Link
       to={`/recipes/${recipe.id}`}
-      className="block bg-card rounded-lg shadow-soft card-animated overflow-hidden"
+      className="block bg-card rounded-lg card-animated overflow-hidden"
+      style={{ boxShadow: 'var(--card-shadow)' }}
       aria-label={recipe.title}
       data-testid="recipe-card"
     >

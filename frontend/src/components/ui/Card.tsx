@@ -37,6 +37,7 @@ export function Card({
         ${padding ? paddingClasses[padding] : ''}
         ${className}
       `}
+      style={{ boxShadow: 'var(--card-shadow)' }}
       tabIndex={hoverable ? 0 : undefined}
       data-hoverable={hoverable || undefined}
       data-variant={variant}

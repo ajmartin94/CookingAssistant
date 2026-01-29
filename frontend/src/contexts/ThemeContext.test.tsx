@@ -362,12 +362,13 @@ describe('ThemeContext - Season functionality', () => {
     // Toggle theme to light
     await user.click(screen.getByRole('button', { name: 'Toggle Theme' }));
 
-    // Season should still be winter with correct accent
+    // Season should still be winter, but accent updates to light-mode value
     await waitFor(() => {
       expect(screen.getByTestId('current-theme')).toHaveTextContent('light');
     });
     expect(screen.getByTestId('current-season')).toHaveTextContent('winter');
-    expect(document.documentElement.style.getPropertyValue('--accent')).toBe(SEASON_COLORS.winter);
+    // Light mode winter accent is #4a8ab4 (mode-specific accent values)
+    expect(document.documentElement.style.getPropertyValue('--accent')).toBe('#4a8ab4');
   });
 
   it('should maintain season when theme changes from light to dark', async () => {
@@ -408,5 +409,252 @@ describe('ThemeContext - Season functionality', () => {
     });
     expect(screen.getByTestId('current-season')).toHaveTextContent('spring');
     expect(document.documentElement.style.getPropertyValue('--accent')).toBe(SEASON_COLORS.spring);
+  });
+});
+
+/**
+ * Tests for Expanded Seasonal Theme System (14 CSS variables per season/mode)
+ *
+ * The new system replaces the 3-variable approach (--accent, --accent-hover, --accent-subtle)
+ * with 14 CSS variables per season per mode (dark/light), enabling full theme customization.
+ */
+
+// All 14 CSS variables that must be set per season per mode
+const EXPANDED_SEASON_VARIABLES = [
+  '--accent',
+  '--accent-hover',
+  '--accent-subtle',
+  '--bg-primary',
+  '--bg-secondary',
+  '--bg-card',
+  '--bg-hover',
+  '--border',
+  '--text-primary',
+  '--text-secondary',
+  '--text-muted',
+  '--card-shadow',
+  '--card-border',
+  '--season-gradient',
+] as const;
+
+// Expected values from the prototype for verification
+const EXPECTED_SPRING_DARK = {
+  '--accent': '#66bb6a',
+  '--bg-primary': '#152215',
+  '--text-primary': '#e8f5e8',
+};
+
+const EXPECTED_SPRING_LIGHT = {
+  '--accent': '#4caf50',
+  '--bg-primary': '#eaf5ea',
+  '--text-primary': '#1a2e1a',
+};
+
+const EXPECTED_FALL_DARK = {
+  '--accent': '#e07850',
+  '--bg-primary': '#1e1410',
+};
+
+const EXPECTED_FALL_LIGHT = {
+  '--accent': '#e07850',
+  '--bg-primary': '#faf0ea',
+};
+
+// Test component that exposes both season and theme toggling
+function ExpandedSeasonTestComponent() {
+  const { theme, toggleTheme, season, setSeason } = useTheme() as {
+    theme: string;
+    toggleTheme: () => void;
+    season: Season;
+    setSeason: (season: Season) => void;
+  };
+
+  return (
+    <div>
+      <div data-testid="current-theme">Current theme: {theme}</div>
+      <div data-testid="current-season">Current season: {season}</div>
+      <button onClick={toggleTheme}>Toggle Theme</button>
+      <button onClick={() => setSeason('spring')}>Set Spring</button>
+      <button onClick={() => setSeason('summer')}>Set Summer</button>
+      <button onClick={() => setSeason('fall')}>Set Fall</button>
+      <button onClick={() => setSeason('winter')}>Set Winter</button>
+    </div>
+  );
+}
+
+describe('ThemeContext - Expanded seasonal theme system (14 variables)', () => {
+  beforeEach(() => {
+    localStorage.clear();
+    document.documentElement.removeAttribute('data-theme');
+    document.documentElement.removeAttribute('data-season');
+    EXPANDED_SEASON_VARIABLES.forEach((v) => document.documentElement.style.removeProperty(v));
+    vi.restoreAllMocks();
+  });
+
+  afterEach(() => {
+    localStorage.clear();
+    document.documentElement.removeAttribute('data-theme');
+    document.documentElement.removeAttribute('data-season');
+    EXPANDED_SEASON_VARIABLES.forEach((v) => document.documentElement.style.removeProperty(v));
+  });
+
+  it('should set all 14 CSS variables when a season is applied', async () => {
+    const user = userEvent.setup();
+
+    rtlRender(<ExpandedSeasonTestComponent />, { wrapper: ThemeOnlyWrapper });
+
+    await user.click(screen.getByRole('button', { name: 'Set Spring' }));
+
+    await waitFor(() => {
+      for (const varName of EXPANDED_SEASON_VARIABLES) {
+        const value = document.documentElement.style.getPropertyValue(varName);
+        expect(value, `Expected ${varName} to be set but it was empty`).not.toBe('');
+      }
+    });
+  });
+
+  it('should set --bg-primary for spring dark to #152215', async () => {
+    localStorage.setItem('theme', 'dark');
+
+    rtlRender(<ExpandedSeasonTestComponent />, { wrapper: ThemeOnlyWrapper });
+
+    const user = userEvent.setup();
+    await user.click(screen.getByRole('button', { name: 'Set Spring' }));
+
+    await waitFor(() => {
+      expect(document.documentElement.style.getPropertyValue('--bg-primary')).toBe(
+        EXPECTED_SPRING_DARK['--bg-primary']
+      );
+    });
+  });
+
+  it('should set --text-primary for spring dark to #e8f5e8', async () => {
+    localStorage.setItem('theme', 'dark');
+
+    rtlRender(<ExpandedSeasonTestComponent />, { wrapper: ThemeOnlyWrapper });
+
+    const user = userEvent.setup();
+    await user.click(screen.getByRole('button', { name: 'Set Spring' }));
+
+    await waitFor(() => {
+      expect(document.documentElement.style.getPropertyValue('--text-primary')).toBe(
+        EXPECTED_SPRING_DARK['--text-primary']
+      );
+    });
+  });
+
+  it('should produce different --bg-primary values for dark vs light mode (spring)', async () => {
+    localStorage.setItem('theme', 'dark');
+    localStorage.setItem('season', 'spring');
+
+    rtlRender(<ExpandedSeasonTestComponent />, { wrapper: ThemeOnlyWrapper });
+
+    await waitFor(() => {
+      expect(document.documentElement.style.getPropertyValue('--bg-primary')).toBe(
+        EXPECTED_SPRING_DARK['--bg-primary']
+      );
+    });
+
+    const user = userEvent.setup();
+    await user.click(screen.getByRole('button', { name: 'Toggle Theme' }));
+
+    await waitFor(() => {
+      expect(screen.getByTestId('current-theme')).toHaveTextContent('Current theme: light');
+    });
+
+    // After toggling to light, --bg-primary should change to the light value
+    expect(document.documentElement.style.getPropertyValue('--bg-primary')).toBe(
+      EXPECTED_SPRING_LIGHT['--bg-primary']
+    );
+  });
+
+  it('should use different --accent for spring light (#4caf50) vs spring dark (#66bb6a)', async () => {
+    localStorage.setItem('theme', 'light');
+    localStorage.setItem('season', 'spring');
+
+    rtlRender(<ExpandedSeasonTestComponent />, { wrapper: ThemeOnlyWrapper });
+
+    await waitFor(() => {
+      expect(document.documentElement.style.getPropertyValue('--accent')).toBe(
+        EXPECTED_SPRING_LIGHT['--accent']
+      );
+    });
+  });
+
+  it('should set --bg-primary for fall dark to #1e1410', async () => {
+    localStorage.setItem('theme', 'dark');
+    localStorage.setItem('season', 'fall');
+
+    rtlRender(<ExpandedSeasonTestComponent />, { wrapper: ThemeOnlyWrapper });
+
+    await waitFor(() => {
+      expect(document.documentElement.style.getPropertyValue('--bg-primary')).toBe(
+        EXPECTED_FALL_DARK['--bg-primary']
+      );
+    });
+  });
+
+  it('should set --bg-primary for fall light to #faf0ea', async () => {
+    localStorage.setItem('theme', 'light');
+    localStorage.setItem('season', 'fall');
+
+    rtlRender(<ExpandedSeasonTestComponent />, { wrapper: ThemeOnlyWrapper });
+
+    await waitFor(() => {
+      expect(document.documentElement.style.getPropertyValue('--bg-primary')).toBe(
+        EXPECTED_FALL_LIGHT['--bg-primary']
+      );
+    });
+  });
+
+  it('should re-apply season colors with new mode values when theme is toggled', async () => {
+    localStorage.setItem('theme', 'dark');
+    localStorage.setItem('season', 'fall');
+
+    rtlRender(<ExpandedSeasonTestComponent />, { wrapper: ThemeOnlyWrapper });
+
+    await waitFor(() => {
+      expect(document.documentElement.style.getPropertyValue('--bg-primary')).toBe(
+        EXPECTED_FALL_DARK['--bg-primary']
+      );
+    });
+
+    const user = userEvent.setup();
+    await user.click(screen.getByRole('button', { name: 'Toggle Theme' }));
+
+    await waitFor(() => {
+      expect(screen.getByTestId('current-theme')).toHaveTextContent('Current theme: light');
+    });
+
+    // After toggling, fall light values should be applied
+    expect(document.documentElement.style.getPropertyValue('--bg-primary')).toBe(
+      EXPECTED_FALL_LIGHT['--bg-primary']
+    );
+  });
+
+  it('should set --card-shadow CSS variable when season is applied', async () => {
+    const user = userEvent.setup();
+
+    rtlRender(<ExpandedSeasonTestComponent />, { wrapper: ThemeOnlyWrapper });
+
+    await user.click(screen.getByRole('button', { name: 'Set Spring' }));
+
+    await waitFor(() => {
+      const cardShadow = document.documentElement.style.getPropertyValue('--card-shadow');
+      expect(cardShadow, 'Expected --card-shadow to be set').not.toBe('');
+    });
+  });
+
+  it('should set --season-gradient CSS variable when season is applied', async () => {
+    const user = userEvent.setup();
+
+    rtlRender(<ExpandedSeasonTestComponent />, { wrapper: ThemeOnlyWrapper });
+
+    await user.click(screen.getByRole('button', { name: 'Set Spring' }));
+
+    await waitFor(() => {
+      const gradient = document.documentElement.style.getPropertyValue('--season-gradient');
+      expect(gradient, 'Expected --season-gradient to be set').not.toBe('');
+    });
   });
 });

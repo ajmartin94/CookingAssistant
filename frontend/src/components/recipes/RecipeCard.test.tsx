@@ -185,11 +185,12 @@ describe('RecipeCard', () => {
       expect(link).toHaveClass('card-animated');
     });
 
-    it('should have rounded corners and shadow', () => {
+    it('should have rounded corners and seasonal shadow', () => {
       const { container } = render(<RecipeCard recipe={mockRecipe} />);
 
       const link = container.querySelector('a');
-      expect(link).toHaveClass('rounded-lg', 'shadow-soft');
+      expect(link).toHaveClass('rounded-lg');
+      expect(link!.getAttribute('style')).toContain('var(--card-shadow)');
     });
   });
 

@@ -49,14 +49,24 @@ Full design system spec: **[docs/DESIGN_SYSTEM.md](../docs/DESIGN_SYSTEM.md)**
 
 ### Quick Reference
 
-| Token | Value | Use |
-|-------|-------|-----|
+> **Note:** These are base/Fall-dark defaults. All values are overridden at runtime by `ThemeContext.applySeasonTheme()` based on the selected season and mode. See `ThemeContext.tsx:SEASON_COLORS` for the full 4×2 palette.
+
+| Token | Default (Fall/Dark) | Use |
+|-------|---------------------|-----|
 | `--bg-primary` | #1a1a1a | Page background |
+| `--bg-secondary` | #2a2a2a | Sidebar background |
 | `--bg-card` | #2a2a2a | Cards, inputs |
 | `--text-primary` | #f5f5f5 | Headings |
 | `--text-secondary` | #a0a0a0 | Body text |
+| `--text-muted` | #666 | Muted text |
 | `--accent` | #e07850 | Primary actions |
+| `--accent-hover` | #c96842 | Accent hover state |
+| `--accent-subtle` | rgba(224,120,80,0.15) | Subtle accent background |
 | `--border` | #3a3a3a | Default borders |
+| `--bg-hover` | #333 | Hover states |
+| `--card-shadow` | (seasonal) | Card box-shadow glow |
+| `--card-border` | (seasonal) | Card-specific border |
+| `--season-gradient` | (seasonal) | Gradient bar (below TopBar) |
 
 ### Navigation
 - **Desktop**: 220px sidebar (left), settings/profile bottom

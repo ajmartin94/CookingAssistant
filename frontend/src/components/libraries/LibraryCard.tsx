@@ -23,7 +23,8 @@ const LibraryCard: React.FC<LibraryCardProps> = ({ library, onDelete }) => {
   return (
     <Link
       to={`/libraries/${library.id}`}
-      className="block bg-white rounded-lg shadow-soft hover:shadow-soft-md transition-shadow duration-200 overflow-hidden"
+      className="block bg-card rounded-lg hover:shadow-soft-md transition-shadow duration-200 overflow-hidden"
+      style={{ boxShadow: 'var(--card-shadow)' }}
       data-testid="library-card"
     >
       {/* Library Header */}

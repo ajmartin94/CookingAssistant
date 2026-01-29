@@ -35,6 +35,13 @@ export function MainLayout({ children }: MainLayoutProps) {
         {/* Top bar */}
         <TopBar />
 
+        {/* Season gradient bar */}
+        <div
+          data-testid="season-gradient-bar"
+          className="h-1"
+          style={{ background: 'var(--season-gradient)' }}
+        />
+
         {/* Page content */}
         <main className="p-4 lg:p-6">{children}</main>
       </div>

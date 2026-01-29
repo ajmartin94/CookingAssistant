@@ -631,13 +631,11 @@ describe('SettingsPage', () => {
           expect(screen.getByRole('radiogroup', { name: /season/i })).toBeInTheDocument();
         });
 
-        // Select Spring in light mode
+        // Select Spring in light mode (light mode uses different accent: #4caf50)
         await user.click(screen.getByRole('radio', { name: /spring/i }));
 
         await waitFor(() => {
-          expect(document.documentElement.style.getPropertyValue('--accent')).toBe(
-            SEASON_COLORS.spring
-          );
+          expect(document.documentElement.style.getPropertyValue('--accent')).toBe('#4caf50');
           expect(document.documentElement.getAttribute('data-theme')).toBe('light');
         });
       });
