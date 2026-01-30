@@ -1,8 +1,8 @@
 ---
 name: plan
 description: |
-  Structure a brainstorm into a TDD-ready plan with acceptance criteria, layer breakdown,
-  and independent review. Use this skill when: (1) a brainstorm.md exists and needs
+  Structure a brainstorm into TDD-ready user stories with acceptance criteria, layer
+  breakdown, and independent review. Use this skill when: (1) a brainstorm.md exists and needs
   structuring for TDD, (2) the user says "plan this" or "make a plan", (3) preparing
   a feature for /tdd execution.
 ---
@@ -11,14 +11,17 @@ description: |
 
 Transform a brainstorm document into a structured plan that `/tdd` can execute.
 
-## Multi-Feature Plans
+## User Stories, Not Features
 
-A brainstorm may contain multiple features. The plan should break these into
-**separate feature sections**, each sized for one TDD round. Each feature section
-is independently executable by `/tdd`.
+A brainstorm may contain multiple capabilities. The plan should break these into
+**user stories** — each describing a complete user-visible outcome, sized for one
+TDD round. Each story is independently executable by `/tdd`.
 
-If a brainstorm is too large for one TDD session, split it into features that can
-be executed sequentially. Note dependencies between features where order matters.
+Stories are scoped from the user's perspective, not by technical layer or component.
+A good story answers: "What can the user do after this is done that they couldn't before?"
+
+If a brainstorm is too large for one TDD session, split it into stories that can
+be executed sequentially. Note dependencies between stories where order matters.
 
 ## Prerequisites
 
@@ -34,39 +37,45 @@ was designed.
 
 ### 2. Draft the Plan Structure
 
-Build the plan with the following structure. Repeat the Feature section for each
-feature in the brainstorm:
+Build the plan with the following structure. Repeat the Story section for each
+story in the brainstorm:
 
 ```markdown
 # Plan: {overall name}
 
 ## Overview
-What this plan covers and how many features/TDD rounds it contains.
+What this plan covers and how many stories/TDD rounds it contains.
 
-## Feature Order
-List features in execution order with dependencies noted.
-1. Feature A (no dependencies)
-2. Feature B (depends on A)
+## Story Order
+List stories in execution order with dependencies noted.
+1. Story name (no dependencies)
+2. Story name (depends on Story 1)
 
 ---
 
-## Feature: {name}
+## Story 1: {short name}
 
-### Summary
-One paragraph: what we're building and why.
+> *As a {user role}, I want to {action} so that {benefit}.*
 
 ### Layers
 Which layers are involved: [E2E, Backend, Frontend]
 
 ### Acceptance Criteria
-What the E2E tests verify when this feature is complete.
-- [ ] Criterion 1
-- [ ] Criterion 2
+Written from the user's perspective. Each criterion should be directly testable
+as an E2E scenario.
+- [ ] I can {action} and see {result}
+- [ ] When I {trigger}, {observable outcome} happens
+
+### E2E
+What the E2E tests verify. Each test maps to one or more acceptance criteria.
+- **Tests:**
+  - {User action} → {expected outcome}
 
 ### Backend
 What the backend tests should cover and what implementation looks like.
 - Tests: [what to test]
 - Implementation: [brief approach]
+(Omit this section if the story doesn't touch the backend.)
 
 ### Frontend
 What the frontend tests should cover and what implementation looks like.
@@ -80,8 +89,8 @@ What existing behavior changes. What existing tests will likely break.
 
 ---
 
-## Feature: {next name}
-[repeat structure]
+## Story 2: {next name}
+[repeat story structure]
 
 ---
 
@@ -95,7 +104,7 @@ Present the draft plan. Use `AskUserQuestion` to clarify:
 - Gaps in acceptance criteria
 - Unclear implementation approaches
 - Whether breaking changes are complete
-- Feature ordering and dependencies
+- Story ordering and dependencies
 - Any open questions from the brainstorm
 
 One topic per round, multiple questions per topic for efficiency.
@@ -108,32 +117,32 @@ to critique the plan from different angles:
 
 **Feasibility reviewer:**
 ```
-Review this feature plan for feasibility:
+Review this plan for feasibility:
 [plan content]
 
 Based on the project's current codebase (read CLAUDE.md and relevant source files),
 identify:
 - Missing dependencies or prerequisites
-- Scope concerns (any single feature too large for one TDD session?)
+- Scope concerns (any single story too large for one TDD session?)
 - Technical risks or unknowns
-- Whether feature ordering makes sense
+- Whether story ordering makes sense
 ```
 
 **Completeness reviewer:**
 ```
-Review this feature plan for completeness:
+Review this plan for completeness:
 [plan content]
 
 Identify:
 - Acceptance criteria that are vague or untestable
 - Missing edge cases or error scenarios
 - Layers that should be involved but aren't listed
-- Features that should be split further
+- Stories that should be split further
 ```
 
 **Migration reviewer:**
 ```
-Review this feature plan for migration risk:
+Review this plan for migration risk:
 [plan content]
 
 Based on the current codebase (read relevant test files and source),
@@ -148,7 +157,7 @@ identify:
 
 Summarize all reviewer findings to the user. For each finding, use `AskUserQuestion`:
 - Present the concern
-- Options: address now (update plan) / accept the risk / split into separate feature
+- Options: address now (update plan) / accept the risk / split into separate story
 
 Iterate until the user approves.
 
@@ -156,12 +165,13 @@ Iterate until the user approves.
 
 Save to: `.plans/issue-{issue-number}/plan.md`
 
-Tell the user: "Plan saved. Run `/tdd` to execute the first feature, or specify
-which feature to start with."
+Tell the user: "Plan saved. Run `/tdd` to execute the first story, or specify
+which story to start with."
 
 ## Principles
 
-- **One feature = one TDD round** — keep features independently executable
+- **One story = one TDD round** — each story delivers a user-visible outcome
+- **User perspective drives scope** — stories are sliced by what the user can do, not by technical layer
 - **Plan is for the machine** — structured enough for TDD to parse
 - **User decides** — reviewers surface concerns, user resolves them
 - **Complete before starting** — open questions must be resolved before TDD
