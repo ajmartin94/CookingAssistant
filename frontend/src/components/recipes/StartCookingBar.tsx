@@ -6,7 +6,11 @@
 
 import { Play } from '../common/icons';
 
-export default function StartCookingBar() {
+interface StartCookingBarProps {
+  onClick?: () => void;
+}
+
+export default function StartCookingBar({ onClick }: StartCookingBarProps) {
   return (
     <div
       data-testid="start-cooking-bar"
@@ -18,6 +22,7 @@ export default function StartCookingBar() {
       </div>
       <button
         aria-label="Start Cooking"
+        onClick={onClick}
         className="px-6 py-3 bg-accent text-text-on-accent rounded-lg font-medium flex items-center gap-2 hover:bg-accent-hover transition"
       >
         <Play className="w-4 h-4" />

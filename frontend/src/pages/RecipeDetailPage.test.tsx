@@ -463,6 +463,35 @@ describe('RecipeDetailPage', () => {
     });
   });
 
+  describe('Auto-open Cooking Mode via Query Param', () => {
+    it('should auto-open cooking mode overlay when URL has ?cook=true', async () => {
+      // Set the URL to include ?cook=true before rendering
+      window.history.pushState({}, '', '/recipes/1?cook=true');
+
+      render(<RecipeDetailPage />);
+
+      // The cooking mode overlay should open automatically
+      await waitFor(() => {
+        expect(screen.getByTestId('cooking-mode-overlay')).toBeInTheDocument();
+      });
+    });
+
+    it('should clear cook=true query param after auto-opening cooking mode', async () => {
+      // Set the URL to include ?cook=true before rendering
+      window.history.pushState({}, '', '/recipes/1?cook=true');
+
+      render(<RecipeDetailPage />);
+
+      // Wait for overlay to appear
+      await waitFor(() => {
+        expect(screen.getByTestId('cooking-mode-overlay')).toBeInTheDocument();
+      });
+
+      // The query param should be cleared from the URL
+      expect(window.location.search).not.toContain('cook=true');
+    });
+  });
+
   describe('Start Cooking Bar', () => {
     it('should display a fixed "Start Cooking" bar at the bottom', async () => {
       render(<RecipeDetailPage />);

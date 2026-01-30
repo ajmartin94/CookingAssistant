@@ -6,7 +6,7 @@
  */
 
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Clock, Users, ChefHat, ArrowRight, Gauge } from 'lucide-react';
 import { AIChatInput, SuggestionChips, ContextCard, QuickActions } from '../components/home';
 import { useAuth } from '../contexts/AuthContext';
@@ -38,6 +38,7 @@ function getTodayDayOfWeek(): number {
 
 export default function HomePage() {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [greeting, setGreeting] = useState(getGreeting());
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
@@ -236,7 +237,16 @@ export default function HomePage() {
                     </span>
                   </div>
                   <div className="flex gap-2">
-                    <button className="btn-animated px-4 py-2 bg-accent text-text-primary rounded-lg text-sm font-medium hover:bg-accent-hover transition">
+                    <button
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        if (tonightsDinner?.recipe?.id) {
+                          navigate(`/recipes/${tonightsDinner.recipe.id}?cook=true`);
+                        }
+                      }}
+                      className="btn-animated px-4 py-2 bg-accent text-text-primary rounded-lg text-sm font-medium hover:bg-accent-hover transition"
+                    >
                       Start Cooking
                     </button>
                     <button className="btn-animated px-4 py-2 bg-card text-text-secondary border border-default rounded-lg text-sm font-medium hover:bg-hover transition">

@@ -185,6 +185,45 @@ window.location.href = '/login';
 
 See [E2E Infrastructure Conventions](../e2e/CLAUDE.md#infrastructure-conventions) for full context.
 
+### Deep Link with Auto-Action Pattern
+
+Navigate to a page that should trigger an action on load (e.g., open cooking mode from home page):
+
+```typescript
+// Source page — navigate with query param
+navigate(`/recipes/${recipeId}?cook=true`);
+
+// Destination page — read param, act, then clear
+const [searchParams, setSearchParams] = useSearchParams();
+
+useEffect(() => {
+  if (recipe && searchParams.get('cook') === 'true') {
+    setCookingMode(true);
+    setSearchParams({}, { replace: true }); // Clear to prevent re-trigger on refresh
+  }
+}, [recipe, searchParams, setSearchParams]);
+```
+
+Use `replace: true` to avoid polluting browser history. Only trigger after data is loaded.
+
+---
+
+## Browser APIs
+
+### Wake Lock
+
+Prevents screen from sleeping during active sessions (cooking mode, timers):
+
+```typescript
+import { useWakeLock } from '../hooks/useWakeLock';
+
+function CookingOverlay() {
+  useWakeLock(true); // Acquires on mount, releases on unmount
+}
+```
+
+Gracefully degrades on unsupported browsers (no crash). Logs warning in dev mode on failure.
+
 ---
 
 <!-- Per AD-0100 -->

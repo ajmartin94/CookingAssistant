@@ -266,6 +266,38 @@ export class APIHelper {
     }
   }
 
+  // Meal Plan API methods
+  async getCurrentMealPlan(token: string) {
+    const response = await this.request.get(`${this.baseURL}/api/v1/meal-plans/current`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
+    if (!response.ok()) {
+      const text = await response.text();
+      throw new Error(`Failed to get current meal plan: ${text}`);
+    }
+
+    return response.json();
+  }
+
+  async upsertMealPlanEntry(token: string, planId: string, data: {
+    date: string;
+    meal_type: string;
+    recipe_id: string;
+  }) {
+    const response = await this.request.put(`${this.baseURL}/api/v1/meal-plans/${planId}/entries`, {
+      headers: { Authorization: `Bearer ${token}` },
+      data,
+    });
+
+    if (!response.ok()) {
+      const text = await response.text();
+      throw new Error(`Failed to upsert meal plan entry: ${text}`);
+    }
+
+    return response.json();
+  }
+
   // User API methods
   async getCurrentUser(token: string) {
     const response = await this.request.get(`${this.baseURL}/api/v1/users/me`, {

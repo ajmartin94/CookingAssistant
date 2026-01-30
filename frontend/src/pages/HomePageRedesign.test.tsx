@@ -190,6 +190,21 @@ describe('HomePage Redesign', () => {
       });
     });
 
+    it('should navigate to recipe detail with cook=true when "Start Cooking" is clicked', async () => {
+      const user = userEvent.setup();
+      render(<HomePage />);
+
+      await waitFor(() => {
+        expect(screen.getByRole('button', { name: /start cooking/i })).toBeInTheDocument();
+      });
+
+      await user.click(screen.getByRole('button', { name: /start cooking/i }));
+
+      // Should navigate to the tonight's dinner recipe with ?cook=true query param
+      expect(window.location.pathname).toBe('/recipes/r-today');
+      expect(window.location.search).toBe('?cook=true');
+    });
+
     it('should show metadata with time, servings, and difficulty', async () => {
       render(<HomePage />);
 
