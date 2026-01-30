@@ -43,6 +43,12 @@ def _build_entry_response(e: object) -> MealPlanEntryResponse:
                 id=e.recipe.id,
                 title=e.recipe.title,
                 cook_time_minutes=e.recipe.cook_time_minutes,
+                servings=e.recipe.servings,
+                difficulty_level=(
+                    e.recipe.difficulty_level.value
+                    if e.recipe.difficulty_level
+                    else None
+                ),
             )
             if e.recipe
             else None

@@ -8,7 +8,13 @@ interface BackendMealPlanResponse {
     id: string;
     day_of_week: number;
     meal_type: 'breakfast' | 'lunch' | 'dinner';
-    recipe: { id: string; title: string; cook_time_minutes: number } | null;
+    recipe: {
+      id: string;
+      title: string;
+      cook_time_minutes: number;
+      servings: number;
+      difficulty_level: string;
+    } | null;
   }[];
   created_at: string;
   updated_at: string;
@@ -28,6 +34,8 @@ function transformMealPlan(data: BackendMealPlanResponse): MealPlan {
               id: e.recipe.id,
               title: e.recipe.title,
               cookTimeMinutes: e.recipe.cook_time_minutes,
+              servings: e.recipe.servings,
+              difficultyLevel: e.recipe.difficulty_level,
             }
           : null,
       })
@@ -56,7 +64,13 @@ export async function upsertMealPlanEntry(
     id: string;
     day_of_week: number;
     meal_type: 'breakfast' | 'lunch' | 'dinner';
-    recipe: { id: string; title: string; cook_time_minutes: number } | null;
+    recipe: {
+      id: string;
+      title: string;
+      cook_time_minutes: number;
+      servings: number;
+      difficulty_level: string;
+    } | null;
   }>(`/api/v1/meal-plans/${planId}/entries`, data);
   const e = response.data;
   return {
@@ -64,7 +78,13 @@ export async function upsertMealPlanEntry(
     dayOfWeek: e.day_of_week,
     mealType: e.meal_type,
     recipe: e.recipe
-      ? { id: e.recipe.id, title: e.recipe.title, cookTimeMinutes: e.recipe.cook_time_minutes }
+      ? {
+          id: e.recipe.id,
+          title: e.recipe.title,
+          cookTimeMinutes: e.recipe.cook_time_minutes,
+          servings: e.recipe.servings,
+          difficultyLevel: e.recipe.difficulty_level,
+        }
       : null,
   };
 }

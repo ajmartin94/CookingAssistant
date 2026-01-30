@@ -90,6 +90,8 @@ describe('MealPlanPage', () => {
                     id: 'r1',
                     title: 'Scrambled Eggs',
                     cook_time_minutes: 10,
+                    servings: 2,
+                    difficulty_level: 'easy',
                   },
                 }),
               ],

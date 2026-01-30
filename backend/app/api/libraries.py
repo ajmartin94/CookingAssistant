@@ -53,7 +53,19 @@ async def list_libraries(
         skip=skip,
         limit=limit,
     )
-    return libraries
+    return [
+        LibraryResponse(
+            id=lib.id,
+            name=lib.name,
+            description=lib.description,
+            is_public=lib.is_public,
+            owner_id=lib.owner_id,
+            recipe_count=len(lib.recipes) if lib.recipes else 0,
+            created_at=lib.created_at,
+            updated_at=lib.updated_at,
+        )
+        for lib in libraries
+    ]
 
 
 @router.post("", response_model=LibraryResponse, status_code=status.HTTP_201_CREATED)

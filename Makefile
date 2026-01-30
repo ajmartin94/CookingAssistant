@@ -2,7 +2,7 @@
        test test-backend test-frontend test-e2e test-e2e-full \
        dev dev-backend dev-frontend \
        lint format typecheck check \
-       migrate migration
+       migrate migration seed seed-reset
 
 # Paths (relative from repo root)
 VENV    = backend/venv
@@ -62,10 +62,16 @@ dev: ## Show instructions to start dev servers
 	@echo "  make dev-backend    # http://localhost:8000"
 	@echo "  make dev-frontend   # http://localhost:5173"
 
-dev-backend: ## Start backend dev server
+dev-backend: ## Start backend dev server (use RESET=1 to kill existing first)
+ifdef RESET
+	-fuser -k 8000/tcp 2>/dev/null; sleep 1
+endif
 	cd backend && $(BPYTHON) -m uvicorn app.main:app --reload --port 8000
 
-dev-frontend: ## Start frontend dev server
+dev-frontend: ## Start frontend dev server (use RESET=1 to kill existing first)
+ifdef RESET
+	-fuser -k 5173/tcp 2>/dev/null; sleep 1
+endif
 	cd frontend && npm run dev
 
 # ── Code Quality ─────────────────────────────────────────────────────
@@ -100,6 +106,12 @@ check: ## Full CI check locally (lint + format-check + typecheck + test)
 
 migrate: ## Run pending migrations
 	cd backend && $(BPYTHON) -m alembic upgrade head
+
+seed: ## Seed database with demo data (demo@example.com / demopassword123)
+	cd backend && SEED_USER_EMAIL=demo@example.com SEED_USER_PASSWORD=demopassword123 $(BPYTHON) -m scripts.seed
+
+seed-reset: ## Wipe and re-seed database
+	cd backend && SEED_USER_EMAIL=demo@example.com SEED_USER_PASSWORD=demopassword123 $(BPYTHON) -m scripts.seed --reset
 
 migration: ## Create new migration (usage: make migration MSG="description")
 ifndef MSG

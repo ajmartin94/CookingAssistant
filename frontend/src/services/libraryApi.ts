@@ -17,14 +17,36 @@ interface LibraryDetailResponse extends RecipeLibrary {
   recipes: Recipe[];
 }
 
+interface BackendLibrary {
+  id: string;
+  name: string;
+  description: string;
+  owner_id: string;
+  is_public: boolean;
+  recipe_count: number;
+  created_at: string;
+  updated_at: string;
+}
+
+const transformLibrary = (backend: BackendLibrary): RecipeLibrary => ({
+  id: backend.id,
+  name: backend.name,
+  description: backend.description,
+  ownerId: backend.owner_id,
+  isPublic: backend.is_public,
+  recipeCount: backend.recipe_count ?? 0,
+  createdAt: backend.created_at,
+  updatedAt: backend.updated_at,
+});
+
 /**
  * Get list of user's libraries
  */
 export const getLibraries = async (skip = 0, limit = 50): Promise<RecipeLibrary[]> => {
-  const response = await apiClient.get('/api/v1/libraries', {
+  const response = await apiClient.get<BackendLibrary[]>('/api/v1/libraries', {
     params: { skip, limit },
   });
-  return response.data;
+  return response.data.map(transformLibrary);
 };
 
 /**

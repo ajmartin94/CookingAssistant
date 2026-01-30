@@ -1210,38 +1210,31 @@ describe('RecipesPage', () => {
       expect(screen.getByText(/manage/i)).toBeInTheDocument();
     });
 
-    it('should render 5 collection cards', async () => {
+    it('should render collection cards from API', async () => {
       render(<RecipesPage />);
 
-      const collectionCards = screen.getAllByTestId('collection-card');
-      expect(collectionCards).toHaveLength(5);
+      await waitFor(() => {
+        const collectionCards = screen.getAllByTestId('collection-card');
+        expect(collectionCards).toHaveLength(2); // default MSW handler returns 2 libraries
+      });
     });
 
-    it('should render collection cards with names: Favorites, Quick Meals, Healthy, Party Food, New Collection', async () => {
+    it('should render collection cards with names from API', async () => {
       render(<RecipesPage />);
 
-      expect(screen.getByText('Favorites')).toBeInTheDocument();
-      expect(screen.getByText('Quick Meals')).toBeInTheDocument();
-      expect(screen.getByText('Healthy')).toBeInTheDocument();
-      expect(screen.getByText('Party Food')).toBeInTheDocument();
-      expect(screen.getByText('New Collection')).toBeInTheDocument();
+      await waitFor(() => {
+        expect(screen.getByText('Test Library')).toBeInTheDocument();
+        expect(screen.getByText('Another Library')).toBeInTheDocument();
+      });
     });
 
     it('should render collection cards with recipe counts', async () => {
       render(<RecipesPage />);
 
-      expect(screen.getByText(/12 recipes/i)).toBeInTheDocument();
-      expect(screen.getByText(/8 recipes/i)).toBeInTheDocument();
-    });
-
-    it('should use Lucide icons (SVG elements) not emoji text', async () => {
-      render(<RecipesPage />);
-
-      const collectionCards = screen.getAllByTestId('collection-card');
-      // Each collection card should contain an SVG icon
-      collectionCards.forEach((card) => {
-        const svg = card.querySelector('svg');
-        expect(svg).toBeInTheDocument();
+      await waitFor(() => {
+        // Default mock libraries both have recipeCount: 5
+        const countElements = screen.getAllByText(/5 recipes/i);
+        expect(countElements.length).toBeGreaterThanOrEqual(1);
       });
     });
   });

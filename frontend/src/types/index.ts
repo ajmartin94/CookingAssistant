@@ -59,6 +59,7 @@ export interface RecipeLibrary {
   description: string;
   ownerId: string;
   isPublic: boolean;
+  recipeCount: number;
   createdAt: string;
   updatedAt: string;
 }

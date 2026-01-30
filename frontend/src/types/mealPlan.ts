@@ -4,6 +4,8 @@ export interface MealPlanRecipe {
   id: string;
   title: string;
   cookTimeMinutes: number;
+  servings: number;
+  difficultyLevel: string;
 }
 
 export interface MealPlanEntry {

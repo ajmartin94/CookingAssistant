@@ -18,11 +18,15 @@ import sys
 from pathlib import Path
 from typing import Optional
 
+from datetime import date, timedelta
+
 from sqlalchemy import select, delete
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.user import User
 from app.models.recipe import Recipe
+from app.models.library import RecipeLibrary
+from app.models.meal_plan import MealPlan, MealPlanEntry
 from app.services.auth_service import get_password_hash
 
 
@@ -127,7 +131,31 @@ async def run_seed(
                 "Use --reset to delete and re-create seed data."
             )
 
-        # Delete existing user (cascade deletes recipes)
+        # Delete existing seed data
+        # First clear library_id from recipes to avoid FK issues
+        result_recipes = await db.execute(
+            select(Recipe).where(Recipe.owner_id == existing_user.id)
+        )
+        for recipe in result_recipes.scalars().all():
+            recipe.library_id = None
+        await db.flush()
+
+        # Delete meal plan entries and meal plans
+        result_plans = await db.execute(
+            select(MealPlan).where(MealPlan.user_id == existing_user.id)
+        )
+        for plan in result_plans.scalars().all():
+            await db.execute(
+                delete(MealPlanEntry).where(MealPlanEntry.meal_plan_id == plan.id)
+            )
+        await db.execute(delete(MealPlan).where(MealPlan.user_id == existing_user.id))
+
+        # Delete libraries
+        await db.execute(
+            delete(RecipeLibrary).where(RecipeLibrary.owner_id == existing_user.id)
+        )
+
+        # Delete recipes and user
         await db.execute(delete(Recipe).where(Recipe.owner_id == existing_user.id))
         await db.execute(delete(User).where(User.id == existing_user.id))
         await db.commit()
@@ -162,6 +190,58 @@ async def run_seed(
             owner_id=seed_user.id,
         )
         db.add(recipe)
+
+    await db.commit()
+
+    # Fetch all created recipes for library assignment
+    result = await db.execute(select(Recipe).where(Recipe.owner_id == seed_user.id))
+    all_recipes = list(result.scalars().all())
+
+    # Create 5 libraries with varied recipe subsets
+    library_definitions = [
+        ("Favorites", "Your favorite recipes", slice(0, 5)),
+        ("Quick Meals", "Recipes under 30 minutes", slice(5, 9)),
+        ("Healthy", "Nutritious and wholesome recipes", slice(9, 15)),
+        ("Comfort Food", "Warm and comforting dishes", slice(15, 18)),
+        ("Weeknight Dinners", "Easy weeknight meal ideas", slice(18, 20)),
+    ]
+
+    for lib_name, lib_desc, recipe_slice in library_definitions:
+        library = RecipeLibrary(
+            name=lib_name,
+            description=lib_desc,
+            owner_id=seed_user.id,
+        )
+        db.add(library)
+        await db.flush()
+
+        for recipe in all_recipes[recipe_slice]:
+            recipe.library_id = library.id
+
+    await db.commit()
+
+    # Create meal plan for current week
+    today = date.today()
+    # Monday of current week
+    week_start = today - timedelta(days=today.weekday())
+
+    meal_plan = MealPlan(
+        user_id=seed_user.id,
+        week_start_date=week_start,
+    )
+    db.add(meal_plan)
+    await db.flush()
+
+    # Create dinner entries for each day (0-6)
+    for day in range(7):
+        recipe = all_recipes[day % len(all_recipes)]
+        entry = MealPlanEntry(
+            meal_plan_id=meal_plan.id,
+            day_of_week=day,
+            meal_type="dinner",
+            recipe_id=recipe.id,
+        )
+        db.add(entry)
 
     await db.commit()
 

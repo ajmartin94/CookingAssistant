@@ -12,38 +12,23 @@ import {
   Upload,
   Search,
   Filter,
-  Heart,
-  Zap,
-  Salad,
-  PartyPopper,
   LayoutGrid,
   List,
 } from '../components/common/icons';
 import RecipeCard from '../components/recipes/RecipeCard';
 import { recipeApi } from '../services/recipeApi';
-import type { Recipe } from '../types';
-import type { LucideIcon } from 'lucide-react';
-
-// Collection data with Lucide icons
-interface Collection {
-  name: string;
-  icon: LucideIcon;
-  count: number;
-  countLabel: string;
-}
-
-const COLLECTIONS: Collection[] = [
-  { name: 'Favorites', icon: Heart, count: 12, countLabel: '12 recipes' },
-  { name: 'Quick Meals', icon: Zap, count: 8, countLabel: '8 recipes' },
-  { name: 'Healthy', icon: Salad, count: 15, countLabel: '15 recipes' },
-  { name: 'Party Food', icon: PartyPopper, count: 6, countLabel: '6 recipes' },
-  { name: 'New Collection', icon: Plus, count: 0, countLabel: 'Create' },
-];
+import { getLibraries } from '../services/libraryApi';
+import type { Recipe, RecipeLibrary } from '../types';
 
 export default function RecipesPage() {
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  // Libraries (collections) state
+  const [libraries, setLibraries] = useState<RecipeLibrary[]>([]);
+  const [librariesLoading, setLibrariesLoading] = useState(true);
+  const [librariesError, setLibrariesError] = useState<string | null>(null);
 
   // Filter states
   const [searchQuery, setSearchQuery] = useState('');
@@ -81,6 +66,23 @@ export default function RecipesPage() {
       }
     };
   }, [searchQuery]);
+
+  // Fetch libraries on mount
+  useEffect(() => {
+    const fetchLibraries = async () => {
+      try {
+        setLibrariesLoading(true);
+        setLibrariesError(null);
+        const data = await getLibraries();
+        setLibraries(data);
+      } catch {
+        setLibrariesError('Failed to load collections');
+      } finally {
+        setLibrariesLoading(false);
+      }
+    };
+    fetchLibraries();
+  }, []);
 
   // Fetch recipes
   useEffect(() => {
@@ -198,24 +200,43 @@ export default function RecipesPage() {
           <h3 className="text-lg font-semibold text-text-primary">Collections</h3>
           <span className="text-accent text-sm cursor-pointer">Manage &rarr;</span>
         </div>
-        <div className="flex gap-3 overflow-x-auto pb-2">
-          {COLLECTIONS.map((collection) => {
-            const IconComponent = collection.icon;
-            return (
+        {librariesLoading && (
+          <div className="flex gap-3 overflow-x-auto pb-2">
+            {[1, 2, 3].map((i) => (
               <div
-                key={collection.name}
+                key={i}
+                className="min-w-[180px] bg-card border border-default rounded-lg p-4 animate-pulse"
+                data-testid="collection-skeleton"
+              >
+                <div className="h-4 bg-hover rounded w-3/4 mb-2"></div>
+                <div className="h-3 bg-hover rounded w-1/2"></div>
+              </div>
+            ))}
+          </div>
+        )}
+        {librariesError && <p className="text-error text-sm">{librariesError}</p>}
+        {!librariesLoading && !librariesError && libraries.length === 0 && (
+          <div className="text-center py-6">
+            <p className="text-text-muted text-sm mb-2">No collections yet</p>
+            <button className="px-4 py-2 bg-accent text-text-primary rounded-lg font-semibold hover:bg-accent-hover transition">
+              Create Collection
+            </button>
+          </div>
+        )}
+        {!librariesLoading && !librariesError && libraries.length > 0 && (
+          <div className="flex gap-3 overflow-x-auto pb-2">
+            {libraries.map((library) => (
+              <div
+                key={library.id}
                 className="min-w-[180px] bg-card border border-default rounded-lg p-4 cursor-pointer hover:border-text-muted transition"
                 data-testid="collection-card"
               >
-                <div className="w-10 h-10 bg-hover rounded-lg flex items-center justify-center mb-3">
-                  <IconComponent className="w-5 h-5 text-text-secondary" />
-                </div>
-                <div className="text-sm font-medium text-text-primary">{collection.name}</div>
-                <div className="text-xs text-text-muted">{collection.countLabel}</div>
+                <div className="text-sm font-medium text-text-primary">{library.name}</div>
+                <div className="text-xs text-text-muted">{library.recipeCount} recipes</div>
               </div>
-            );
-          })}
-        </div>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Search, Filters & View Toggle */}

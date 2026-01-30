@@ -10,6 +10,8 @@ import { Link } from 'react-router-dom';
 import { Clock, Users, ChefHat, ArrowRight, Gauge } from 'lucide-react';
 import { AIChatInput, SuggestionChips, ContextCard, QuickActions } from '../components/home';
 import { useAuth } from '../contexts/AuthContext';
+import { fetchCurrentMealPlan } from '../services/mealPlanApi';
+import type { MealPlan, MealPlanEntry } from '../types/mealPlan';
 
 // Get greeting based on time of day
 function getGreeting(): string {
@@ -28,11 +30,20 @@ function formatDate(): string {
   });
 }
 
+// Get today's day_of_week (Monday=0 ... Sunday=6)
+function getTodayDayOfWeek(): number {
+  const jsDay = new Date().getDay();
+  return jsDay === 0 ? 6 : jsDay - 1;
+}
+
 export default function HomePage() {
   const { user } = useAuth();
   const [greeting, setGreeting] = useState(getGreeting());
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
+  const [mealPlan, setMealPlan] = useState<MealPlan | null>(null);
+  const [mealPlanLoading, setMealPlanLoading] = useState(true);
+  const [mealPlanError, setMealPlanError] = useState(false);
 
   // Update greeting when time changes significantly
   useEffect(() => {
@@ -41,6 +52,57 @@ export default function HomePage() {
     }, 60000); // Check every minute
     return () => clearInterval(interval);
   }, []);
+
+  // Fetch current meal plan
+  const isAuthenticated = !!user;
+  useEffect(() => {
+    if (!isAuthenticated) return;
+    let cancelled = false;
+    fetchCurrentMealPlan()
+      .then((plan) => {
+        if (!cancelled) {
+          setMealPlan(plan);
+          setMealPlanError(false);
+        }
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setMealPlanError(true);
+        }
+      })
+      .finally(() => {
+        if (!cancelled) setMealPlanLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [isAuthenticated]);
+
+  // Get today's dinner entry
+  function getTonightsDinner(): MealPlanEntry | null {
+    if (!mealPlan) return null;
+    const todayDow = getTodayDayOfWeek();
+    const entry = mealPlan.entries.find((e) => e.dayOfWeek === todayDow && e.mealType === 'dinner');
+    return entry ?? null;
+  }
+
+  // Build 5-day rolling window (today + 4 days)
+  function getWeekDays(): Array<{ label: string; recipe: string | null; isToday: boolean }> {
+    const dayNames = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+    const todayDow = getTodayDayOfWeek();
+    const days: Array<{ label: string; recipe: string | null; isToday: boolean }> = [];
+    for (let i = 0; i < 5; i++) {
+      const dow = (todayDow + i) % 7;
+      const label = i === 0 ? 'Today' : dayNames[dow];
+      const entry = mealPlan?.entries.find((e) => e.dayOfWeek === dow && e.mealType === 'dinner');
+      days.push({
+        label,
+        recipe: entry?.recipe?.title ?? null,
+        isToday: i === 0,
+      });
+    }
+    return days;
+  }
 
   const handleChatSubmit = (message: string) => {
     // Visual feedback only - AI functionality deferred
@@ -85,6 +147,9 @@ export default function HomePage() {
     );
   }
 
+  const tonightsDinner = getTonightsDinner();
+  const hasDinner = !mealPlanLoading && !mealPlanError && tonightsDinner?.recipe;
+
   // Authenticated home page
   return (
     <div className="min-h-screen bg-primary">
@@ -119,70 +184,110 @@ export default function HomePage() {
           {/* Primary Card - Tonight's Meal */}
           <ContextCard
             title="Tonight's Dinner"
-            badge="Ready"
-            subtitle="Planned for 6:30 PM"
-            to="/recipes"
+            badge={hasDinner ? 'Ready' : undefined}
+            subtitle={hasDinner ? 'Planned for 6:30 PM' : undefined}
+            to={hasDinner ? '/recipes' : '/planning'}
           >
-            <div className="flex gap-4">
-              <div className="w-32 h-24 rounded-lg bg-gradient-to-br from-hover to-card flex items-center justify-center">
-                <ChefHat className="w-8 h-8 text-text-muted" />
-              </div>
-              <div className="flex-1">
-                <h2 className="text-lg font-semibold text-text-primary mb-2">
-                  Honey Garlic Salmon
-                </h2>
-                <div className="flex gap-4 text-sm text-text-secondary mb-3">
-                  <span className="flex items-center gap-1">
-                    <Clock className="w-4 h-4" />
-                    35 min
-                  </span>
-                  <span className="flex items-center gap-1">
-                    <Users className="w-4 h-4" />4 servings
-                  </span>
-                  <span className="flex items-center gap-1">
-                    <Gauge className="w-4 h-4" />
-                    Medium
-                  </span>
-                </div>
-                <div className="flex gap-2">
-                  <button className="btn-animated px-4 py-2 bg-accent text-text-primary rounded-lg text-sm font-medium hover:bg-accent-hover transition">
-                    Start Cooking
-                  </button>
-                  <button className="btn-animated px-4 py-2 bg-card text-text-secondary border border-default rounded-lg text-sm font-medium hover:bg-hover transition">
-                    View Recipe
-                  </button>
+            {mealPlanLoading ? (
+              <div className="flex gap-4">
+                <div
+                  data-testid="skeleton-image"
+                  className="w-32 h-24 rounded-lg bg-hover animate-pulse"
+                />
+                <div className="flex-1 space-y-3">
+                  <div
+                    data-testid="skeleton-title"
+                    className="h-5 w-40 bg-hover rounded animate-pulse"
+                  />
+                  <div
+                    data-testid="skeleton-meta"
+                    className="h-4 w-56 bg-hover rounded animate-pulse"
+                  />
+                  <div
+                    data-testid="skeleton-buttons"
+                    className="h-8 w-48 bg-hover rounded animate-pulse"
+                  />
                 </div>
               </div>
-            </div>
+            ) : mealPlanError ? (
+              <p className="text-text-secondary">{"Couldn't load meal plan data."}</p>
+            ) : tonightsDinner?.recipe ? (
+              <div className="flex gap-4">
+                <div className="w-32 h-24 rounded-lg bg-gradient-to-br from-hover to-card flex items-center justify-center">
+                  <ChefHat className="w-8 h-8 text-text-muted" />
+                </div>
+                <div className="flex-1">
+                  <h2 className="text-lg font-semibold text-text-primary mb-2">
+                    {tonightsDinner.recipe.title}
+                  </h2>
+                  <div className="flex gap-4 text-sm text-text-secondary mb-3">
+                    <span className="flex items-center gap-1">
+                      <Clock className="w-4 h-4" />
+                      {tonightsDinner.recipe.cookTimeMinutes} min
+                    </span>
+                    <span className="flex items-center gap-1">
+                      <Users className="w-4 h-4" />
+                      {tonightsDinner.recipe.servings} servings
+                    </span>
+                    <span className="flex items-center gap-1">
+                      <Gauge className="w-4 h-4" />
+                      {tonightsDinner.recipe.difficultyLevel.charAt(0).toUpperCase() +
+                        tonightsDinner.recipe.difficultyLevel.slice(1)}
+                    </span>
+                  </div>
+                  <div className="flex gap-2">
+                    <button className="btn-animated px-4 py-2 bg-accent text-text-primary rounded-lg text-sm font-medium hover:bg-accent-hover transition">
+                      Start Cooking
+                    </button>
+                    <button className="btn-animated px-4 py-2 bg-card text-text-secondary border border-default rounded-lg text-sm font-medium hover:bg-hover transition">
+                      View Recipe
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className="text-center py-4">
+                <p className="text-text-secondary mb-3">No dinner planned for tonight</p>
+                <span className="text-accent">Plan dinner</span>
+              </div>
+            )}
           </ContextCard>
 
           {/* Week Preview Card */}
           <ContextCard title="This Week" to="/planning">
-            <div className="space-y-2">
-              {['Fri', 'Today', 'Sun', 'Mon', 'Tue'].map((day, index) => (
-                <div
-                  key={day}
-                  className="flex items-center gap-3 py-2 border-b border-default last:border-b-0"
-                >
-                  <span
-                    className={`w-10 text-xs ${day === 'Today' ? 'text-accent font-medium' : 'text-text-muted'}`}
+            {mealPlanLoading ? (
+              <div className="space-y-2">
+                {[0, 1, 2, 3, 4].map((i) => (
+                  <div
+                    key={i}
+                    data-testid={`skeleton-day-${i}`}
+                    className="h-8 bg-hover rounded animate-pulse"
+                  />
+                ))}
+              </div>
+            ) : (
+              <div className="space-y-2">
+                {getWeekDays().map((day, index) => (
+                  <div
+                    key={`${day.label}-${index}`}
+                    className="flex items-center gap-3 py-2 border-b border-default last:border-b-0"
                   >
-                    {day}
-                  </span>
-                  <span
-                    className={`text-sm ${index > 2 ? 'text-text-muted italic' : 'text-text-secondary'}`}
-                  >
-                    {index === 0
-                      ? 'Pasta Carbonara'
-                      : index === 1
-                        ? 'Honey Garlic Salmon'
-                        : index === 2
-                          ? 'Beef Tacos'
-                          : 'Not planned'}
-                  </span>
-                </div>
-              ))}
-            </div>
+                    <span
+                      className={`w-10 text-xs ${day.label === 'Today' ? 'text-accent font-medium' : 'text-text-muted'}`}
+                    >
+                      {day.label}
+                    </span>
+                    <span
+                      className={`text-sm ${day.recipe ? 'text-text-secondary' : 'text-text-muted italic'}`}
+                    >
+                      {day.isToday && day.recipe
+                        ? "See tonight's dinner"
+                        : (day.recipe ?? 'Not planned')}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
             <span className="mt-3 text-sm text-accent flex items-center gap-1">
               View full plan <ArrowRight className="w-3 h-3" />
             </span>

@@ -31,11 +31,23 @@ describe('DayColumn', () => {
     const entries = [
       mockMealPlanEntry({
         meal_type: 'breakfast',
-        recipe: { id: 'r1', title: 'Pancakes', cook_time_minutes: 15 },
+        recipe: {
+          id: 'r1',
+          title: 'Pancakes',
+          cook_time_minutes: 15,
+          servings: 2,
+          difficulty_level: 'easy',
+        },
       }),
       mockMealPlanEntry({
         meal_type: 'dinner',
-        recipe: { id: 'r2', title: 'Pasta', cook_time_minutes: 25 },
+        recipe: {
+          id: 'r2',
+          title: 'Pasta',
+          cook_time_minutes: 25,
+          servings: 4,
+          difficulty_level: 'medium',
+        },
       }),
     ];
 

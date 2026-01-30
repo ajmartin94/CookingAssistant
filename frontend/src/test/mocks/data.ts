@@ -122,6 +122,7 @@ export const mockLibrary = (overrides?: Partial<RecipeLibrary>): RecipeLibrary =
   description: 'A test library',
   isPublic: false,
   ownerId: '1',
+  recipeCount: 5,
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
   ...overrides,
