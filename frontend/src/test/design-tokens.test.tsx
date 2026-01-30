@@ -31,7 +31,6 @@ import RecipeDetailPage from '../pages/RecipeDetailPage';
 import RecipeCard from '../components/recipes/RecipeCard';
 import RecipeForm from '../components/recipes/RecipeForm';
 import { Sidebar } from '../components/common/layout/Sidebar';
-import { TopBar } from '../components/common/layout/TopBar';
 import { MainLayout } from '../components/common/layout/MainLayout';
 import { ChatPanel } from '../components/chat/ChatPanel';
 import { FeedbackButton } from '../components/feedback/FeedbackButton';
@@ -324,11 +323,11 @@ describe('Design Token Migration', () => {
       expect(formContainer?.className).not.toMatch(/\bbg-white\b/);
     });
 
-    it('should use text-primary token for labels', () => {
+    it('should use text-text-secondary token for labels', () => {
       render(<LoginPage />);
 
       const label = screen.getByText('Username');
-      expect(label.className).toMatch(/\btext-primary\b/);
+      expect(label.className).toMatch(/\btext-text-secondary\b/);
       expect(label.className).not.toMatch(/\btext-neutral-\d+\b/);
     });
 
@@ -854,57 +853,6 @@ describe('Design Token Migration', () => {
           expect(badge.className).not.toMatch(/\bbg-success-\d+\b/);
         });
       });
-    });
-  });
-
-  describe('TopBar Component', () => {
-    it('should use semantic design tokens instead of hardcoded colors', () => {
-      const { container } = render(<TopBar />);
-
-      const hardcodedColors = findAllHardcodedColors(container);
-
-      expect(
-        hardcodedColors.size,
-        `Found hardcoded colors in TopBar: ${JSON.stringify(Object.fromEntries(hardcodedColors))}`
-      ).toBe(0);
-    });
-
-    it('should use bg-card token for header background', () => {
-      const { container } = render(<TopBar />);
-
-      const header = container.querySelector('header');
-      // Should use bg-card, not bg-white
-      expect(header?.className).toMatch(/\bbg-card\b/);
-      expect(header?.className).not.toMatch(/\bbg-white\b/);
-    });
-
-    it('should use border-default token for bottom border', () => {
-      const { container } = render(<TopBar />);
-
-      const header = container.querySelector('header');
-      // Should use border-default, not border-neutral-200
-      expect(header?.className).toMatch(/\bborder-default\b/);
-      expect(header?.className).not.toMatch(/\bborder-neutral-\d+\b/);
-    });
-
-    it('should use text-text-primary token for logo text', () => {
-      const { container } = render(<TopBar />);
-
-      const logoText = container.querySelector('[class*="font-display"]');
-      // Should use text-text-primary, not text-neutral-900
-      expect(logoText?.className).toMatch(/\btext-text-primary\b/);
-      expect(logoText?.className).not.toMatch(/\btext-neutral-\d+\b/);
-    });
-
-    it('should use bg-accent token for logo icon container', () => {
-      const { container } = render(<TopBar />);
-
-      const logoIcon = container.querySelector('[class*="rounded-lg"]');
-      if (logoIcon && logoIcon.querySelector('svg')) {
-        // Should use bg-accent, not bg-primary-500
-        expect(logoIcon.className).toMatch(/\bbg-accent\b/);
-        expect(logoIcon.className).not.toMatch(/\bbg-primary-\d+\b/);
-      }
     });
   });
 

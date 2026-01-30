@@ -77,7 +77,7 @@ const RecipeCard: React.FC<RecipeCardProps> = ({ recipe }) => {
         <div className="p-4">
           {/* Title */}
           <h3
-            className="text-xl font-semibold text-primary mb-2 line-clamp-2"
+            className="text-xl font-semibold text-text-primary mb-2 line-clamp-2"
             data-testid="card-title"
           >
             {recipe.title}

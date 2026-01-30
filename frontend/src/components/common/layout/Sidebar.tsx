@@ -7,7 +7,6 @@
  */
 
 import type { ReactNode } from 'react';
-import { Link } from 'react-router-dom';
 import {
   ChevronLeft,
   ChevronRight,
@@ -15,7 +14,6 @@ import {
   BookOpen,
   Calendar,
   ShoppingCart,
-  ChefHat,
   Settings,
 } from 'lucide-react';
 import { useSidebar } from '../../../contexts/SidebarContext';
@@ -53,42 +51,8 @@ export function Sidebar({ children }: SidebarProps) {
           w-[220px]
         `}
       >
-        {/* Logo / Header */}
-        <div
-          className={`
-          flex items-center h-16 border-b border-default
-          ${isCollapsed ? 'justify-center px-2' : 'justify-between px-4'}
-        `}
-        >
-          <Link
-            to="/home"
-            className="flex items-center gap-2 min-w-0 overflow-hidden focus:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded-lg"
-            onClick={closeMobile}
-          >
-            <div className="w-8 h-8 bg-accent rounded-lg flex-shrink-0 flex items-center justify-center">
-              <ChefHat className="w-5 h-5 text-text-primary" />
-            </div>
-            {!isCollapsed && (
-              <span className="font-display font-bold text-base text-text-primary whitespace-nowrap">
-                CookingAssistant
-              </span>
-            )}
-          </Link>
-
-          {/* Collapse toggle - desktop only */}
-          <button
-            onClick={toggleCollapse}
-            data-testid="sidebar-collapse"
-            className="hidden lg:flex items-center justify-center w-8 h-8 rounded-lg hover:bg-hover text-text-muted focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
-            aria-label={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-          >
-            {isCollapsed ? (
-              <ChevronRight className="w-4 h-4" />
-            ) : (
-              <ChevronLeft className="w-4 h-4" />
-            )}
-          </button>
-        </div>
+        {/* Spacer for logo area */}
+        <div className="h-16" />
 
         {/* Navigation */}
         <nav className="flex-1 overflow-y-auto p-3">
@@ -109,6 +73,22 @@ export function Sidebar({ children }: SidebarProps) {
             </>
           )}
         </nav>
+
+        {/* Collapse toggle - desktop only */}
+        <div className="p-3">
+          <button
+            onClick={toggleCollapse}
+            data-testid="sidebar-collapse"
+            className="hidden lg:flex items-center justify-center w-full h-10 rounded-lg hover:bg-hover text-text-muted focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+            aria-label={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+          >
+            {isCollapsed ? (
+              <ChevronRight className="w-4 h-4" />
+            ) : (
+              <ChevronLeft className="w-4 h-4" />
+            )}
+          </button>
+        </div>
 
         {/* Settings at bottom */}
         <div className="p-3 border-t border-default">

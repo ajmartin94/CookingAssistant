@@ -165,19 +165,14 @@ describe('Sidebar', () => {
     });
   });
 
-  describe('logo', () => {
-    it('should render logo text "CookingAssistant"', () => {
+  describe('logo removed from sidebar', () => {
+    it('should NOT render logo text "CookingAssistant" inside the sidebar', () => {
       render(<Sidebar />);
 
-      expect(screen.getByText('CookingAssistant')).toBeInTheDocument();
-    });
-
-    it('should link logo to /home', () => {
-      render(<Sidebar />);
-
-      // Logo link should go to /home, not /recipes
-      const logoLink = screen.getByText('CookingAssistant').closest('a');
-      expect(logoLink).toHaveAttribute('href', '/home');
+      // Logo has been moved to MainLayout; sidebar should not contain it
+      const sidebar = screen.getByTestId('sidebar');
+      const logoText = within(sidebar).queryByText('CookingAssistant');
+      expect(logoText).not.toBeInTheDocument();
     });
   });
 

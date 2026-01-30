@@ -244,7 +244,7 @@ font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 - Width: 220px
 - Background: `--bg-secondary`
 - Border: 1px right `--border`
-- Logo at top, settings/profile at bottom
+- Logo fixed top-left (outside sidebar in MainLayout), settings at bottom
 - Nav items: 12px padding, 8px border-radius
 - Active state: `--bg-card` background
 

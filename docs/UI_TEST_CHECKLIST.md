@@ -44,14 +44,19 @@ Open browser to `http://localhost:5173` with DevTools ready (F12).
 | Tap backdrop closes | Returns to hidden state | [ ] |
 | Navigation works | Tapping item navigates + closes menu | [ ] |
 
-### Top Bar
+### Logo (Fixed)
 
 | Check | Expected | Pass |
 |-------|----------|------|
-| Logo/branding | Left aligned, clickable to home | [ ] |
-| User greeting | Shows username when logged in | [ ] |
-| Logout button | Visible, functional | [ ] |
-| Height | 64px (h-16) | [ ] |
+| Logo/branding | Fixed top-left, always visible regardless of sidebar state | [ ] |
+| Clickable to home | Links to /home | [ ] |
+
+### Account (Settings Page)
+
+| Check | Expected | Pass |
+|-------|----------|------|
+| Username display | Shows current username | [ ] |
+| Logout button | Visible, functional, navigates to /login | [ ] |
 
 ---
 

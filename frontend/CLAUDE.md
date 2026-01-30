@@ -66,7 +66,7 @@ Full design system spec: **[docs/DESIGN_SYSTEM.md](../docs/DESIGN_SYSTEM.md)**
 | `--bg-hover` | #333 | Hover states |
 | `--card-shadow` | (seasonal) | Card box-shadow glow |
 | `--card-border` | (seasonal) | Card-specific border |
-| `--season-gradient` | (seasonal) | Gradient bar (below TopBar) |
+| `--season-gradient` | (seasonal) | Gradient bar (top of content area) |
 
 ### Navigation
 - **Desktop**: 220px sidebar (left), settings/profile bottom

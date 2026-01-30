@@ -10,8 +10,6 @@ export type { SidebarItemProps } from './SidebarItem';
 export { SidebarActionButton } from './SidebarActionButton';
 export type { SidebarActionButtonProps } from './SidebarActionButton';
 
-export { TopBar } from './TopBar';
-
 export { MainLayout } from './MainLayout';
 export type { MainLayoutProps } from './MainLayout';
 
