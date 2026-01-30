@@ -6,7 +6,9 @@
  */
 
 import { useState, useEffect, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { getCurrentUser, updatePreferences } from '../services/authApi';
+import { useAuth } from '../contexts/AuthContext';
 import { ThemeToggle } from '../components/ui/ThemeToggle';
 import { SeasonPicker } from '../components/ui/SeasonPicker';
 
@@ -25,6 +27,8 @@ const DIETARY_OPTIONS = [
 const SKILL_LEVELS = ['beginner', 'intermediate', 'advanced'] as const;
 
 export default function SettingsPage() {
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
   const [dietaryRestrictions, setDietaryRestrictions] = useState<string[]>([]);
   const [skillLevel, setSkillLevel] = useState<string>('beginner');
   const [servingsValue, setServingsValue] = useState<string>('4');
@@ -222,6 +226,23 @@ export default function SettingsPage() {
           <span className="text-sm text-text-secondary">Season</span>
           <SeasonPicker />
         </div>
+      </div>
+
+      {/* Account Section */}
+      <div className="bg-card rounded-lg shadow-soft p-6 mt-6">
+        <h2 className="text-lg font-semibold text-text-primary mb-4">Account</h2>
+        {user && <p className="text-sm text-text-secondary mb-4">{user.username}</p>}
+        <button
+          type="button"
+          aria-label="Logout"
+          onClick={() => {
+            logout();
+            navigate('/login');
+          }}
+          className="px-4 py-2 bg-error text-text-primary rounded-lg font-semibold hover:opacity-90 transition"
+        >
+          Logout
+        </button>
       </div>
     </div>
   );

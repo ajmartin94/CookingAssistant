@@ -256,6 +256,30 @@ describe('LoginPage', () => {
     });
   });
 
+  describe('Text Visibility', () => {
+    it('should use text-text-secondary on form labels for readable text color', () => {
+      render(<LoginPage />);
+
+      // Labels must use text-text-secondary (text color token), not text-primary (background color token)
+      const usernameLabel = screen.getByText('Username');
+      expect(usernameLabel).toHaveClass('text-text-secondary');
+
+      const passwordLabel = screen.getByText('Password');
+      expect(passwordLabel).toHaveClass('text-text-secondary');
+    });
+
+    it('should use text-text-secondary on register form labels', async () => {
+      const { user } = render(<LoginPage />);
+      await user.click(screen.getByRole('button', { name: /sign up/i }));
+
+      const emailLabel = screen.getByText('Email');
+      expect(emailLabel).toHaveClass('text-text-secondary');
+
+      const fullNameLabel = screen.getByText('Full Name (Optional)');
+      expect(fullNameLabel).toHaveClass('text-text-secondary');
+    });
+  });
+
   describe('Layout', () => {
     it('should have semantic background color', () => {
       const { container } = render(<LoginPage />);

@@ -48,7 +48,8 @@ export class RecipesPage extends BasePage {
   }
 
   async logout() {
-    await this.logoutButton.click();
+    await this.page.goto('/settings');
+    await this.page.locator('button[aria-label="Logout"]').click();
     await this.page.waitForURL(/\/login/);
   }
 

@@ -177,6 +177,16 @@ describe('RecipeCard', () => {
     });
   });
 
+  describe('Text Visibility', () => {
+    it('should use text-text-primary on the title for readable text color', () => {
+      render(<RecipeCard recipe={mockRecipe} />);
+
+      const title = screen.getByTestId('card-title');
+      // Title must use text-text-primary (text color token), not text-primary (background color token)
+      expect(title).toHaveClass('text-text-primary');
+    });
+  });
+
   describe('Styling', () => {
     it('should have hover effect classes', () => {
       const { container } = render(<RecipeCard recipe={mockRecipe} />);

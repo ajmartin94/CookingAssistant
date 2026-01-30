@@ -54,7 +54,10 @@ export default function LoginPage() {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label htmlFor="username" className="block text-sm font-medium text-primary mb-1">
+            <label
+              htmlFor="username"
+              className="block text-sm font-medium text-text-secondary mb-1"
+            >
               Username
             </label>
             <input
@@ -72,7 +75,10 @@ export default function LoginPage() {
           {!isLogin && (
             <>
               <div>
-                <label htmlFor="email" className="block text-sm font-medium text-primary mb-1">
+                <label
+                  htmlFor="email"
+                  className="block text-sm font-medium text-text-secondary mb-1"
+                >
                   Email
                 </label>
                 <input
@@ -88,7 +94,10 @@ export default function LoginPage() {
               </div>
 
               <div>
-                <label htmlFor="fullName" className="block text-sm font-medium text-primary mb-1">
+                <label
+                  htmlFor="fullName"
+                  className="block text-sm font-medium text-text-secondary mb-1"
+                >
                   Full Name (Optional)
                 </label>
                 <input
@@ -105,7 +114,10 @@ export default function LoginPage() {
           )}
 
           <div>
-            <label htmlFor="password" className="block text-sm font-medium text-primary mb-1">
+            <label
+              htmlFor="password"
+              className="block text-sm font-medium text-text-secondary mb-1"
+            >
               Password
             </label>
             <input

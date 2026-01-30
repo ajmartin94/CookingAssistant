@@ -6,7 +6,7 @@
  */
 
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import { render } from '../../../test/test-utils';
+import { render, screen } from '../../../test/test-utils';
 import { MainLayout } from './MainLayout';
 
 describe('MainLayout - Seasonal gradient bar', () => {
@@ -71,5 +71,41 @@ describe('MainLayout - Seasonal gradient bar', () => {
       style.includes('var(--season-gradient)'),
       'Gradient bar should use var(--season-gradient) for its background'
     ).toBe(true);
+  });
+});
+
+describe('MainLayout - TopBar removal', () => {
+  it('should not render a header element (TopBar) in the layout', () => {
+    const { container } = render(
+      <MainLayout>
+        <div>Test content</div>
+      </MainLayout>
+    );
+
+    const header = container.querySelector('header');
+    expect(
+      header,
+      'MainLayout should not contain a <header> element (TopBar should be removed)'
+    ).toBeNull();
+  });
+});
+
+describe('MainLayout - Logo in layout', () => {
+  it('should render a logo link with "CookingAssistant" text in the layout', () => {
+    render(
+      <MainLayout>
+        <div>Test content</div>
+      </MainLayout>
+    );
+
+    // MainLayout itself (outside Sidebar) should contain a logo link
+    const logoText = screen.getByText('CookingAssistant');
+    const logoLink = logoText.closest('a');
+    expect(logoLink).not.toBeNull();
+    expect(logoLink).toHaveAttribute('href', '/home');
+
+    // The logo should be outside the sidebar (in the main layout area)
+    const sidebar = screen.getByTestId('sidebar');
+    expect(sidebar.contains(logoText)).toBe(false);
   });
 });

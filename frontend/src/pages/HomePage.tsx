@@ -156,7 +156,7 @@ export default function HomePage() {
       <main
         id="main"
         data-testid="home-content"
-        className="max-w-4xl mx-auto px-4 py-8 lg:px-8 flex flex-col"
+        className="max-w-7xl mx-auto px-4 py-8 lg:px-8 flex flex-col"
       >
         {/* Greeting */}
         <div className="mb-8 animate-fade-in">

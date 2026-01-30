@@ -269,6 +269,39 @@ describe('SettingsPage', () => {
     });
   });
 
+  describe('Feature D: Account section with logout', () => {
+    it('should render an Account section with the current username and a logout button', async () => {
+      server.use(
+        http.get(`${BASE_URL}/api/v1/users/me`, () => {
+          return HttpResponse.json({
+            id: '1',
+            username: 'testuser',
+            email: 'test@example.com',
+            full_name: 'Test User',
+            dietary_restrictions: [],
+            skill_level: 'beginner',
+            default_servings: 4,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+          });
+        })
+      );
+
+      render(<SettingsPage />);
+
+      // Wait for page to load
+      await waitFor(() => {
+        expect(screen.getByText(/account/i)).toBeInTheDocument();
+      });
+
+      // Should display the current username
+      expect(screen.getByText('testuser')).toBeInTheDocument();
+
+      // Should have a logout button
+      expect(screen.getByRole('button', { name: /logout/i })).toBeInTheDocument();
+    });
+  });
+
   /**
    * Feature 9: Seasonal Themes
    *

@@ -298,6 +298,13 @@ describe('HomePage Redesign', () => {
         expect(contextCards.className).toMatch(/grid/);
       }
     });
+
+    it('should use max-w-7xl for wider content area', () => {
+      render(<HomePage />);
+
+      const homeContent = screen.getByTestId('home-content');
+      expect(homeContent.className).toMatch(/max-w-7xl/);
+    });
   });
 
   describe('No Emojis', () => {
