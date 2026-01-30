@@ -12,7 +12,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { render, screen, within } from '../test/test-utils';
+import { render, screen, within, waitFor } from '../test/test-utils';
 import userEvent from '@testing-library/user-event';
 
 import HomePage from './HomePage';
@@ -166,30 +166,36 @@ describe('HomePage Redesign', () => {
   });
 
   describe("Tonight's Dinner Card", () => {
-    it('should display difficulty in metadata', () => {
+    it('should display difficulty in metadata', async () => {
       render(<HomePage />);
 
-      expect(screen.getByText(/medium/i)).toBeInTheDocument();
+      await waitFor(() => {
+        expect(screen.getByText(/medium/i)).toBeInTheDocument();
+      });
     });
 
-    it('should have a "View Recipe" button', () => {
+    it('should have a "View Recipe" button', async () => {
       render(<HomePage />);
 
-      const viewRecipeButton = screen.getByRole('button', { name: /view recipe/i });
-      expect(viewRecipeButton).toBeInTheDocument();
+      await waitFor(() => {
+        expect(screen.getByRole('button', { name: /view recipe/i })).toBeInTheDocument();
+      });
     });
 
-    it('should have a "Start Cooking" button', () => {
+    it('should have a "Start Cooking" button', async () => {
       render(<HomePage />);
 
-      const startCookingButton = screen.getByRole('button', { name: /start cooking/i });
-      expect(startCookingButton).toBeInTheDocument();
+      await waitFor(() => {
+        expect(screen.getByRole('button', { name: /start cooking/i })).toBeInTheDocument();
+      });
     });
 
-    it('should show metadata with time, servings, and difficulty', () => {
+    it('should show metadata with time, servings, and difficulty', async () => {
       render(<HomePage />);
 
-      expect(screen.getByText(/35 min/)).toBeInTheDocument();
+      await waitFor(() => {
+        expect(screen.getByText(/35 min/)).toBeInTheDocument();
+      });
       expect(screen.getByText(/4 servings/)).toBeInTheDocument();
       expect(screen.getByText(/medium/i)).toBeInTheDocument();
     });
@@ -208,9 +214,9 @@ describe('HomePage Redesign', () => {
       expect(within(quickActions).getByText('Recent Reflection')).toBeInTheDocument();
 
       // Verify subtitles
-      expect(within(quickActions).getByText('12 items across 2 stores')).toBeInTheDocument();
+      expect(within(quickActions).getByText('View your shopping list')).toBeInTheDocument();
       expect(within(quickActions).getByText('Import or create new')).toBeInTheDocument();
-      expect(within(quickActions).getByText(/pasta was too salty/i)).toBeInTheDocument();
+      expect(within(quickActions).getByText('Record cooking notes')).toBeInTheDocument();
     });
 
     it('should render quick action links to correct pages', () => {

@@ -54,7 +54,7 @@ async def get_libraries(
     Returns:
         List of libraries
     """
-    query = select(RecipeLibrary)
+    query = select(RecipeLibrary).options(selectinload(RecipeLibrary.recipes))
 
     if owner_id:
         query = query.where(RecipeLibrary.owner_id == owner_id)

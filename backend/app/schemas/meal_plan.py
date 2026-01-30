@@ -14,6 +14,8 @@ class RecipeRef(BaseModel):
     id: str
     title: str
     cook_time_minutes: Optional[int] = None
+    servings: Optional[int] = None
+    difficulty_level: Optional[str] = None
 
 
 class MealPlanEntryResponse(BaseModel):

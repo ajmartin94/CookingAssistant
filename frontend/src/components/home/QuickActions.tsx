@@ -20,7 +20,7 @@ const actions: QuickAction[] = [
     to: '/shopping',
     icon: <ShoppingCart className="w-5 h-5" />,
     label: 'Go Shopping',
-    description: '12 items across 2 stores',
+    description: 'View your shopping list',
   },
   {
     to: '/recipes/create',
@@ -32,7 +32,7 @@ const actions: QuickAction[] = [
     to: '/reflections',
     icon: <MessageSquare className="w-5 h-5" />,
     label: 'Recent Reflection',
-    description: 'Pasta was too salty — noted',
+    description: 'Record cooking notes',
   },
 ];
 

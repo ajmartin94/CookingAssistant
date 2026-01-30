@@ -19,6 +19,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.user import User
 from app.models.recipe import Recipe
+from app.models.library import RecipeLibrary
+from app.models.meal_plan import MealPlan, MealPlanEntry
 
 # Compute backend directory dynamically for CLI tests
 BACKEND_DIR = Path(__file__).parent.parent.parent
@@ -290,3 +292,184 @@ class TestSeedCLI:
         # Should fail due to missing env vars, not unknown flag
         # If --reset were unknown, we'd see "unrecognized arguments"
         assert "unrecognized" not in result.stderr.lower()
+
+
+class TestSeedLibraries:
+    """Tests for seed script library creation."""
+
+    @pytest.mark.asyncio
+    async def test_seed_creates_libraries(self, test_db: AsyncSession):
+        """Running seed script creates 5 recipe libraries."""
+        seed_email = "seeduser@example.com"
+        seed_password = "seedpassword123"
+
+        from scripts.seed import run_seed
+
+        with patch.dict(
+            os.environ,
+            {
+                "SEED_USER_EMAIL": seed_email,
+                "SEED_USER_PASSWORD": seed_password,
+            },
+        ):
+            await run_seed(db=test_db)
+
+        library_count = await test_db.scalar(select(func.count(RecipeLibrary.id)))
+        assert library_count == 5, f"Expected 5 libraries, got {library_count}"
+
+    @pytest.mark.asyncio
+    async def test_seed_libraries_have_varied_recipe_counts(
+        self, test_db: AsyncSession
+    ):
+        """Seed libraries should have different numbers of recipes."""
+        seed_email = "seeduser@example.com"
+        seed_password = "seedpassword123"
+
+        from scripts.seed import run_seed
+
+        with patch.dict(
+            os.environ,
+            {
+                "SEED_USER_EMAIL": seed_email,
+                "SEED_USER_PASSWORD": seed_password,
+            },
+        ):
+            await run_seed(db=test_db)
+
+        result = await test_db.execute(select(RecipeLibrary))
+        libraries = result.scalars().all()
+
+        recipe_counts = set()
+        for lib in libraries:
+            # Refresh to load recipes relationship
+            await test_db.refresh(lib, ["recipes"])
+            recipe_counts.add(len(lib.recipes))
+
+        assert (
+            len(recipe_counts) > 1
+        ), "Libraries should have varied recipe counts, not all the same"
+
+
+class TestSeedMealPlan:
+    """Tests for seed script meal plan creation."""
+
+    @pytest.mark.asyncio
+    async def test_seed_creates_meal_plan(self, test_db: AsyncSession):
+        """Running seed script creates a meal plan for the current week."""
+        seed_email = "seeduser@example.com"
+        seed_password = "seedpassword123"
+
+        from scripts.seed import run_seed
+
+        with patch.dict(
+            os.environ,
+            {
+                "SEED_USER_EMAIL": seed_email,
+                "SEED_USER_PASSWORD": seed_password,
+            },
+        ):
+            await run_seed(db=test_db)
+
+        plan_count = await test_db.scalar(select(func.count(MealPlan.id)))
+        assert plan_count == 1, f"Expected 1 meal plan, got {plan_count}"
+
+    @pytest.mark.asyncio
+    async def test_seed_creates_dinner_entries_for_each_day(
+        self, test_db: AsyncSession
+    ):
+        """Seed meal plan should have dinner entries for all 7 days (0-6)."""
+        seed_email = "seeduser@example.com"
+        seed_password = "seedpassword123"
+
+        from scripts.seed import run_seed
+
+        with patch.dict(
+            os.environ,
+            {
+                "SEED_USER_EMAIL": seed_email,
+                "SEED_USER_PASSWORD": seed_password,
+            },
+        ):
+            await run_seed(db=test_db)
+
+        result = await test_db.execute(select(MealPlanEntry))
+        entries = result.scalars().all()
+
+        assert len(entries) == 7, f"Expected 7 dinner entries, got {len(entries)}"
+
+        days = sorted([e.day_of_week for e in entries])
+        assert days == list(range(7)), f"Expected days 0-6, got {days}"
+
+        for entry in entries:
+            assert entry.meal_type == "dinner"
+            assert entry.recipe_id is not None
+
+
+class TestSeedIdempotencyWithLibrariesAndMealPlans:
+    """Tests for seed idempotency with libraries and meal plans."""
+
+    @pytest.mark.asyncio
+    async def test_seed_idempotent_no_duplicate_libraries(self, test_db: AsyncSession):
+        """Running seed twice should not create duplicate libraries."""
+        seed_email = "seeduser@example.com"
+        seed_password = "seedpassword123"
+
+        from scripts.seed import run_seed, SeedUserExistsError
+
+        env_vars = {
+            "SEED_USER_EMAIL": seed_email,
+            "SEED_USER_PASSWORD": seed_password,
+        }
+
+        # First run
+        with patch.dict(os.environ, env_vars):
+            await run_seed(db=test_db)
+
+        lib_count_after_first = await test_db.scalar(
+            select(func.count(RecipeLibrary.id))
+        )
+
+        # Second run raises error
+        with patch.dict(os.environ, env_vars):
+            with pytest.raises(SeedUserExistsError):
+                await run_seed(db=test_db, reset=False)
+
+        lib_count_after_second = await test_db.scalar(
+            select(func.count(RecipeLibrary.id))
+        )
+        assert (
+            lib_count_after_first == lib_count_after_second
+        ), "Library count should not change on second run"
+
+    @pytest.mark.asyncio
+    async def test_seed_reset_clears_libraries_and_meal_plans(
+        self, test_db: AsyncSession
+    ):
+        """Running seed with --reset should clear libraries and meal plans."""
+        seed_email = "seeduser@example.com"
+        seed_password = "seedpassword123"
+
+        from scripts.seed import run_seed
+
+        env_vars = {
+            "SEED_USER_EMAIL": seed_email,
+            "SEED_USER_PASSWORD": seed_password,
+        }
+
+        # First run
+        with patch.dict(os.environ, env_vars):
+            await run_seed(db=test_db)
+
+        # Reset run
+        with patch.dict(os.environ, env_vars):
+            await run_seed(db=test_db, reset=True)
+
+        # Should still have exactly 5 libraries and 1 meal plan (not doubled)
+        lib_count = await test_db.scalar(select(func.count(RecipeLibrary.id)))
+        assert lib_count == 5, f"Expected 5 libraries after reset, got {lib_count}"
+
+        plan_count = await test_db.scalar(select(func.count(MealPlan.id)))
+        assert plan_count == 1, f"Expected 1 meal plan after reset, got {plan_count}"
+
+        entry_count = await test_db.scalar(select(func.count(MealPlanEntry.id)))
+        assert entry_count == 7, f"Expected 7 entries after reset, got {entry_count}"

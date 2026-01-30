@@ -138,7 +138,30 @@ export const handlers = [
 
   // Library endpoints
   http.get(`${BASE_URL}/api/v1/libraries`, async () => {
-    return HttpResponse.json([mockLibrary(), mockLibrary({ id: '2', name: 'Another Library' })]);
+    const lib1 = mockLibrary();
+    const lib2 = mockLibrary({ id: '2', name: 'Another Library' });
+    return HttpResponse.json([
+      {
+        id: lib1.id,
+        name: lib1.name,
+        description: lib1.description,
+        owner_id: lib1.ownerId,
+        is_public: lib1.isPublic,
+        recipe_count: lib1.recipeCount,
+        created_at: lib1.createdAt,
+        updated_at: lib1.updatedAt,
+      },
+      {
+        id: lib2.id,
+        name: lib2.name,
+        description: lib2.description,
+        owner_id: lib2.ownerId,
+        is_public: lib2.isPublic,
+        recipe_count: lib2.recipeCount,
+        created_at: lib2.createdAt,
+        updated_at: lib2.updatedAt,
+      },
+    ]);
   }),
 
   http.get(`${BASE_URL}/api/v1/libraries/:id`, async ({ params }) => {

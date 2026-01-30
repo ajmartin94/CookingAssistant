@@ -122,6 +122,7 @@ export const getSharedLibrary = async (shareToken: string): Promise<RecipeLibrar
     description: data.description,
     ownerId: data.owner_id,
     isPublic: data.is_public,
+    recipeCount: data.recipe_count ?? 0,
     createdAt: data.created_at,
     updatedAt: data.updated_at,
   };
