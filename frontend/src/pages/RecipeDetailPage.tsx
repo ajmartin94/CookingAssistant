@@ -9,7 +9,7 @@
  */
 
 import { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { ChevronLeft, Clock, Users, Timer, Heart } from '../components/common/icons';
 import { recipeApi } from '../services/recipeApi';
 import type { Recipe } from '../types';
@@ -18,10 +18,12 @@ import ShareModal from '../components/sharing/ShareModal';
 import IngredientsList from '../components/recipes/IngredientsList';
 import RecipeNotes from '../components/recipes/RecipeNotes';
 import StartCookingBar from '../components/recipes/StartCookingBar';
+import { CookingModeOverlay } from '../components/recipes/CookingModeOverlay';
 
 export default function RecipeDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const { user } = useAuth();
 
   const [recipe, setRecipe] = useState<Recipe | null>(null);
@@ -29,6 +31,8 @@ export default function RecipeDetailPage() {
   const [error, setError] = useState<string | null>(null);
   const [deleting, setDeleting] = useState(false);
   const [showShareModal, setShowShareModal] = useState(false);
+  const [cookingMode, setCookingMode] = useState(false);
+  const [cookingStep, setCookingStep] = useState(0);
 
   // Fetch recipe
   useEffect(() => {
@@ -63,6 +67,14 @@ export default function RecipeDetailPage() {
 
     fetchRecipe();
   }, [id]);
+
+  // Auto-open cooking mode when ?cook=true is present
+  useEffect(() => {
+    if (recipe && searchParams.get('cook') === 'true') {
+      setCookingMode(true);
+      setSearchParams({}, { replace: true });
+    }
+  }, [recipe, searchParams, setSearchParams]);
 
   // Handle delete
   const handleDelete = async () => {
@@ -342,7 +354,20 @@ export default function RecipeDetailPage() {
       )}
 
       {/* Start Cooking Bar */}
-      <StartCookingBar />
+      {!cookingMode && <StartCookingBar onClick={() => setCookingMode(true)} />}
+
+      {/* Cooking Mode Overlay */}
+      {cookingMode && (
+        <CookingModeOverlay
+          recipeTitle={recipe.title}
+          instructions={recipe.instructions}
+          initialStep={cookingStep}
+          onClose={() => {
+            setCookingMode(false);
+          }}
+          onStepChange={setCookingStep}
+        />
+      )}
 
       {/* Share Modal */}
       <ShareModal
