@@ -55,8 +55,7 @@ test.describe('Core: Desktop Navigation', () => {
   test('user navigates home by clicking logo', async ({ authenticatedPage }) => {
     await authenticatedPage.goto('/recipes');
 
-    const sidebar = authenticatedPage.locator('[data-testid="sidebar"]').first();
-    await sidebar.getByText('CookingAssistant').click();
+    await authenticatedPage.getByText('CookingAssistant').click();
 
     await expect(authenticatedPage).toHaveURL(/\/home/);
   });
