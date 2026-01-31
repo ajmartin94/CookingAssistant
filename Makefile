@@ -1,6 +1,7 @@
 .PHONY: help setup setup-backend setup-frontend \
        test test-backend test-frontend test-e2e test-e2e-full \
        dev dev-backend dev-frontend \
+       dev-lan dev-backend-lan dev-frontend-lan \
        lint format typecheck check \
        migrate migration seed seed-reset
 
@@ -73,6 +74,37 @@ ifdef RESET
 	-fuser -k 5173/tcp 2>/dev/null; sleep 1
 endif
 	cd frontend && npm run dev
+
+dev-lan: ## Show instructions to start LAN-accessible dev servers
+	@IP=$$(hostname -I | awk '{print $$1}'); \
+	echo ""; \
+	echo "Your LAN IP: $$IP"; \
+	echo "Start each in a separate terminal:"; \
+	echo "  make dev-backend-lan   # http://$$IP:8000"; \
+	echo "  make dev-frontend-lan  # http://$$IP:5173"; \
+	echo ""; \
+	echo "WSL2 note: you may need to forward ports from Windows."; \
+	echo "Run in PowerShell (Admin):"; \
+	echo "  netsh interface portproxy add v4tov4 listenport=8000 listenaddress=0.0.0.0 connectport=8000 connectaddress=$$IP"; \
+	echo "  netsh interface portproxy add v4tov4 listenport=5173 listenaddress=0.0.0.0 connectport=5173 connectaddress=$$IP"; \
+	echo "  New-NetFirewallRule -DisplayName 'CookingAssistant Dev' -Direction Inbound -LocalPort 5173,8000 -Protocol TCP -Action Allow"
+
+dev-backend-lan: ## Start backend dev server accessible on LAN
+ifdef RESET
+	-fuser -k 8000/tcp 2>/dev/null; sleep 1
+endif
+	@IP=$$(hostname -I | awk '{print $$1}'); \
+	echo "Backend LAN: http://$$IP:8000"; \
+	cd backend && CORS_ORIGINS="http://localhost:5173,http://$$IP:5173" \
+	$(BPYTHON) -m uvicorn app.main:app --reload --port 8000 --host 0.0.0.0
+
+dev-frontend-lan: ## Start frontend dev server accessible on LAN
+ifdef RESET
+	-fuser -k 5173/tcp 2>/dev/null; sleep 1
+endif
+	@IP=$$(hostname -I | awk '{print $$1}'); \
+	echo "Frontend LAN: http://$$IP:5173"; \
+	cd frontend && VITE_API_URL=http://$$IP:8000 npx vite --host 0.0.0.0
 
 # ── Code Quality ─────────────────────────────────────────────────────
 
