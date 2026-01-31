@@ -20,30 +20,28 @@ the user decides what to do about each failure. You execute their decisions.
 
 ### 0. Environment Setup
 
-Activate virtual environments and verify infrastructure before running tests:
+Verify infrastructure before running tests:
 
 ```bash
-# Backend: activate venv (NEVER claim "pytest unavailable" without checking)
-cd backend && source venv/bin/activate && python -m pytest --version
+# Verify backend venv exists (NEVER claim "pytest unavailable" without checking)
+make test-backend ARGS="--version"
 
-# Frontend: verify node_modules
-cd frontend && ls node_modules/.bin/vitest
-
-# E2E: start servers if needed for E2E tests
-cd backend && source venv/bin/activate && uvicorn app.main:app --port 8001 &
-cd frontend && npm run dev -- --port 5174 &
+# Verify frontend node_modules
+ls frontend/node_modules/.bin/vitest
 ```
 
-If venv or node_modules don't exist, install dependencies first (`pip install -r requirements.txt` / `npm install`).
+If venv or node_modules don't exist, run `make setup` first.
 
 ### 1. Run Full Suite
 
-Run all test layers (with venv activated for backend):
+This is the single authoritative cross-layer test run. TDD sub-agents only verify their own layer — this is where cross-layer regressions surface.
+
+Run all test layers from the repo root:
 
 ```bash
-cd backend && source venv/bin/activate && python -m pytest
-cd frontend && npm test -- --run
-cd e2e && npx playwright test
+make test-backend
+make test-frontend
+make test-e2e
 ```
 
 Collect all failures.
@@ -80,9 +78,19 @@ the old response format for GET /recipes").
 
 ### 4. Execute Decisions
 
+**Context management**: Spawn a `general-purpose` sub-agent (via `Task` tool) when a fix
+requires reading multiple files or making coordinated changes across files. Do simple
+single-file edits (update one assertion, delete one test) inline to avoid unnecessary overhead.
+
+When spawning a sub-agent, provide:
+- The specific test file(s) and line numbers
+- What the old behavior was and what the new behavior is
+- The exact decision (update/remove)
+- Instructions to run the affected test file after the fix: `make test-backend ARGS="path/to/test.py"`
+
 For each decision:
 
-- **Update test**: Modify the test to assert new behavior. Run it to confirm it passes.
+- **Update test**: Modify the test to assert new behavior. Run the specific test file to confirm it passes.
 - **Remove test**: Delete the test. If it was the only test for that behavior, ask
   if replacement coverage is needed.
 - **Bug**: Create a LEARNING task noting the regression. Do not fix in migration —
@@ -112,8 +120,14 @@ If no database changes detected, skip this step.
 ### 6. Verify
 
 After all decisions are executed:
-- Run full suite again
+- Run only the affected layers again (e.g., if you only updated backend tests, run `make test-backend`)
 - If new failures appear (from the fixes), repeat from step 3
+- Once affected layers are green, run the full suite one final time to confirm:
+  ```bash
+  make test-backend
+  make test-frontend
+  make test-e2e
+  ```
 - Continue until suite is green or only skipped/bug items remain
 
 ### 7. Summary

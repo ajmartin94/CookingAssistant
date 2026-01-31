@@ -43,14 +43,14 @@ setup-frontend: ## Frontend: npm install + Playwright browsers
 
 test: test-backend test-frontend ## Run backend + frontend tests
 
-test-backend: ## Run backend tests (pytest)
-	cd backend && $(BPYTHON) -m pytest
+test-backend: ## Run backend tests (pytest) — use ARGS for specific files
+	cd backend && $(BPYTHON) -m pytest $(ARGS)
 
-test-frontend: ## Run frontend tests (vitest)
-	cd frontend && npm test -- --run
+test-frontend: ## Run frontend tests (vitest) — use ARGS for specific files
+	cd frontend && npm test -- --run $(ARGS)
 
-test-e2e: ## Run E2E tests (smoke + core)
-	npm run test:e2e
+test-e2e: ## Run E2E tests (smoke + core) — use ARGS for specific files
+	npm run test:e2e $(if $(ARGS),-- $(ARGS))
 
 test-e2e-full: ## Run all E2E tests
 	npm run test:e2e:full

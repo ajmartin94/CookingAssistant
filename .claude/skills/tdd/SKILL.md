@@ -25,12 +25,12 @@ Read the plan file. Create Tasks with `addBlockedBy` enforcing outside-in order:
 
 | Phase | Type | Verify |
 |-------|------|--------|
-| E2E RED | Write E2E test | Tests FAIL |
-| Backend RED | Write backend tests | Tests FAIL |
-| Backend GREEN | Implement backend | ALL tests PASS |
-| Frontend RED | Write frontend tests | Tests FAIL |
-| Frontend GREEN | Implement frontend | ALL tests PASS |
-| E2E GREEN | Verify acceptance | E2E tests PASS |
+| E2E RED | Write E2E test | New test file FAILs |
+| Backend RED | Write backend tests | New test file FAILs |
+| Backend GREEN | Implement backend | Backend layer PASS |
+| Frontend RED | Write frontend tests | New test file FAILs |
+| Frontend GREEN | Implement frontend | Frontend layer PASS |
+| E2E GREEN | Verify acceptance | E2E layer PASS |
 
 Skip layers not relevant to the plan. Use plan's acceptance criteria for E2E phases.
 
@@ -42,7 +42,7 @@ For each ready task (pending, not blocked):
 2. Spawn **impl sub-agent** using custom agent type:
    - RED phase: `Task` tool with `subagent_type="tdd-red-impl"`
    - GREEN phase: `Task` tool with `subagent_type="tdd-green-impl"`
-3. Run verification (RED: new tests must FAIL; GREEN: ALL tests must PASS)
+3. Run verification (RED: new test file must FAIL; GREEN: layer suite must PASS)
 4. Spawn **review sub-agent** (`Task` tool, `subagent_type="tdd-review"`)
 5. Review PASS → mark task `completed`, summarize to user
 6. Review FAIL → retry from step 2 (max 3 attempts)
@@ -127,7 +127,7 @@ If Tasks already exist when invoked:
 - Continue execution from where it left off
 
 If no Tasks exist but plan references prior work:
-- Run the test suite
+- Run the layer suite (`make test-backend`, `make test-frontend`, or `make test-e2e`)
 - Tests exist and pass → phase done
 - Tests exist and fail → GREEN phase needed
 - No tests → RED phase needed

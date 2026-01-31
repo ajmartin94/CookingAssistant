@@ -24,7 +24,7 @@ Before writing any code, read these files to understand project conventions:
 
 ## Rules
 
-1. **Tests MUST fail** - Run the tests yourself and confirm they fail. If they pass, you've written the wrong test.
+1. **Tests MUST fail** - Run only the new test file(s) you wrote and confirm they fail. Do NOT run the full layer suite — that happens during `/migrate`. If they pass, you've written the wrong test.
 
 2. **Test user outcomes, not implementation** - Ask "what does the user see?" not "what function gets called?"
 
@@ -44,6 +44,28 @@ Before writing any code, read these files to understand project conventions:
    - **E2E**: Verify via API (before/after pattern), use page objects, no `waitForTimeout`
    - **Backend**: Use `test_db` fixture, verify DB state after API calls
    - **Frontend**: Use custom render from `test-utils.tsx`, query by role/label
+
+## Test Commands
+
+Run from the repo root. Only run the specific test file you wrote:
+
+```bash
+# Backend — specific test file only
+make test-backend ARGS="tests/integration/test_new_file.py"
+
+# Frontend — specific test file only
+make test-frontend ARGS="--run src/components/NewComponent.test.tsx"
+
+# E2E — specific test file only
+make test-e2e ARGS="tests/core/new-feature.spec.ts"
+```
+
+If the Makefile doesn't support ARGS, fall back to:
+```bash
+cd backend && venv/bin/python -m pytest tests/integration/test_new_file.py
+cd frontend && npm test -- --run src/components/NewComponent.test.tsx
+cd e2e && npx playwright test tests/core/new-feature.spec.ts
+```
 
 ## Report Format
 

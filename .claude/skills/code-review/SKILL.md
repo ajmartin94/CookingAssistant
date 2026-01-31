@@ -144,15 +144,29 @@ For each finding, use `AskUserQuestion`:
 
 ### 4. Execute Fixes
 
+**Context management**: Spawn a `general-purpose` sub-agent (via `Task` tool) when a fix
+touches multiple files or requires reading surrounding code for context. Do simple
+single-file cosmetic edits inline.
+
+When spawning a sub-agent, provide:
+- The specific file(s) and line numbers
+- What standard or convention is violated
+- What the fix should look like
+
 For any "fix now" decisions:
 - Make the change
-- Run relevant tests to confirm nothing breaks
+- Fixes here should be cosmetic (naming, patterns, docs, minor standards issues)
+- If a fix is significant enough that it could break tests, flag it and send it back through `/migrate` instead
 
 ### 5. Final Verification
 
-- Run full test suite one last time
-- Confirm suite is green
 - Confirm no unaddressed must-fix items remain
+- Do NOT re-run the test suite — it's already green from `/migrate`
+- If step 4 made code changes, run only the affected layer's lint/typecheck to catch syntax issues:
+  ```bash
+  make lint
+  make typecheck
+  ```
 
 ### 6. Summary
 
@@ -162,7 +176,7 @@ Present final state:
 - Quality issues fixed: [count]
 - Accepted deviations: [list]
 - Follow-up tasks created: [list]
-- Suite status: GREEN
+- Lint/typecheck status: PASS (if fixes were made)
 
 Tell the user: "Code review complete. Ready for PR."
 
@@ -172,4 +186,5 @@ Tell the user: "Code review complete. Ready for PR."
 - **Standards are non-negotiable** — must-fix, not suggestions
 - **Quality is contextual** — only flag concrete issues, not preferences
 - **User decides on deviations** — extra features or different approaches aren't always wrong
-- **Green suite always** — never approve with failing tests
+- **Tests are migrate's job** — code-review does not run the test suite; the suite is already green from `/migrate`
+- **Significant fixes go back** — if a review fix could break tests, route it through `/migrate`
