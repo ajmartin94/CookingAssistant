@@ -152,6 +152,32 @@ CANNED_CONVERSATIONAL_RESPONSE = (
     "glass of water, like fresh flowers."
 )
 
+# Canned shopping list consolidation response
+CANNED_SHOPPING_LIST_RESPONSE = """Here are your consolidated shopping list items:
+
+```json
+{
+  "items": [
+    {"name": "Garlic", "amount": "5", "unit": "cloves", "category": "Produce"},
+    {"name": "Pasta", "amount": "200", "unit": "g", "category": "Pantry"},
+    {"name": "Olive Oil", "amount": "2", "unit": "tbsp", "category": "Pantry"},
+    {"name": "Bread", "amount": "1", "unit": "loaf", "category": "Bakery"},
+    {"name": "Butter", "amount": "3", "unit": "tbsp", "category": "Dairy"},
+    {"name": "Onion", "amount": "1", "unit": "whole", "category": "Produce"},
+    {"name": "Tomato", "amount": "2", "unit": "whole", "category": "Produce"},
+    {"name": "Lettuce", "amount": "1", "unit": "head", "category": "Produce"},
+    {"name": "Chicken", "amount": "500", "unit": "g", "category": "Meat"},
+    {"name": "Rice", "amount": "2", "unit": "cups", "category": "Pantry"},
+    {"name": "Salmon", "amount": "2", "unit": "fillets", "category": "Seafood"},
+    {"name": "Lemon", "amount": "1", "unit": "whole", "category": "Produce"}
+  ]
+}
+```
+"""
+
+# Keywords that trigger shopping list consolidation response
+SHOPPING_LIST_KEYWORDS = ["shopping", "consolidate", "ingredients"]
+
 # Keywords that indicate a recipe creation request
 CREATION_KEYWORDS = ["create", "make", "recipe for", "cook", "bake", "prepare"]
 
@@ -206,6 +232,10 @@ class TestProvider:
         for msg in messages:
             if msg.role == "user":
                 content_lower = msg.content.lower()
+
+                # Check for shopping list consolidation keywords
+                if any(keyword in content_lower for keyword in SHOPPING_LIST_KEYWORDS):
+                    return CANNED_SHOPPING_LIST_RESPONSE
 
                 # Check for gluten-free modification keywords first (highest priority)
                 if any(keyword in content_lower for keyword in GLUTEN_FREE_KEYWORDS):

@@ -10,6 +10,7 @@ from app.models.library import RecipeLibrary
 from app.models.share import RecipeShare, SharePermission
 from app.models.feedback import Feedback
 from app.models.meal_plan import MealPlan, MealPlanEntry
+from app.models.shopping_list import ShoppingList, ShoppingListItem
 
 __all__ = [
     "User",
@@ -21,4 +22,6 @@ __all__ = [
     "Feedback",
     "MealPlan",
     "MealPlanEntry",
+    "ShoppingList",
+    "ShoppingListItem",
 ]

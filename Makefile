@@ -1,6 +1,7 @@
 .PHONY: help setup setup-backend setup-frontend \
        test test-backend test-frontend test-e2e test-e2e-full \
        dev dev-backend dev-frontend \
+       dev-lan dev-backend-lan dev-frontend-lan \
        lint format typecheck check \
        migrate migration seed seed-reset
 
@@ -43,14 +44,14 @@ setup-frontend: ## Frontend: npm install + Playwright browsers
 
 test: test-backend test-frontend ## Run backend + frontend tests
 
-test-backend: ## Run backend tests (pytest)
-	cd backend && $(BPYTHON) -m pytest
+test-backend: ## Run backend tests (pytest) — use ARGS for specific files
+	cd backend && $(BPYTHON) -m pytest $(ARGS)
 
-test-frontend: ## Run frontend tests (vitest)
-	cd frontend && npm test -- --run
+test-frontend: ## Run frontend tests (vitest) — use ARGS for specific files
+	cd frontend && npm test -- --run $(ARGS)
 
-test-e2e: ## Run E2E tests (smoke + core)
-	npm run test:e2e
+test-e2e: ## Run E2E tests (smoke + core) — use ARGS for specific files
+	npm run test:e2e $(if $(ARGS),-- $(ARGS))
 
 test-e2e-full: ## Run all E2E tests
 	npm run test:e2e:full
@@ -73,6 +74,42 @@ ifdef RESET
 	-fuser -k 5173/tcp 2>/dev/null; sleep 1
 endif
 	cd frontend && npm run dev
+
+dev-lan: ## Show instructions to start LAN-accessible dev servers
+	@if [ ! -f .env.lan ]; then \
+		echo "ERROR: .env.lan not found. Create it with:"; \
+		echo '  echo "LAN_IP=192.168.1.x" > .env.lan'; \
+		exit 1; \
+	fi
+	@. ./.env.lan; \
+	echo ""; \
+	echo "LAN IP: $$LAN_IP"; \
+	echo "Start each in a separate terminal:"; \
+	echo "  make dev-backend-lan   # http://$$LAN_IP:8000"; \
+	echo "  make dev-frontend-lan  # http://$$LAN_IP:5173"; \
+	echo ""; \
+	echo "WSL2: ensure ports are forwarded from Windows (one-time setup):"; \
+	WSL_IP=$$(hostname -I | awk '{print $$1}'); \
+	echo "  netsh interface portproxy add v4tov4 listenport=8000 listenaddress=0.0.0.0 connectport=8000 connectaddress=$$WSL_IP"; \
+	echo "  netsh interface portproxy add v4tov4 listenport=5173 listenaddress=0.0.0.0 connectport=5173 connectaddress=$$WSL_IP"; \
+	echo "  New-NetFirewallRule -DisplayName 'CookingAssistant Dev' -Direction Inbound -LocalPort 5173,8000 -Protocol TCP -Action Allow"
+
+dev-backend-lan: ## Start backend dev server accessible on LAN
+ifdef RESET
+	-fuser -k 8000/tcp 2>/dev/null; sleep 1
+endif
+	@. ./.env.lan; \
+	echo "Backend LAN: http://$$LAN_IP:8000"; \
+	cd backend && CORS_ORIGINS='["http://localhost:5173","http://'"$$LAN_IP"':5173"]' \
+	$(BPYTHON) -m uvicorn app.main:app --reload --port 8000 --host 0.0.0.0
+
+dev-frontend-lan: ## Start frontend dev server accessible on LAN
+ifdef RESET
+	-fuser -k 5173/tcp 2>/dev/null; sleep 1
+endif
+	@. ./.env.lan; \
+	echo "Frontend LAN: http://$$LAN_IP:5173"; \
+	cd frontend && VITE_API_URL=http://$$LAN_IP:8000 npx vite --host 0.0.0.0
 
 # ── Code Quality ─────────────────────────────────────────────────────
 

@@ -28,7 +28,7 @@ Before reviewing, read:
 
 ### For RED Phase (failing tests)
 
-1. **Tests actually fail** - Run the tests and verify failure
+1. **Tests actually fail** - Trust the impl agent's test output. Only re-run if the output looks suspicious (e.g., truncated, wrong file, unclear failure)
 2. **Tests verify user outcomes** - Not implementation details
 3. **Uses proper fixtures** - No manual test data creation
 4. **Follows naming conventions** - File names, test names match layer standards
@@ -37,7 +37,7 @@ Before reviewing, read:
 
 ### For GREEN Phase (passing tests)
 
-1. **ALL tests pass** - Run full suite, not just new tests
+1. **Layer tests pass** - Trust the impl agent's test output. Only re-run if the output looks suspicious or incomplete
 2. **Implementation is minimal** - No over-engineering
 3. **No test weakening** - Compare with previous assertions if tests changed:
    - Assertions not removed or loosened
@@ -46,17 +46,18 @@ Before reviewing, read:
 4. **Follows layer patterns** - Code structure matches existing patterns
 5. **Types/hints complete** - All functions typed (backend), strict mode satisfied (frontend)
 
-### Verification Commands
+### When to Re-Run Tests
 
+Do NOT re-run tests by default. Only re-run if:
+- The impl agent's test output is missing or truncated
+- The output references wrong files or test counts don't match
+- You suspect the output was from a stale run (e.g., files were edited after the test)
+
+When you do need to re-run, use Makefile commands from repo root:
 ```bash
-# Backend
-cd backend && pytest -v
-
-# Frontend
-cd frontend && npm test -- --run
-
-# E2E
-cd e2e && npx playwright test
+make test-backend
+make test-frontend
+make test-e2e
 ```
 
 ## Report Format
@@ -79,9 +80,6 @@ cd e2e && npx playwright test
 
 ## Required Changes (if FAIL)
 1. [specific change needed]
-
-## Test Output
-[relevant test output confirming tests fail (RED) or pass (GREEN)]
 ```
 
 Be specific. "Tests use fixtures" is not useful feedback. "test_create_recipe manually creates User object instead of using test_user fixture" is useful.

@@ -7,6 +7,7 @@ import {
   mockLoginResponse,
 } from './data';
 import { mockMealPlanWeek } from './mealPlanData';
+import { mockBackendShoppingList, mockBackendShoppingListItem } from './shoppingListData';
 
 const BASE_URL = 'http://localhost:8000';
 
@@ -34,6 +35,17 @@ type LibraryRequest = Record<string, unknown>;
 interface FeedbackRequest {
   message: string;
   page_url: string;
+}
+
+interface ShoppingListCreateRequest {
+  name: string;
+}
+
+interface ShoppingListItemCreateRequest {
+  name: string;
+  amount?: string | null;
+  unit?: string | null;
+  category?: string | null;
 }
 
 export const handlers = [
@@ -329,5 +341,130 @@ export const handlers = [
       message: 'Hello! I can help you with your recipe. What would you like to do?',
       proposed_recipe: null,
     });
+  }),
+
+  // Shopping list endpoints
+  http.get(`${BASE_URL}/api/v1/shopping-lists`, () => {
+    return HttpResponse.json([
+      mockBackendShoppingList(),
+      mockBackendShoppingList({ id: 'list-2', name: 'Party Supplies' }),
+    ]);
+  }),
+
+  http.post(`${BASE_URL}/api/v1/shopping-lists`, async ({ request }) => {
+    const body = (await request.json()) as ShoppingListCreateRequest;
+    return HttpResponse.json(mockBackendShoppingList({ id: 'list-new', name: body.name }), {
+      status: 201,
+    });
+  }),
+
+  http.get(`${BASE_URL}/api/v1/shopping-lists/:id`, ({ params }) => {
+    const { id } = params;
+    return HttpResponse.json(
+      mockBackendShoppingList({
+        id: id as string,
+        name: 'Weekly Groceries',
+        items: [
+          mockBackendShoppingListItem({
+            id: 'item-1',
+            name: 'Milk',
+            category: 'Dairy',
+            sort_order: 0,
+          }),
+          mockBackendShoppingListItem({
+            id: 'item-2',
+            name: 'Cheese',
+            category: 'Dairy',
+            amount: '200',
+            unit: 'g',
+            sort_order: 1,
+          }),
+          mockBackendShoppingListItem({
+            id: 'item-3',
+            name: 'Bread',
+            category: 'Bakery',
+            amount: '1',
+            unit: 'loaf',
+            sort_order: 2,
+          }),
+          mockBackendShoppingListItem({
+            id: 'item-4',
+            name: 'Apples',
+            category: 'Produce',
+            amount: '6',
+            unit: 'pieces',
+            sort_order: 3,
+          }),
+        ],
+      })
+    );
+  }),
+
+  http.delete(`${BASE_URL}/api/v1/shopping-lists/:id`, () => {
+    return new HttpResponse(null, { status: 204 });
+  }),
+
+  http.post(`${BASE_URL}/api/v1/shopping-lists/:id/items`, async ({ request, params }) => {
+    const body = (await request.json()) as ShoppingListItemCreateRequest;
+    const { id } = params;
+    const newItem = mockBackendShoppingListItem({
+      id: 'item-new',
+      name: body.name,
+      amount: body.amount ?? null,
+      unit: body.unit ?? null,
+      category: body.category ?? null,
+      sort_order: 99,
+    });
+    // Backend returns the full updated list, not just the item
+    return HttpResponse.json(
+      mockBackendShoppingList({
+        id: id as string,
+        name: 'Shopping List',
+        items: [newItem],
+      }),
+      { status: 201 }
+    );
+  }),
+
+  http.delete(`${BASE_URL}/api/v1/shopping-lists/:id/items/:itemId`, () => {
+    return new HttpResponse(null, { status: 204 });
+  }),
+
+  // Shopping list generate endpoint
+  http.post(`${BASE_URL}/api/v1/shopping-lists/generate`, async ({ request }) => {
+    const body = (await request.json()) as { week_start_date: string; name?: string };
+    return HttpResponse.json(
+      mockBackendShoppingList({
+        id: 'list-generated',
+        name: body.name || `Meal Plan - ${body.week_start_date}`,
+        items: [
+          mockBackendShoppingListItem({
+            id: 'gen-1',
+            name: 'Chicken Breast',
+            amount: '2',
+            unit: 'lbs',
+            category: 'Meat',
+            sort_order: 0,
+          }),
+          mockBackendShoppingListItem({
+            id: 'gen-2',
+            name: 'Olive Oil',
+            amount: '2',
+            unit: 'tbsp',
+            category: 'Pantry',
+            sort_order: 1,
+          }),
+          mockBackendShoppingListItem({
+            id: 'gen-3',
+            name: 'Eggs',
+            amount: '6',
+            unit: 'pieces',
+            category: 'Dairy',
+            sort_order: 2,
+          }),
+        ],
+      }),
+      { status: 201 }
+    );
   }),
 ];

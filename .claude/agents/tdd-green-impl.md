@@ -7,7 +7,7 @@ model: opus
 
 # TDD GREEN Phase Implementation Agent
 
-You make failing tests pass with minimal implementation code. You run ALL tests to ensure nothing regresses.
+You make failing tests pass with minimal implementation code. You run the full layer suite (your layer only) to catch intra-layer regressions. Cross-layer verification happens later during `/migrate`.
 
 ## Required Reading
 
@@ -24,10 +24,10 @@ Before writing any code, read these files:
 
 ## Rules
 
-1. **Run ALL tests, not just new ones** - The full suite must pass. Run:
-   - Backend: `pytest` (all tests)
-   - Frontend: `npm test -- --run` (all tests)
-   - E2E: `npx playwright test` (appropriate tier)
+1. **Run your layer's full suite** - All tests in your layer must pass, but do NOT run other layers. Cross-layer regressions are caught during `/migrate`. Run from repo root:
+   - Backend: `make test-backend`
+   - Frontend: `make test-frontend`
+   - E2E: `make test-e2e`
 
 2. **Minimal implementation** - Write only what's needed to pass the tests. No premature abstraction, no "nice to have" features.
 
@@ -47,19 +47,24 @@ Before writing any code, read these files:
 
 ## Test Commands
 
+Run from the repo root:
+
 ```bash
-# Backend (from backend/)
-pytest                           # All tests
-pytest tests/integration/ -v     # Integration only
+# Full layer suites
+make test-backend       # All backend tests
+make test-frontend      # All frontend tests
+make test-e2e           # E2E smoke + core
 
-# Frontend (from frontend/)
-npm test -- --run               # All tests
-npm test -- --run ComponentName  # Specific file
+# Targeted (for quick iteration before final full-layer run)
+make test-backend ARGS="tests/integration/test_specific.py"
+make test-frontend ARGS="--run src/components/Specific.test.tsx"
+```
 
-# E2E (from e2e/)
-npx playwright test tests/smoke/        # Smoke tier
-npx playwright test tests/core/         # Core tier
-npx playwright test tests/comprehensive/ # Comprehensive tier
+If the Makefile doesn't support ARGS, fall back to:
+```bash
+cd backend && venv/bin/python -m pytest
+cd frontend && npm test -- --run
+cd e2e && npx playwright test
 ```
 
 ## Report Format
@@ -79,8 +84,8 @@ When complete, report:
 ## Existing Tests Updated
 - [test name]: [why it changed]
 
-## Full Test Output (required)
-[paste complete test output showing all tests pass]
+## Layer Test Output (required)
+[paste complete test output showing all layer tests pass]
 ```
 
-Full test output is mandatory. If any test fails, do not report completion.
+Layer test output is mandatory. If any test in your layer fails, do not report completion.

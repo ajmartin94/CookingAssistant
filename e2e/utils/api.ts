@@ -343,4 +343,18 @@ export class APIHelper {
 
     return response.json();
   }
+
+  async generateShoppingList(token: string, weekStartDate: string) {
+    const response = await this.request.post(`${this.baseURL}/api/v1/shopping-lists/generate`, {
+      headers: { Authorization: `Bearer ${token}` },
+      data: { week_start_date: weekStartDate },
+    });
+
+    if (!response.ok()) {
+      const text = await response.text();
+      throw new Error(`Failed to generate shopping list: ${text}`);
+    }
+
+    return response.json();
+  }
 }
