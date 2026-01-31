@@ -224,6 +224,21 @@ function CookingOverlay() {
 
 Gracefully degrades on unsupported browsers (no crash). Logs warning in dev mode on failure.
 
+### localStorage Persistence
+
+For client-side state that should persist across page refreshes (e.g., checked items):
+
+```typescript
+import { useCheckedItems } from '../hooks/useCheckedItems';
+
+// Key format: `shopping-checked-{listId}` storing JSON array of IDs
+const { isChecked, toggle, checkedCount, clearChecked } = useCheckedItems(listId);
+```
+
+- Key naming: `{feature}-{purpose}-{entityId}` (e.g., `shopping-checked-{listId}`)
+- Serialization: JSON arrays or objects
+- Cleanup: call `clearChecked(id)` when the parent entity is deleted
+
 ---
 
 <!-- Per AD-0100 -->

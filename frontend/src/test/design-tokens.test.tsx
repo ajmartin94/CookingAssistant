@@ -26,6 +26,7 @@ import LibraryDetailPage from '../pages/LibraryDetailPage';
 import SettingsPage from '../pages/SettingsPage';
 import SharedRecipePage from '../pages/SharedRecipePage';
 import RecipeDetailPage from '../pages/RecipeDetailPage';
+import ShoppingListPage from '../pages/ShoppingListPage';
 
 // Import components to test
 import RecipeCard from '../components/recipes/RecipeCard';
@@ -1041,6 +1042,20 @@ describe('Design Token Migration', () => {
     });
   });
 
+  describe('ShoppingListPage', () => {
+    it('should use semantic design tokens instead of hardcoded colors', async () => {
+      const { container } = render(<ShoppingListPage />);
+
+      await waitFor(() => {
+        const hardcodedColors = findAllHardcodedColors(container);
+        expect(
+          hardcodedColors.size,
+          `Found hardcoded colors in ShoppingListPage: ${JSON.stringify(Object.fromEntries(hardcodedColors))}`
+        ).toBe(0);
+      });
+    });
+  });
+
   describe('Complete Page Coverage - Theme Consistency', () => {
     it('should render all additional pages without errors in dark theme', () => {
       localStorage.setItem('theme', 'dark');
@@ -1067,6 +1082,10 @@ describe('Design Token Migration', () => {
 
       expect(() => {
         render(<SharedRecipePage />);
+      }).not.toThrow();
+
+      expect(() => {
+        render(<ShoppingListPage />);
       }).not.toThrow();
     });
 
@@ -1095,6 +1114,10 @@ describe('Design Token Migration', () => {
 
       expect(() => {
         render(<SharedRecipePage />);
+      }).not.toThrow();
+
+      expect(() => {
+        render(<ShoppingListPage />);
       }).not.toThrow();
     });
   });
