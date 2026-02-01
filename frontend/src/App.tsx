@@ -12,7 +12,6 @@ import { AuthProvider } from './contexts/AuthContext';
 import { SidebarProvider } from './contexts/SidebarContext';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { ProtectedLayout } from './components/common/layout';
-import { FeedbackButton } from './components/feedback';
 import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
 import RecipesPage from './pages/RecipesPage';
@@ -55,8 +54,6 @@ function App() {
                 <Route path="/settings" element={<SettingsPage />} />
               </Route>
             </Routes>
-            {/* Global feedback button - visible on all pages */}
-            <FeedbackButton />
           </Router>
         </SidebarProvider>
       </AuthProvider>
