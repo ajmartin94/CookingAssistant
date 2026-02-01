@@ -134,7 +134,7 @@ export function FeedbackModal({ isOpen, onClose, screenshotState }: FeedbackModa
             <img
               src={screenshotState.screenshot}
               alt="Screenshot preview"
-              className="max-w-full h-auto rounded border border-border"
+              className="w-full max-h-32 object-cover object-top rounded border border-border"
             />
           </div>
         )}
