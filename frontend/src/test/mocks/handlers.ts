@@ -35,6 +35,7 @@ type LibraryRequest = Record<string, unknown>;
 interface FeedbackRequest {
   message: string;
   page_url: string;
+  screenshot?: string;
 }
 
 interface ShoppingListCreateRequest {
@@ -291,6 +292,11 @@ export const handlers = [
     return HttpResponse.json({
       id: 'feedback-123',
       message: body.message,
+      page_url: body.page_url,
+      user_agent: 'Mozilla/5.0 (test)',
+      user_id: null,
+      screenshot: body.screenshot ?? null,
+      github_issue_url: null,
       created_at: new Date().toISOString(),
     });
   }),

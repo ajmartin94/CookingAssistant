@@ -8,14 +8,20 @@
 import { useState, useEffect, useCallback, useRef, type FormEvent, type ChangeEvent } from 'react';
 import { submitFeedback } from '../../services/feedbackApi';
 
+export interface ScreenshotState {
+  isCapturing: boolean;
+  screenshot: string | null;
+}
+
 export interface FeedbackModalProps {
   isOpen: boolean;
   onClose: () => void;
+  screenshotState?: ScreenshotState;
 }
 
 const MIN_MESSAGE_LENGTH = 10;
 
-export function FeedbackModal({ isOpen, onClose }: FeedbackModalProps) {
+export function FeedbackModal({ isOpen, onClose, screenshotState }: FeedbackModalProps) {
   const [message, setMessage] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [toast, setToast] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
@@ -86,6 +92,7 @@ export function FeedbackModal({ isOpen, onClose }: FeedbackModalProps) {
       await submitFeedback({
         message,
         pageUrl: window.location.href,
+        screenshot: screenshotState?.screenshot,
       });
 
       setToast({ type: 'success', text: 'Thanks for your feedback!' });
@@ -115,14 +122,28 @@ export function FeedbackModal({ isOpen, onClose }: FeedbackModalProps) {
       aria-label="Feedback"
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
     >
-      <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-md mx-4">
-        <h2 className="text-lg font-semibold mb-4">Send Feedback</h2>
+      <div className="bg-card rounded-lg shadow-xl p-6 w-full max-w-md mx-4">
+        <h2 className="text-lg font-semibold mb-4 text-text-primary">Send Feedback</h2>
+
+        {screenshotState?.isCapturing && (
+          <p className="mb-4 text-sm text-text-muted">Capturing screenshot...</p>
+        )}
+
+        {screenshotState?.screenshot && !screenshotState.isCapturing && (
+          <div className="mb-4">
+            <img
+              src={screenshotState.screenshot}
+              alt="Screenshot preview"
+              className="w-full max-h-32 object-cover object-top rounded border border-border"
+            />
+          </div>
+        )}
 
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
             <label
               htmlFor="feedback-message"
-              className="block text-sm font-medium text-gray-700 mb-2"
+              className="block text-sm font-medium text-text-secondary mb-2"
             >
               Feedback Message
             </label>
@@ -131,15 +152,15 @@ export function FeedbackModal({ isOpen, onClose }: FeedbackModalProps) {
               value={message}
               onChange={handleMessageChange}
               placeholder="Tell us what you think..."
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-3 py-2 border border-default rounded-md bg-card text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent"
               rows={4}
               disabled={isSubmitting}
             />
-            <p className="text-xs text-gray-500 mt-1">
+            <p className="text-xs text-text-muted mt-1">
               {message.length} / {MIN_MESSAGE_LENGTH} characters minimum
             </p>
             {showValidationError && !isValid && (
-              <p className="text-xs text-red-600 mt-1">
+              <p className="text-xs text-error mt-1">
                 Please enter at least {MIN_MESSAGE_LENGTH} characters of feedback.
               </p>
             )}
@@ -149,7 +170,9 @@ export function FeedbackModal({ isOpen, onClose }: FeedbackModalProps) {
           {toast && (
             <div
               className={`mb-4 p-3 rounded-md text-sm ${
-                toast.type === 'success' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                toast.type === 'success'
+                  ? 'bg-success-subtle text-success'
+                  : 'bg-error-subtle text-error'
               }`}
             >
               {toast.text}
@@ -161,19 +184,19 @@ export function FeedbackModal({ isOpen, onClose }: FeedbackModalProps) {
               type="button"
               onClick={onClose}
               disabled={isSubmitting}
-              className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 disabled:opacity-50"
+              className="px-4 py-2 text-sm font-medium text-text-secondary bg-secondary rounded-md hover:bg-hover disabled:opacity-50"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={!isValid || isSubmitting}
-              className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+              className="px-4 py-2 text-sm font-medium text-text-on-accent bg-accent rounded-md hover:bg-accent-hover disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
             >
               {isSubmitting && (
                 <span
                   role="status"
-                  className="inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"
+                  className="inline-block w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin"
                 />
               )}
               Submit
@@ -184,5 +207,3 @@ export function FeedbackModal({ isOpen, onClose }: FeedbackModalProps) {
     </div>
   );
 }
-
-export default FeedbackModal;

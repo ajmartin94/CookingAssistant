@@ -21,7 +21,8 @@ tell the user: "No plan found. Run `/plan` first to structure the implementation
 
 ### 1. Setup
 
-Read the plan file. Create Tasks with `addBlockedBy` enforcing outside-in order:
+Read the plan file. Create Tasks for each user story, with `addBlockedBy` enforcing
+outside-in order **within** each story:
 
 | Phase | Type | Verify |
 |-------|------|--------|
@@ -33,25 +34,53 @@ Read the plan file. Create Tasks with `addBlockedBy` enforcing outside-in order:
 | E2E GREEN | Verify acceptance | E2E layer PASS |
 
 Skip layers not relevant to the plan. Use plan's acceptance criteria for E2E phases.
+The plan's complexity determines TDD scope — a one-story bug plan produces a single
+RED/GREEN pair, a multi-story feature plan produces the full outside-in sequence.
+
+#### Parallel Execution
+
+Parallelization is allowed **only when there are zero dependencies** between the
+work items. Two types of safe parallelism:
+
+1. **Within a story**: Frontend RED and Backend RED for the same story can run in
+   parallel (they write tests in different layers with no shared files)
+2. **Across stories**: Unrelated stories that share no code, models, or API surface
+   can run their phases concurrently
+
+**Do NOT parallelize when:**
+- Stories touch the same models, routes, components, or shared infrastructure
+- A GREEN phase in one story could affect files another story reads
+- You are unsure — default to sequential
+
+When creating tasks:
+- Use `addBlockedBy` for within-story phase ordering (RED → GREEN)
+- Use `addBlockedBy` for cross-story dependencies when stories share any code surface
+- Only leave tasks unblocked when you are confident they are fully independent
 
 ### 2. Execution Loop
 
-For each ready task (pending, not blocked):
+For each ready task (pending, not blocked). When multiple tasks are ready
+simultaneously (e.g., independent stories), execute them in parallel using
+multiple `Task` tool calls in a single message:
 
 1. Mark task `in_progress`
 2. Spawn **impl sub-agent** using custom agent type:
    - RED phase: `Task` tool with `subagent_type="tdd-red-impl"`
    - GREEN phase: `Task` tool with `subagent_type="tdd-green-impl"`
-3. Run verification (RED: new test file must FAIL; GREEN: layer suite must PASS)
+3. Run verification (RED: new test file must FAIL; GREEN: new RED tests must PASS — existing test breakage is recorded as friction)
 4. Spawn **review sub-agent** (`Task` tool, `subagent_type="tdd-review"`)
 5. Review PASS → mark task `completed`, summarize to user
 6. Review FAIL → retry from step 2 (max 3 attempts)
-7. After 3 failures → mark task `completed`, create LEARNING task, continue to next
+7. After 3 failures → **leave task `in_progress`**, record friction (see §4), continue to next ready task
 
 **Agent Definitions:**
 - `tdd-red-impl`: Has Read/Write/Edit/Bash - writes failing tests (Opus model)
-- `tdd-green-impl`: Has Read/Write/Edit/Bash - implements code (Opus model)
+- `tdd-green-impl`: Has Read/Write/Edit/Bash - implements code, **never modifies test files** (Opus model)
 - `tdd-review`: Has Read/Bash only - cannot edit, reviews artifacts (Sonnet model)
+
+**Critical rule**: GREEN phase agents must make the RED tests pass **as written**.
+They cannot modify, weaken, or delete test files. If existing tests break due to
+intentional behavior changes, record friction and leave resolution to `/review`.
 
 ### 3. Sub-Agent Prompts
 
@@ -97,19 +126,35 @@ Files changed:
 [file paths from impl output]
 ```
 
-### 4. Friction Detection
+### 4. Friction Recording
 
-Create a LEARNING task (do not stop execution) when:
+The orchestrator (you) records friction to `.plans/issue-{issue-number}/friction.md`
+(create if it doesn't exist). Sub-agents report friction in their output — you
+extract it and append it to the file. Do not stop execution. Do not attempt to
+resolve friction — that is `/review`'s job.
 
-- A command fails unexpectedly (missing dependency, wrong path)
+**Sources of friction:**
+
+- Sub-agent reports a `## Friction` section in its output (extract and record)
+- A command fails unexpectedly during verification (missing dependency, wrong path)
 - Impl fails review 2+ times on the same issue
 - Sub-agent installs a new library not in project standards
-- Sub-agent finds competing patterns and must choose
 - Verification produces unexpected results (tests pass when should fail, etc.)
+- A task fails 3 times and is left `in_progress` (see §2 step 7)
+- A repeated bash command fails in a way that suggests documentation is missing
 
-LEARNING task format:
-- Subject: `LEARNING: [brief description]`
-- Description: what happened, what was ambiguous, what the sub-agent decided
+**When you detect friction from any source, append an entry to friction.md:**
+
+```markdown
+### [brief description]
+- **Phase**: [RED/GREEN] [layer]
+- **What happened**: [description]
+- **What was ambiguous or missing**: [gap in guidance, docs, or tooling]
+- **What the sub-agent decided** (if applicable): [decision made]
+```
+
+Keep entries factual. Do not suggest resolutions — `/review` determines the right fix
+with user input.
 
 ### 5. User Communication
 
@@ -117,7 +162,8 @@ LEARNING task format:
 
 > "Backend RED complete. 3 tests: create_recipe, duplicate_rejected, missing_fields_error."
 
-**After all tasks complete:** Full summary + all LEARNING tasks presented together.
+**After all tasks complete:** Summary of completed tasks, incomplete tasks, and
+friction count. Tell the user: "N friction items recorded for `/review` to resolve."
 
 ### 6. Resume
 

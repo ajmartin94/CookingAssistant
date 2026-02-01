@@ -302,6 +302,42 @@ describe('SettingsPage', () => {
     });
   });
 
+  describe('Feature: Feedback section on settings page (mobile)', () => {
+    it('should render a Feedback section heading below the Account section', async () => {
+      render(<SettingsPage />);
+
+      await waitFor(() => {
+        expect(screen.getByRole('heading', { name: /feedback/i })).toBeInTheDocument();
+      });
+    });
+
+    it('should render a button to open the feedback modal', async () => {
+      render(<SettingsPage />);
+
+      await waitFor(() => {
+        expect(screen.getByRole('heading', { name: /feedback/i })).toBeInTheDocument();
+      });
+
+      const feedbackButton = screen.getByRole('button', { name: /give feedback/i });
+      expect(feedbackButton).toBeInTheDocument();
+    });
+
+    it('should open the feedback modal when the feedback button is clicked', async () => {
+      const user = userEvent.setup();
+      render(<SettingsPage />);
+
+      await waitFor(() => {
+        expect(screen.getByRole('heading', { name: /feedback/i })).toBeInTheDocument();
+      });
+
+      await user.click(screen.getByRole('button', { name: /give feedback/i }));
+
+      // The FeedbackModal should appear as a dialog with a textarea
+      expect(screen.getByRole('dialog', { name: /feedback/i })).toBeInTheDocument();
+      expect(screen.getByRole('textbox', { name: /feedback message/i })).toBeInTheDocument();
+    });
+  });
+
   /**
    * Feature 9: Seasonal Themes
    *

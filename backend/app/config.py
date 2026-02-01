@@ -65,6 +65,10 @@ class Settings(BaseSettings):
     # Monitoring & Error Tracking
     sentry_dsn: str = ""
 
+    # GitHub Integration (for feedback → issue creation)
+    github_pat: str | None = None
+    github_repo: str | None = None
+
     # Seed Data Settings (optional, for development/demo)
     seed_user_email: str | None = None
     seed_user_password: str | None = None

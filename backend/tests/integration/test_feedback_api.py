@@ -9,6 +9,7 @@ They will fail initially - that's the RED phase of TDD.
 """
 
 import pytest
+from unittest.mock import patch, AsyncMock
 from httpx import AsyncClient
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -199,6 +200,112 @@ class TestCreateFeedback:
         assert data["message"] == "0123456789"
 
     @pytest.mark.asyncio
+    async def test_create_feedback_with_screenshot(
+        self,
+        client: AsyncClient,
+        test_db: AsyncSession,
+    ):
+        """Submit feedback with a screenshot base64 string stores it in DB."""
+        from app.models.feedback import Feedback
+
+        fake_screenshot = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUg=="
+
+        # ACTION: POST feedback with screenshot
+        response = await client.post(
+            "/api/v1/feedback",
+            json={
+                "message": "Bug report with screenshot attached for context.",
+                "page_url": "/recipes/456",
+                "screenshot": fake_screenshot,
+            },
+        )
+
+        # VERIFY: Response
+        assert response.status_code == 201
+        data = response.json()
+        assert data["screenshot"] == fake_screenshot
+
+        # OUTCOME: Verify in database
+        feedback = await test_db.get(Feedback, data["id"])
+        assert feedback is not None
+        assert feedback.screenshot == fake_screenshot
+
+    @pytest.mark.asyncio
+    async def test_create_feedback_without_screenshot(
+        self,
+        client: AsyncClient,
+        test_db: AsyncSession,
+    ):
+        """Submit feedback without screenshot field still works, screenshot is null."""
+        from app.models.feedback import Feedback
+
+        response = await client.post(
+            "/api/v1/feedback",
+            json={
+                "message": "Feedback without any screenshot attached here.",
+                "page_url": "/recipes/789",
+            },
+        )
+
+        assert response.status_code == 201
+        data = response.json()
+        assert data["screenshot"] is None
+
+        # OUTCOME: Verify in database
+        feedback = await test_db.get(Feedback, data["id"])
+        assert feedback is not None
+        assert feedback.screenshot is None
+
+    @pytest.mark.asyncio
+    async def test_create_feedback_response_includes_github_issue_url(
+        self,
+        client: AsyncClient,
+    ):
+        """FeedbackResponse includes github_issue_url field, null by default."""
+        response = await client.post(
+            "/api/v1/feedback",
+            json={
+                "message": "Feedback to verify github issue url in response.",
+                "page_url": "/home",
+            },
+        )
+
+        assert response.status_code == 201
+        data = response.json()
+        assert "github_issue_url" in data
+        assert data["github_issue_url"] is None
+
+    @pytest.mark.asyncio
+    async def test_create_feedback_screenshot_large_base64(
+        self,
+        client: AsyncClient,
+        test_db: AsyncSession,
+    ):
+        """Screenshot field accepts large base64 strings (no length limit)."""
+        from app.models.feedback import Feedback
+
+        # Simulate a large screenshot (~100KB base64)
+        large_screenshot = "data:image/png;base64," + "A" * 100_000
+
+        response = await client.post(
+            "/api/v1/feedback",
+            json={
+                "message": "Feedback with a very large screenshot base64 string.",
+                "page_url": "/settings",
+                "screenshot": large_screenshot,
+            },
+        )
+
+        assert response.status_code == 201
+        data = response.json()
+        assert data["screenshot"] == large_screenshot
+
+        # OUTCOME: Verify full string stored in database
+        feedback = await test_db.get(Feedback, data["id"])
+        assert feedback is not None
+        assert feedback.screenshot == large_screenshot
+
+    @pytest.mark.asyncio
     async def test_create_feedback_message_at_maximum_length(
         self,
         client: AsyncClient,
@@ -305,3 +412,225 @@ class TestListFeedback:
         assert response.status_code == 200
         data = response.json()
         assert len(data["items"]) == 5
+
+
+class TestFeedbackGitHubIntegration:
+    """Tests for GitHub issue creation triggered by feedback submission.
+
+    These tests mock at the external boundary (httpx calls to GitHub API)
+    and verify outcomes in the database. No internal wiring is mocked.
+    """
+
+    @pytest.mark.asyncio
+    async def test_feedback_creates_github_issue_when_configured(
+        self,
+        client: AsyncClient,
+        test_db: AsyncSession,
+        monkeypatch,
+    ):
+        """When GITHUB_PAT and GITHUB_REPO are set, submitting feedback creates
+        a GitHub issue and stores the issue URL in the database."""
+        from app.models.feedback import Feedback
+        from unittest.mock import MagicMock
+        from contextlib import asynccontextmanager
+
+        expected_url = "https://github.com/owner/repo/issues/42"
+
+        # Configure GitHub settings via environment variables
+        monkeypatch.setenv("GITHUB_PAT", "ghp_testtoken")
+        monkeypatch.setenv("GITHUB_REPO", "owner/repo")
+
+        # Re-initialize settings so env vars take effect
+        from app.config import Settings
+
+        test_settings = Settings()
+        monkeypatch.setattr("app.config.settings", test_settings)
+        monkeypatch.setattr("app.api.feedback.settings", test_settings)
+
+        # Patch AsyncSessionLocal so background task uses the test DB session
+        @asynccontextmanager
+        async def mock_session_local():
+            yield test_db
+
+        monkeypatch.setattr("app.api.feedback.AsyncSessionLocal", mock_session_local)
+
+        # Mock at the httpx boundary - the actual HTTP call to GitHub
+        mock_response = MagicMock()
+        mock_response.status_code = 201
+        mock_response.json.return_value = {"html_url": expected_url}
+
+        mock_client_instance = AsyncMock()
+        mock_client_instance.post.return_value = mock_response
+
+        with patch("app.services.github_service.httpx.AsyncClient") as MockClient:
+            MockClient.return_value.__aenter__ = AsyncMock(
+                return_value=mock_client_instance
+            )
+            MockClient.return_value.__aexit__ = AsyncMock(return_value=False)
+
+            response = await client.post(
+                "/api/v1/feedback",
+                json={
+                    "message": "This feedback should trigger a GitHub issue creation.",
+                    "page_url": "/recipes/123",
+                },
+            )
+
+        assert response.status_code == 201
+        feedback_id = response.json()["id"]
+
+        # OUTCOME: Verify github_issue_url is populated in database
+        test_db.expire_all()
+        feedback = await test_db.get(Feedback, feedback_id)
+        assert feedback is not None
+        assert feedback.github_issue_url == expected_url
+
+    @pytest.mark.asyncio
+    async def test_feedback_skips_github_when_not_configured(
+        self,
+        client: AsyncClient,
+        test_db: AsyncSession,
+        monkeypatch,
+    ):
+        """When GITHUB_PAT and GITHUB_REPO are not set, feedback is created
+        but github_issue_url stays null. No HTTP call is made."""
+        from app.models.feedback import Feedback
+
+        # Ensure GitHub settings are empty (the default)
+        monkeypatch.delenv("GITHUB_PAT", raising=False)
+        monkeypatch.delenv("GITHUB_REPO", raising=False)
+
+        from app.config import Settings
+
+        test_settings = Settings()
+        monkeypatch.setattr("app.config.settings", test_settings)
+
+        with patch("app.services.github_service.httpx.AsyncClient") as MockClient:
+            response = await client.post(
+                "/api/v1/feedback",
+                json={
+                    "message": "This feedback should not trigger GitHub issue.",
+                    "page_url": "/home",
+                },
+            )
+
+            assert response.status_code == 201
+            feedback_id = response.json()["id"]
+
+            # OUTCOME: No GitHub call was made
+            MockClient.assert_not_called()
+
+        # OUTCOME: github_issue_url remains null in database
+        feedback = await test_db.get(Feedback, feedback_id)
+        assert feedback is not None
+        assert feedback.github_issue_url is None
+
+    @pytest.mark.asyncio
+    async def test_github_issue_url_populated_in_db_on_success(
+        self,
+        client: AsyncClient,
+        test_db: AsyncSession,
+        monkeypatch,
+    ):
+        """After successful GitHub issue creation, the feedback record in DB
+        has github_issue_url set to the issue URL from GitHub's response."""
+        from app.models.feedback import Feedback
+        from unittest.mock import MagicMock
+        from contextlib import asynccontextmanager
+
+        expected_url = "https://github.com/owner/repo/issues/99"
+
+        monkeypatch.setenv("GITHUB_PAT", "ghp_testtoken")
+        monkeypatch.setenv("GITHUB_REPO", "owner/repo")
+
+        from app.config import Settings
+
+        test_settings = Settings()
+        monkeypatch.setattr("app.config.settings", test_settings)
+        monkeypatch.setattr("app.api.feedback.settings", test_settings)
+
+        # Patch AsyncSessionLocal so background task uses the test DB session
+        @asynccontextmanager
+        async def mock_session_local():
+            yield test_db
+
+        monkeypatch.setattr("app.api.feedback.AsyncSessionLocal", mock_session_local)
+
+        mock_response = MagicMock()
+        mock_response.status_code = 201
+        mock_response.json.return_value = {"html_url": expected_url}
+
+        mock_client_instance = AsyncMock()
+        mock_client_instance.post.return_value = mock_response
+
+        with patch("app.services.github_service.httpx.AsyncClient") as MockClient:
+            MockClient.return_value.__aenter__ = AsyncMock(
+                return_value=mock_client_instance
+            )
+            MockClient.return_value.__aexit__ = AsyncMock(return_value=False)
+
+            response = await client.post(
+                "/api/v1/feedback",
+                json={
+                    "message": "Feedback that will get a GitHub issue URL back.",
+                    "page_url": "/settings",
+                },
+            )
+
+        assert response.status_code == 201
+        feedback_id = response.json()["id"]
+
+        # OUTCOME: Verify the DB record has the URL
+        test_db.expire_all()
+        feedback = await test_db.get(Feedback, feedback_id)
+        assert feedback is not None
+        assert feedback.github_issue_url == expected_url
+
+    @pytest.mark.asyncio
+    async def test_github_issue_url_null_in_db_on_api_failure(
+        self,
+        client: AsyncClient,
+        test_db: AsyncSession,
+        monkeypatch,
+    ):
+        """When GitHub API returns an error, github_issue_url remains null in DB."""
+        from app.models.feedback import Feedback
+        from unittest.mock import MagicMock
+
+        monkeypatch.setenv("GITHUB_PAT", "ghp_testtoken")
+        monkeypatch.setenv("GITHUB_REPO", "owner/repo")
+
+        from app.config import Settings
+
+        test_settings = Settings()
+        monkeypatch.setattr("app.config.settings", test_settings)
+
+        # GitHub API returns 422 error
+        mock_response = MagicMock()
+        mock_response.status_code = 422
+        mock_response.json.return_value = {"message": "Validation Failed"}
+
+        mock_client_instance = AsyncMock()
+        mock_client_instance.post.return_value = mock_response
+
+        with patch("app.services.github_service.httpx.AsyncClient") as MockClient:
+            MockClient.return_value.__aenter__ = AsyncMock(
+                return_value=mock_client_instance
+            )
+            MockClient.return_value.__aexit__ = AsyncMock(return_value=False)
+
+            response = await client.post(
+                "/api/v1/feedback",
+                json={
+                    "message": "Feedback where GitHub creation will fail silently.",
+                    "page_url": "/about",
+                },
+            )
+
+        assert response.status_code == 201
+        feedback_id = response.json()["id"]
+
+        # OUTCOME: github_issue_url is still null in database
+        feedback = await test_db.get(Feedback, feedback_id)
+        assert feedback is not None
+        assert feedback.github_issue_url is None

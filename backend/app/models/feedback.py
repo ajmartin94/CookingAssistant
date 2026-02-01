@@ -23,6 +23,8 @@ class Feedback(Base):
     message: Mapped[str] = mapped_column(Text, nullable=False)
     page_url: Mapped[str] = mapped_column(String(500), nullable=False)
     user_agent: Mapped[str | None] = mapped_column(String(500), nullable=True)
+    screenshot: Mapped[str | None] = mapped_column(Text, nullable=True)
+    github_issue_url: Mapped[str | None] = mapped_column(String(500), nullable=True)
     user_id: Mapped[str | None] = mapped_column(
         String(36), ForeignKey("users.id"), nullable=True, index=True
     )

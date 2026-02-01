@@ -166,6 +166,83 @@ describe('feedbackApi', () => {
     });
   });
 
+  describe('screenshot field', () => {
+    it('should send screenshot in request body when provided', async () => {
+      let capturedBody: { message: string; page_url: string; screenshot?: string } | null = null;
+
+      server.use(
+        http.post(`${BASE_URL}/api/v1/feedback`, async ({ request }) => {
+          capturedBody = (await request.json()) as {
+            message: string;
+            page_url: string;
+            screenshot?: string;
+          };
+          return HttpResponse.json({
+            id: 'feedback-123',
+            message: 'Feedback received',
+            created_at: '2026-01-25T12:00:00Z',
+          });
+        })
+      );
+
+      await feedbackApi.submitFeedback({
+        message: 'Feedback with screenshot',
+        pageUrl: 'http://localhost:3000/recipes/123',
+        screenshot: 'data:image/jpeg;base64,abc123',
+      });
+
+      expect(capturedBody).not.toBeNull();
+      expect(capturedBody!.screenshot).toBe('data:image/jpeg;base64,abc123');
+    });
+
+    it('should omit screenshot from request body when null', async () => {
+      let capturedBody: Record<string, unknown> | null = null;
+
+      server.use(
+        http.post(`${BASE_URL}/api/v1/feedback`, async ({ request }) => {
+          capturedBody = (await request.json()) as Record<string, unknown>;
+          return HttpResponse.json({
+            id: 'feedback-123',
+            message: 'Feedback received',
+            created_at: '2026-01-25T12:00:00Z',
+          });
+        })
+      );
+
+      await feedbackApi.submitFeedback({
+        message: 'Feedback without screenshot',
+        pageUrl: 'http://localhost:3000/recipes/123',
+        screenshot: null,
+      });
+
+      expect(capturedBody).not.toBeNull();
+      expect(capturedBody!).not.toHaveProperty('screenshot');
+    });
+
+    it('should omit screenshot from request body when undefined', async () => {
+      let capturedBody: Record<string, unknown> | null = null;
+
+      server.use(
+        http.post(`${BASE_URL}/api/v1/feedback`, async ({ request }) => {
+          capturedBody = (await request.json()) as Record<string, unknown>;
+          return HttpResponse.json({
+            id: 'feedback-123',
+            message: 'Feedback received',
+            created_at: '2026-01-25T12:00:00Z',
+          });
+        })
+      );
+
+      await feedbackApi.submitFeedback({
+        message: 'Feedback without screenshot',
+        pageUrl: 'http://localhost:3000/recipes/123',
+      });
+
+      expect(capturedBody).not.toBeNull();
+      expect(capturedBody!).not.toHaveProperty('screenshot');
+    });
+  });
+
   describe('FeedbackResponse type', () => {
     it('should return properly typed response', async () => {
       server.use(

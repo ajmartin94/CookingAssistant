@@ -4,12 +4,13 @@
  * API functions for submitting user feedback
  */
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+import apiClient from './api';
 
 // Request types (frontend camelCase)
 export interface FeedbackRequest {
   message: string;
   pageUrl: string;
+  screenshot?: string | null;
 }
 
 // Response types (frontend camelCase, transformed from backend snake_case)
@@ -30,41 +31,25 @@ interface BackendFeedbackResponse {
  * Submit user feedback to the API
  *
  * Sends feedback message and page URL to the backend.
- * Includes auth token if user is logged in (optional).
+ * Auth token is added automatically by the apiClient interceptor.
  */
 export const submitFeedback = async (request: FeedbackRequest): Promise<FeedbackResponse> => {
-  const headers: Record<string, string> = {
-    'Content-Type': 'application/json',
-  };
-
-  // Include auth token if available (but don't require it)
-  const token = localStorage.getItem('auth_token');
-  if (token) {
-    headers['Authorization'] = `Bearer ${token}`;
-  }
-
   // Transform to backend format (snake_case)
-  const body = {
+  const body: Record<string, string> = {
     message: request.message,
     page_url: request.pageUrl,
   };
 
-  const response = await fetch(`${API_BASE_URL}/api/v1/feedback`, {
-    method: 'POST',
-    headers,
-    body: JSON.stringify(body),
-  });
-
-  if (!response.ok) {
-    throw new Error(`Failed to submit feedback: ${response.status}`);
+  if (request.screenshot) {
+    body.screenshot = request.screenshot;
   }
 
-  const data: BackendFeedbackResponse = await response.json();
+  const response = await apiClient.post<BackendFeedbackResponse>('/api/v1/feedback', body);
 
   // Transform to frontend format (camelCase)
   return {
-    id: data.id,
-    message: data.message,
-    createdAt: data.created_at,
+    id: response.data.id,
+    message: response.data.message,
+    createdAt: response.data.created_at,
   };
 };
