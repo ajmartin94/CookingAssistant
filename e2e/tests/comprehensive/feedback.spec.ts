@@ -15,15 +15,14 @@
  * - Bounding box position checks (implementation detail)
  */
 
-import { test as publicTest, expect as publicExpect } from '@playwright/test';
 import { test, expect } from '../../fixtures/auth.fixture';
 
-publicTest.describe('Comprehensive: Feedback Widget', () => {
-  publicTest('feedback button is visible on home page', async ({ page }) => {
-    await page.goto('/');
+test.describe('Comprehensive: Feedback Widget', () => {
+  test('feedback button is visible for authenticated user', async ({ authenticatedPage }) => {
+    await authenticatedPage.goto('/recipes');
 
-    const feedbackButton = page.getByRole('button', { name: /give feedback/i });
-    await publicExpect(feedbackButton).toBeVisible();
+    const feedbackButton = authenticatedPage.getByRole('button', { name: /give feedback/i });
+    await expect(feedbackButton).toBeVisible();
   });
 });
 
@@ -31,12 +30,8 @@ test.describe('Comprehensive: Feedback Submission', () => {
   test('authenticated user can submit feedback successfully', async ({ authenticatedPage }) => {
     await authenticatedPage.goto('/recipes');
 
-    // Click the feedback button using JavaScript dispatch since it overlaps
-    // with sidebar (desktop) or bottom tab bar (mobile)
-    await authenticatedPage.evaluate(() => {
-      const button = document.querySelector('button[aria-label="Give Feedback"]') as HTMLElement;
-      if (button) button.click();
-    });
+    // Click the feedback button
+    await authenticatedPage.getByRole('button', { name: /give feedback/i }).click();
 
     // Modal should appear
     const modal = authenticatedPage.getByRole('dialog');
@@ -75,10 +70,7 @@ test.describe('Comprehensive: Feedback Screenshot', () => {
     await authenticatedPage.goto('/recipes');
 
     // Click the feedback button (async — captures screenshot before opening modal)
-    await authenticatedPage.evaluate(() => {
-      const button = document.querySelector('button[aria-label="Give Feedback"]') as HTMLElement;
-      if (button) button.click();
-    });
+    await authenticatedPage.getByRole('button', { name: /give feedback/i }).click();
 
     // Modal should appear (may take longer due to screenshot capture)
     const modal = authenticatedPage.getByRole('dialog');
@@ -108,10 +100,7 @@ test.describe('Comprehensive: Feedback Screenshot', () => {
     });
 
     // Click the feedback button
-    await authenticatedPage.evaluate(() => {
-      const button = document.querySelector('button[aria-label="Give Feedback"]') as HTMLElement;
-      if (button) button.click();
-    });
+    await authenticatedPage.getByRole('button', { name: /give feedback/i }).click();
 
     // Wait for modal with screenshot preview
     const modal = authenticatedPage.getByRole('dialog');
