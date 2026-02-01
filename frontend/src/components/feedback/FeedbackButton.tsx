@@ -8,11 +8,16 @@
 
 import { useState } from 'react';
 import { FeedbackModal } from './FeedbackModal';
+import { useScreenshot } from '../../hooks/useScreenshot';
 
 export function FeedbackButton() {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const { screenshot, isCapturing, capture } = useScreenshot();
 
-  const openModal = () => setIsModalOpen(true);
+  const openModal = async () => {
+    await capture();
+    setIsModalOpen(true);
+  };
   const closeModal = () => setIsModalOpen(false);
 
   return (
@@ -26,9 +31,11 @@ export function FeedbackButton() {
         Feedback
       </button>
 
-      <FeedbackModal isOpen={isModalOpen} onClose={closeModal} />
+      <FeedbackModal
+        isOpen={isModalOpen}
+        onClose={closeModal}
+        screenshotState={{ isCapturing, screenshot }}
+      />
     </>
   );
 }
-
-export default FeedbackButton;

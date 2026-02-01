@@ -6,12 +6,13 @@ Feedback can be submitted anonymously or by authenticated users.
 """
 
 from typing import Annotated, Optional
-from fastapi import APIRouter, Depends, Request, Query, status
+from fastapi import APIRouter, BackgroundTasks, Depends, Request, Query, status
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 
-from app.database import get_db
+from app.config import settings
+from app.database import get_db, AsyncSessionLocal
 from app.models.feedback import Feedback
 from app.models.user import User
 from app.schemas.feedback import (
@@ -20,6 +21,11 @@ from app.schemas.feedback import (
     FeedbackListResponse,
 )
 from app.services.auth_service import decode_access_token, get_user_by_username
+from app.services.github_service import (
+    build_issue_title,
+    build_issue_body,
+    create_github_issue,
+)
 
 router = APIRouter(prefix="/feedback", tags=["feedback"])
 
@@ -53,6 +59,7 @@ async def get_optional_user(
 async def create_feedback(
     feedback_create: FeedbackCreate,
     request: Request,
+    background_tasks: BackgroundTasks,
     db: Annotated[AsyncSession, Depends(get_db)],
     current_user: Annotated[Optional[User], Depends(get_optional_user)],
 ):
@@ -71,6 +78,7 @@ async def create_feedback(
     feedback = Feedback(
         message=feedback_create.message,
         page_url=feedback_create.page_url,
+        screenshot=feedback_create.screenshot,
         user_agent=user_agent,
         user_id=user_id,
     )
@@ -79,7 +87,55 @@ async def create_feedback(
     await db.commit()
     await db.refresh(feedback)
 
+    # Create GitHub issue in background if configured
+    if settings.github_pat and settings.github_repo:
+        background_tasks.add_task(
+            _create_github_issue_for_feedback,
+            feedback_id=feedback.id,
+            message=feedback.message,
+            page_url=feedback.page_url or "",
+            user_agent=user_agent or "",
+            timestamp=str(feedback.created_at),
+            screenshot=feedback.screenshot,
+        )
+
     return feedback
+
+
+async def _create_github_issue_for_feedback(
+    feedback_id: str,
+    message: str,
+    page_url: str,
+    user_agent: str,
+    timestamp: str,
+    screenshot: str | None = None,
+) -> None:
+    """Background task to create a GitHub issue and update the feedback record."""
+    title = build_issue_title(message)
+    body = build_issue_body(
+        message=message,
+        page_url=page_url,
+        user_agent=user_agent,
+        timestamp=timestamp,
+        screenshot=screenshot,
+    )
+
+    assert settings.github_pat is not None
+    assert settings.github_repo is not None
+
+    issue_url = await create_github_issue(
+        title=title,
+        body=body,
+        pat=settings.github_pat,
+        repo=settings.github_repo,
+    )
+
+    if issue_url:
+        async with AsyncSessionLocal() as db:
+            feedback = await db.get(Feedback, feedback_id)
+            if feedback:
+                feedback.github_issue_url = issue_url
+                await db.commit()
 
 
 @router.get("", response_model=FeedbackListResponse)

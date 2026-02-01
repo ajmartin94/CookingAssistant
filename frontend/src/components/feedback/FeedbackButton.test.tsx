@@ -6,10 +6,17 @@
  * (moved from bottom-right to avoid overlap with other UI elements).
  */
 
-import { describe, it, expect } from 'vitest';
-import { render, screen } from '../../test/test-utils';
+import { describe, it, expect, vi } from 'vitest';
+import { render, screen, waitFor } from '../../test/test-utils';
 import userEvent from '@testing-library/user-event';
 import { FeedbackButton } from './FeedbackButton';
+
+// Mock html2canvas so useScreenshot.capture() resolves immediately
+vi.mock('html2canvas', () => ({
+  default: vi.fn().mockResolvedValue({
+    toDataURL: () => 'data:image/jpeg;base64,mock',
+  }),
+}));
 
 describe('FeedbackButton', () => {
   it('renders floating button in bottom-left corner', () => {
@@ -31,8 +38,10 @@ describe('FeedbackButton', () => {
     const button = screen.getByRole('button', { name: /feedback/i });
     await user.click(button);
 
-    // Modal should be visible with textarea and submit button
-    expect(screen.getByRole('dialog', { name: /feedback/i })).toBeInTheDocument();
+    // Modal should be visible after screenshot capture completes
+    await waitFor(() => {
+      expect(screen.getByRole('dialog', { name: /feedback/i })).toBeInTheDocument();
+    });
     expect(screen.getByRole('textbox', { name: /feedback message/i })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /submit/i })).toBeInTheDocument();
   });

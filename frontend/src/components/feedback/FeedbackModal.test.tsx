@@ -250,6 +250,81 @@ describe('FeedbackModal', () => {
     });
   });
 
+  describe('screenshot', () => {
+    it('shows loading indicator while screenshot is being captured', () => {
+      render(
+        <FeedbackModal
+          {...defaultProps}
+          screenshotState={{ isCapturing: true, screenshot: null }}
+        />
+      );
+
+      expect(screen.getByText(/capturing screenshot/i)).toBeInTheDocument();
+    });
+
+    it('renders screenshot thumbnail when capture succeeds', () => {
+      render(
+        <FeedbackModal
+          {...defaultProps}
+          screenshotState={{ isCapturing: false, screenshot: 'data:image/jpeg;base64,abc123' }}
+        />
+      );
+
+      const thumbnail = screen.getByRole('img', { name: /screenshot preview/i });
+      expect(thumbnail).toBeInTheDocument();
+      expect(thumbnail).toHaveAttribute('src', 'data:image/jpeg;base64,abc123');
+    });
+
+    it('opens without screenshot thumbnail when capture fails', () => {
+      render(
+        <FeedbackModal
+          {...defaultProps}
+          screenshotState={{ isCapturing: false, screenshot: null }}
+        />
+      );
+
+      expect(screen.queryByRole('img', { name: /screenshot preview/i })).not.toBeInTheDocument();
+      // Modal should still be functional
+      expect(screen.getByRole('textbox', { name: /feedback message/i })).toBeInTheDocument();
+    });
+
+    it('passes screenshot to submitFeedback on submit', async () => {
+      let capturedRequest: { message: string; page_url: string; screenshot?: string } | null = null;
+
+      server.use(
+        http.post(`${BASE_URL}/api/v1/feedback`, async ({ request }) => {
+          capturedRequest = (await request.json()) as {
+            message: string;
+            page_url: string;
+            screenshot?: string;
+          };
+          return HttpResponse.json({
+            id: '1',
+            message: 'Feedback received',
+            created_at: new Date().toISOString(),
+          });
+        })
+      );
+
+      const user = userEvent.setup();
+      render(
+        <FeedbackModal
+          {...defaultProps}
+          screenshotState={{ isCapturing: false, screenshot: 'data:image/jpeg;base64,abc123' }}
+        />
+      );
+
+      const textarea = screen.getByRole('textbox', { name: /feedback message/i });
+      await user.type(textarea, 'This is valid feedback');
+      await user.click(screen.getByRole('button', { name: /submit/i }));
+
+      await waitFor(() => {
+        expect(capturedRequest).not.toBeNull();
+        expect(capturedRequest!.screenshot).toBe('data:image/jpeg;base64,abc123');
+      });
+    });
+  });
+
   describe('accessibility', () => {
     it('modal has proper ARIA attributes', () => {
       render(<FeedbackModal {...defaultProps} />);
