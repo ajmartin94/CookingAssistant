@@ -1,16 +1,21 @@
 ---
 name: triage
 description: |
-  Analyze a GitHub issue, gather missing context, determine type and size, and route
-  to the correct workflow. Use this skill when: (1) picking up any issue to work on,
-  (2) the user says "triage" or "let's work on #123", (3) an issue needs scoping before
-  starting implementation.
+  Analyze a GitHub issue, articulate the user needs it represents, determine type and
+  size, and route to the correct workflow. Use this skill when: (1) picking up any issue
+  to work on, (2) the user says "triage" or "let's work on #123", (3) an issue needs
+  scoping before starting implementation.
 ---
 
 # Triage
 
-Analyze a GitHub issue, determine what it is and how big it is, then route to the
-correct workflow. Every issue goes through triage before any other work begins.
+Articulate the user needs behind a GitHub issue, determine what it is and how big it is,
+then route to the correct workflow. Every issue goes through triage before any other work
+begins.
+
+**Focus on needs, not solutions.** Triage answers "what is the user trying to accomplish
+and what's missing/broken?" — not "how should we build it." Solutions come later in
+`/brainstorm` and `/plan`.
 
 ## State Machine
 
@@ -55,12 +60,25 @@ Read the issue body and any existing comments. Then gather information from two 
 - Check whether tests exist in the affected area
 - Note any recent changes to related files (`git log --oneline -10 -- <paths>`)
 
+#### Articulate user needs (do this yourself based on issue + codebase analysis):
+
+Before asking the user anything, draft a **user needs statement**:
+
+- Who is the user affected? (end user, developer, admin)
+- What are they trying to accomplish?
+- What's currently broken, missing, or friction-heavy?
+- What does "done" look like from their perspective?
+
+This becomes the foundation for all downstream work.
+
 #### From the user (use `AskUserQuestion`):
 
 Ask these questions in a single round:
 
-1. **Outcome**: "What user-visible outcome should this produce?"
-   - Options vary by issue type, but always include "Not sure yet"
+1. **User needs check**: "Here's my understanding of the user need: [your draft]. Is this accurate?"
+   - Yes — that captures it
+   - Partially — [they'll clarify]
+   - No — the real need is different
 
 2. **Layers**: "Which layers does this touch?"
    - Backend only
@@ -84,13 +102,16 @@ Post the questions and user's answers as an issue comment:
 <!-- triage-state: gathering -->
 ## Triage: Context
 
+**User needs:**
+[Final articulated user need after incorporating user feedback]
+
 **Codebase analysis:**
 - Related files: [files found]
 - Existing tests: [yes/no, which files]
 - Layers with code: [backend/frontend/e2e]
 
 **User responses:**
-1. Outcome: [answer]
+1. User needs: [confirmed/adjusted]
 2. Layers: [answer]
 3. Breaking changes: [answer]
 4. Scope clarity: [answer]
@@ -133,25 +154,44 @@ Score the issue:
 | 2–3 | Medium |
 | 4+ | Large |
 
+#### Brainstorm Recommendation
+
+After sizing, evaluate whether `/brainstorm` is warranted. Recommend brainstorm when ANY of:
+
+- Size is Large
+- The feature challenges or extends existing implementation patterns/guidance
+- Scope clarity is "No" (needs design exploration)
+- Multiple valid implementation approaches exist
+- The issue introduces a new architectural concept to the project
+
+**The user always decides** whether to follow the recommendation. Present it as part of the
+assessment (step 3) with reasoning, not as a gate.
+
 #### Workflow Routing
+
+All code-touching work follows `/plan` → `/tdd` → `/review` as a unit. The plan's
+complexity scales with the issue — a small bug gets a one-story plan, a large feature
+gets multiple stories with journey checks.
 
 | Type + Size | Workflow |
 |-------------|----------|
-| `bug` (small) | `/tdd` (RED: reproduce → GREEN: fix) |
-| `bug` (medium/large) | `/plan` → `/tdd` → `/migrate` → `/code-review` |
-| `enhancement` (small) | `/plan` → `/tdd` → `/code-review` |
-| `enhancement` (medium) | `/plan` → `/tdd` → `/migrate` → `/code-review` |
-| `enhancement` (large) | `/brainstorm` → `/plan` → `/tdd` → `/migrate` → `/code-review` |
-| `idea` (any) | `/brainstorm` → `/plan` → `/tdd` → `/migrate` → `/code-review` |
-| `chore` (code-touching) | Direct execution → run existing tests → `/code-review` |
+| `bug` (any) | `/plan` → `/tdd` → `/review` |
+| `enhancement` (small/medium) | `/plan` → `/tdd` → `/review` |
+| `enhancement` (large) | `/brainstorm`* → `/plan` → `/tdd` → `/review` |
+| `idea` (any) | `/brainstorm` → `/plan` → `/tdd` → `/review` |
+| `chore` (code-touching) | `/plan` → `/tdd` → `/review` |
 | `chore` (non-code) | Direct execution |
 | `spike` (any) | Research → document findings → post to issue → close or spawn follow-up issues |
+
+*`/brainstorm` is recommended for large enhancements but the user decides. See above.
 
 Post the assessment as an issue comment:
 
 ```markdown
 <!-- triage-state: assessed -->
 ## Triage: Assessment
+
+**User need:** [one-sentence summary from step 2]
 
 **Type:** enhancement
 **Size:** Medium (score: 3)
@@ -161,15 +201,17 @@ Post the assessment as an issue comment:
 - Scope clarity: mostly → +0
 - Existing tests: yes → +0
 
+**Brainstorm recommended:** Yes/No — [reason]
+
 **Workflow:**
-`/plan` → `/tdd` → `/migrate` → `/code-review`
+`/plan` → `/tdd` → `/review`
 
 **Labels to add:** `ready`
 ```
 
 Present the assessment to the user via `AskUserQuestion`:
 
-"Based on analysis, this is a **medium enhancement** (score 3). Workflow: `/plan` → `/tdd` → `/migrate` → `/code-review`. Does this look right?"
+"Based on analysis, this is a **medium enhancement** (score 3). Workflow: `/plan` → `/tdd` → `/review`. [If brainstorm recommended: I recommend running `/brainstorm` first because {reason}.] Does this look right?"
 
 - Looks right — proceed
 - Should be smaller — explain why
@@ -201,13 +243,13 @@ gh issue edit <number> --add-label "size:<S|M|L>"
 <!-- triage-state: routed -->
 ## Triage: Complete
 
+**User need:** [one-sentence summary]
 **Type:** enhancement | **Size:** Medium | **Score:** 3
 
 **Workflow:**
-1. [ ] `/plan` — Structure implementation approach
+1. [ ] `/plan` — Structure user stories and acceptance criteria
 2. [ ] `/tdd` — Execute via test-driven development
-3. [ ] `/migrate` — Clean up broken tests
-4. [ ] `/code-review` — Verify against plan and standards
+3. [ ] `/review` — Suite health + code review, final gate before PR
 
 **Next step:** Run `/plan` to begin.
 ```

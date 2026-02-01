@@ -24,7 +24,7 @@ Before writing any code, read these files to understand project conventions:
 
 ## Rules
 
-1. **Tests MUST fail** - Run only the new test file(s) you wrote and confirm they fail. Do NOT run the full layer suite — that happens during `/migrate`. If they pass, you've written the wrong test.
+1. **Tests MUST fail** - Run only the new test file(s) you wrote and confirm they fail. Do NOT run the full layer suite — that happens during `/review`. If they pass, you've written the wrong test.
 
 2. **Test user outcomes, not implementation** - Ask "what does the user see?" not "what function gets called?"
 

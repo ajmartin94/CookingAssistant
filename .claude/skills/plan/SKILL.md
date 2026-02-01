@@ -1,39 +1,49 @@
 ---
 name: plan
 description: |
-  Structure a brainstorm into TDD-ready user stories with acceptance criteria, layer
-  breakdown, and independent review. Use this skill when: (1) a brainstorm.md exists and needs
-  structuring for TDD, (2) the user says "plan this" or "make a plan", (3) preparing
-  a feature for /tdd execution.
+  Structure triage/brainstorm output into TDD-ready user stories with acceptance criteria,
+  layer breakdown, journey check, and independent review. Use this skill when: (1) triage
+  and/or brainstorm output exists and needs structuring for TDD, (2) the user says "plan
+  this" or "make a plan", (3) preparing a feature for /tdd execution.
 ---
 
 # Plan
 
-Transform a brainstorm document into a structured plan that `/tdd` can execute.
+Transform triage and/or brainstorm output into a structured plan that `/tdd` can execute.
 
 ## User Stories, Not Features
 
-A brainstorm may contain multiple capabilities. The plan should break these into
-**user stories** — each describing a complete user-visible outcome, sized for one
-TDD round. Each story is independently executable by `/tdd`.
+The plan should break work into **user stories** — each describing a complete user-visible
+outcome, sized for one TDD round. Each story is independently executable by `/tdd`.
 
 Stories are scoped from the user's perspective, not by technical layer or component.
 A good story answers: "What can the user do after this is done that they couldn't before?"
 
-If a brainstorm is too large for one TDD session, split it into stories that can
-be executed sequentially. Note dependencies between stories where order matters.
+If the work is too large for one TDD session, split it into stories. Note dependencies
+between stories where order matters — stories without dependencies can be executed in
+parallel by `/tdd`.
+
+**Every issue gets a plan.** The plan scales to the work:
+- A small bug → one story, one acceptance criterion ("the bug is fixed"), one layer
+- A small chore → one story describing the change and what to verify
+- A large feature → multiple stories with full acceptance criteria, journey checks, and review
 
 ## Prerequisites
 
-Verify `.plans/issue-{issue-number}/brainstorm.md` exists. If it doesn't, stop and
-tell the user: "No brainstorm found. Run `/brainstorm` first to design the feature."
+Check for input in this order:
+1. `.plans/issue-{issue-number}/brainstorm.md` — use if it exists (richest context)
+2. Triage comments on the GitHub issue — use if no brainstorm exists
+3. If neither exists, stop: "No triage or brainstorm found. Run `/triage` first."
+
+Also read the triage issue comments regardless of whether a brainstorm exists — the
+articulated user need from triage is the foundation for user stories.
 
 ## Process
 
-### 1. Read the Brainstorm
+### 1. Read the Input
 
-Read `.plans/issue-{issue-number}/brainstorm.md` to understand what
-was designed.
+Read the brainstorm (if exists) and/or triage comments to understand the user need
+and any design decisions made.
 
 ### 2. Draft the Plan Structure
 
@@ -110,7 +120,40 @@ Present the draft plan. Use `AskUserQuestion` to clarify:
 One topic per round, multiple questions per topic for efficiency.
 Iterate until the user is satisfied with the structure.
 
-### 4. Review Agents
+### 4. Journey Check
+
+Before review, evaluate whether this work creates or affects cross-feature user journeys.
+
+**Ask two questions** (use `AskUserQuestion`):
+
+1. **New journey**: "Does this feature complete a user journey that spans multiple features?
+   For example, if we're adding shopping list generation from meal plans, the full journey
+   is: create recipe → add to meal plan → generate shopping list → check off items.
+   Should we add an E2E test for the full connected journey?"
+   - Yes — add a cross-feature E2E test to the plan
+   - No — this feature stands alone
+
+2. **Affected existing journeys**: "Does this change affect any existing cross-feature
+   workflows? For example, changing recipe data structures could affect meal plan display
+   or shopping list generation."
+   - Yes — identify which journeys and add verification to the plan
+   - No existing journeys affected
+   - Not sure — I'll investigate
+
+If the user answers "Yes" to either, add a story or acceptance criteria to cover the
+journey-level E2E test. If "Not sure" to #2, spawn a quick sub-agent to scan existing
+E2E tests for related cross-feature workflows and report back.
+
+Add a **Journey Impact** section to the plan output (after Open Questions):
+
+```markdown
+## Journey Impact
+- **New journeys**: [none / description of new cross-feature journey to test]
+- **Affected journeys**: [none / list of existing journeys impacted]
+- **E2E coverage**: [what journey-level tests are added or updated]
+```
+
+### 5. Review Agents
 
 Spawn 2-3 independent review sub-agents (Task tool, `subagent_type="general-purpose"`)
 to critique the plan from different angles:
@@ -153,7 +196,7 @@ identify:
 - Cross-feature conflicts
 ```
 
-### 5. Present Review Feedback
+### 6. Present Review Feedback
 
 Summarize all reviewer findings to the user. For each finding, use `AskUserQuestion`:
 - Present the concern
@@ -161,12 +204,29 @@ Summarize all reviewer findings to the user. For each finding, use `AskUserQuest
 
 Iterate until the user approves.
 
-### 6. Save
+### 7. Save
 
 Save to: `.plans/issue-{issue-number}/plan.md`
 
-Tell the user: "Plan saved. Run `/tdd` to execute the first story, or specify
-which story to start with."
+Post a summary comment on the GitHub issue:
+
+```bash
+gh issue comment <number> --body "$(cat <<'EOF'
+## Plan Complete
+
+**Stories:** [count]
+1. [Story name] — [one-line summary]
+2. [Story name] — [one-line summary]
+
+**Journey impact:** [none / new journey added / existing journey affected]
+
+Full plan: `.plans/issue-<number>/plan.md`
+EOF
+)"
+```
+
+Tell the user: "Plan saved and posted to issue. Run `/tdd` to execute the first story,
+or specify which story to start with."
 
 ## Principles
 
@@ -175,4 +235,5 @@ which story to start with."
 - **Plan is for the machine** — structured enough for TDD to parse
 - **User decides** — reviewers surface concerns, user resolves them
 - **Complete before starting** — open questions must be resolved before TDD
-- **Breaking changes are explicit** — this feeds `/migrate` later
+- **Breaking changes are explicit** — this feeds `/review` later
+- **Journey awareness** — every plan considers cross-feature impact
