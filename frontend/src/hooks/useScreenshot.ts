@@ -21,9 +21,17 @@ export function useScreenshot(): UseScreenshotReturn {
   const [isCapturing, setIsCapturing] = useState(false);
 
   const capture = useCallback(async (): Promise<string | null> => {
+    console.log('[useScreenshot] capture() called');
     setIsCapturing(true);
     try {
+      console.log('[useScreenshot] calling html2canvas...');
       const canvas = await html2canvas(document.body);
+      console.log(
+        '[useScreenshot] html2canvas returned, canvas:',
+        canvas.width,
+        'x',
+        canvas.height
+      );
       // Resize to max width
       let finalCanvas: HTMLCanvasElement = canvas;
       if (canvas.width > SCREENSHOT_MAX_WIDTH) {

@@ -6,6 +6,7 @@
  * - Mobile: Slide-in overlay from left
  */
 
+import { useState } from 'react';
 import type { ReactNode } from 'react';
 import {
   ChevronLeft,
@@ -15,9 +16,12 @@ import {
   Calendar,
   ShoppingCart,
   Settings,
+  MessageSquare,
 } from 'lucide-react';
 import { useSidebar } from '../../../contexts/SidebarContext';
 import { SidebarItem } from './SidebarItem';
+import { FeedbackModal } from '../../feedback/FeedbackModal';
+import { useScreenshot } from '../../../hooks/useScreenshot';
 
 export interface SidebarProps {
   children?: ReactNode;
@@ -25,6 +29,8 @@ export interface SidebarProps {
 
 export function Sidebar({ children }: SidebarProps) {
   const { isCollapsed, isMobileOpen, toggleCollapse, closeMobile } = useSidebar();
+  const [isFeedbackOpen, setIsFeedbackOpen] = useState(false);
+  const { screenshot, isCapturing, capture } = useScreenshot();
 
   return (
     <>
@@ -90,11 +96,28 @@ export function Sidebar({ children }: SidebarProps) {
           </button>
         </div>
 
-        {/* Settings at bottom */}
+        {/* Feedback + Settings at bottom */}
         <div className="p-3 border-t border-default">
+          <button
+            aria-label="Give Feedback"
+            onClick={() => {
+              capture();
+              setIsFeedbackOpen(true);
+              closeMobile();
+            }}
+            className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-text-secondary hover:bg-hover hover:text-text-primary transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent w-full ${isCollapsed ? 'justify-center' : ''}`}
+          >
+            <MessageSquare className="w-5 h-5" />
+            {isCollapsed ? <span className="sr-only">Feedback</span> : <span>Feedback</span>}
+          </button>
           <SidebarItem icon={<Settings className="w-5 h-5" />} label="Settings" to="/settings" />
         </div>
       </aside>
+      <FeedbackModal
+        isOpen={isFeedbackOpen}
+        onClose={() => setIsFeedbackOpen(false)}
+        screenshotState={{ isCapturing, screenshot }}
+      />
     </>
   );
 }

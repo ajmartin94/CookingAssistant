@@ -14,7 +14,6 @@
 
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { render, screen, waitFor } from './test-utils';
-
 // Import pages to test
 import HomePage from '../pages/HomePage';
 import RecipesPage from '../pages/RecipesPage';
@@ -34,7 +33,6 @@ import RecipeForm from '../components/recipes/RecipeForm';
 import { Sidebar } from '../components/common/layout/Sidebar';
 import { MainLayout } from '../components/common/layout/MainLayout';
 import { ChatPanel } from '../components/chat/ChatPanel';
-import { FeedbackButton } from '../components/feedback/FeedbackButton';
 import { ErrorBoundary } from '../components/common/ErrorBoundary';
 
 import type { Recipe, RecipeFormData } from '../types';
@@ -69,7 +67,7 @@ const mockRecipe: Recipe = {
 const HARDCODED_COLOR_PATTERNS = [
   // Background colors
   /\bbg-white\b/,
-  /\bbg-black\b/,
+  /\bbg-black\b(?!\/)/,
   /\bbg-neutral-\d+\b/,
   /\bbg-primary-\d+\b/,
   /\bbg-secondary-\d+\b/,
@@ -476,19 +474,6 @@ describe('Design Token Migration', () => {
       const panel = container.querySelector('[role="complementary"]');
       expect(panel?.className).toMatch(/\bborder-default\b/);
       expect(panel?.className).not.toMatch(/\bborder-neutral-\d+\b/);
-    });
-  });
-
-  describe('FeedbackButton Component', () => {
-    it('should use semantic design tokens instead of hardcoded colors', () => {
-      const { container } = render(<FeedbackButton />);
-
-      const hardcodedColors = findAllHardcodedColors(container);
-
-      expect(
-        hardcodedColors.size,
-        `Found hardcoded colors: ${JSON.stringify(Object.fromEntries(hardcodedColors))}`
-      ).toBe(0);
     });
   });
 

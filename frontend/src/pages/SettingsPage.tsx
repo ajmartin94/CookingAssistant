@@ -11,6 +11,8 @@ import { getCurrentUser, updatePreferences } from '../services/authApi';
 import { useAuth } from '../contexts/AuthContext';
 import { ThemeToggle } from '../components/ui/ThemeToggle';
 import { SeasonPicker } from '../components/ui/SeasonPicker';
+import { FeedbackModal } from '../components/feedback/FeedbackModal';
+import { useScreenshot } from '../hooks/useScreenshot';
 
 const DIETARY_OPTIONS = [
   'vegetarian',
@@ -36,6 +38,8 @@ export default function SettingsPage() {
   const [validationError, setValidationError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [isFeedbackOpen, setIsFeedbackOpen] = useState(false);
+  const { screenshot, isCapturing, capture } = useScreenshot();
 
   // Load current preferences on mount
   useEffect(() => {
@@ -244,6 +248,30 @@ export default function SettingsPage() {
           Logout
         </button>
       </div>
+
+      {/* Feedback Section */}
+      <div className="bg-card rounded-lg shadow-soft p-6 mt-6">
+        <h2 className="text-lg font-semibold text-text-primary mb-4">Feedback</h2>
+        <p className="text-sm text-text-secondary mb-4">
+          Help us improve by sharing your thoughts.
+        </p>
+        <button
+          type="button"
+          aria-label="Give Feedback"
+          onClick={() => {
+            capture();
+            setIsFeedbackOpen(true);
+          }}
+          className="px-4 py-2 bg-accent text-text-on-accent rounded-lg font-semibold hover:bg-accent-hover transition"
+        >
+          Give Feedback
+        </button>
+      </div>
+      <FeedbackModal
+        isOpen={isFeedbackOpen}
+        onClose={() => setIsFeedbackOpen(false)}
+        screenshotState={{ isCapturing, screenshot }}
+      />
     </div>
   );
 }

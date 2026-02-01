@@ -325,6 +325,19 @@ describe('FeedbackModal', () => {
     });
   });
 
+  describe('theming', () => {
+    it('modal container uses semantic bg-card token instead of hardcoded bg-white', () => {
+      render(<FeedbackModal {...defaultProps} />);
+
+      const dialog = screen.getByRole('dialog', { name: /feedback/i });
+      // The inner content container (child of the overlay)
+      const modalContent = dialog.querySelector('.rounded-lg');
+
+      expect(modalContent?.className).toMatch(/\bbg-card\b/);
+      expect(modalContent?.className).not.toMatch(/\bbg-white\b/);
+    });
+  });
+
   describe('accessibility', () => {
     it('modal has proper ARIA attributes', () => {
       render(<FeedbackModal {...defaultProps} />);

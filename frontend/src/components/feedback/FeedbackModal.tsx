@@ -123,7 +123,7 @@ export function FeedbackModal({ isOpen, onClose, screenshotState }: FeedbackModa
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
     >
       <div className="bg-card rounded-lg shadow-xl p-6 w-full max-w-md mx-4">
-        <h2 className="text-lg font-semibold mb-4">Send Feedback</h2>
+        <h2 className="text-lg font-semibold mb-4 text-text-primary">Send Feedback</h2>
 
         {screenshotState?.isCapturing && (
           <p className="mb-4 text-sm text-text-muted">Capturing screenshot...</p>
@@ -152,7 +152,7 @@ export function FeedbackModal({ isOpen, onClose, screenshotState }: FeedbackModa
               value={message}
               onChange={handleMessageChange}
               placeholder="Tell us what you think..."
-              className="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent"
+              className="w-full px-3 py-2 border border-default rounded-md bg-card text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent"
               rows={4}
               disabled={isSubmitting}
             />
@@ -191,12 +191,12 @@ export function FeedbackModal({ isOpen, onClose, screenshotState }: FeedbackModa
             <button
               type="submit"
               disabled={!isValid || isSubmitting}
-              className="px-4 py-2 text-sm font-medium text-text-primary bg-accent rounded-md hover:bg-accent-hover disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+              className="px-4 py-2 text-sm font-medium text-text-on-accent bg-accent rounded-md hover:bg-accent-hover disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
             >
               {isSubmitting && (
                 <span
                   role="status"
-                  className="inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"
+                  className="inline-block w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin"
                 />
               )}
               Submit

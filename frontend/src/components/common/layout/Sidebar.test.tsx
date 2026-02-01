@@ -318,6 +318,29 @@ describe('Sidebar', () => {
     });
   });
 
+  describe('feedback button in sidebar', () => {
+    it('should render a Feedback button in the sidebar bottom section above Settings', () => {
+      render(<Sidebar />);
+
+      const sidebar = screen.getByTestId('sidebar');
+      const feedbackButton = within(sidebar).getByRole('button', { name: /give feedback/i });
+      expect(feedbackButton).toBeInTheDocument();
+    });
+
+    it('should open the feedback modal when the Feedback button is clicked', async () => {
+      const user = userEvent.setup();
+      render(<Sidebar />);
+
+      const sidebar = screen.getByTestId('sidebar');
+      const feedbackButton = within(sidebar).getByRole('button', { name: /give feedback/i });
+      await user.click(feedbackButton);
+
+      // The FeedbackModal should appear as a dialog
+      expect(screen.getByRole('dialog', { name: /feedback/i })).toBeInTheDocument();
+      expect(screen.getByRole('textbox', { name: /feedback message/i })).toBeInTheDocument();
+    });
+  });
+
   describe('desktop visibility', () => {
     it('should be visible on desktop viewport', () => {
       vi.stubGlobal('matchMedia', mockMatchMedia(true));
