@@ -133,7 +133,7 @@ export function CookingModeOverlay({
         role="dialog"
         aria-modal="true"
         data-testid="cooking-mode-overlay"
-        className="fixed inset-0 z-50 bg-primary flex items-center justify-center"
+        className="fixed inset-0 z-[60] bg-primary flex items-center justify-center"
       >
         <p className="text-text-secondary">No steps available</p>
       </div>
@@ -150,7 +150,7 @@ export function CookingModeOverlay({
         role="dialog"
         aria-modal="true"
         data-testid="cooking-mode-overlay"
-        className="fixed inset-0 z-50 bg-primary flex flex-col items-center justify-center"
+        className="fixed inset-0 z-[60] bg-primary flex flex-col items-center justify-center"
       >
         <CookingCompletionScreen recipeTitle={recipeTitle} onDone={onClose} />
       </div>
@@ -173,7 +173,7 @@ export function CookingModeOverlay({
       role="dialog"
       aria-modal="true"
       data-testid="cooking-mode-overlay"
-      className="fixed inset-0 z-50 bg-primary flex flex-col"
+      className="fixed inset-0 z-[60] bg-primary flex flex-col"
       tabIndex={-1}
     >
       {/* Header */}

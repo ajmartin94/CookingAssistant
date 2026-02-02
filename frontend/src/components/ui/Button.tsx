@@ -22,10 +22,10 @@ export interface ButtonProps {
 }
 
 const variantClasses = {
-  primary: 'btn-primary bg-accent hover:bg-accent-hover text-white',
+  primary: 'btn-primary bg-accent hover:bg-accent-hover text-text-on-accent',
   secondary: 'btn-secondary bg-card border border-default text-text-primary hover:bg-hover',
   ghost: 'btn-ghost bg-transparent hover:bg-hover text-text-primary',
-  danger: 'btn-danger bg-error hover:bg-error-hover text-white',
+  danger: 'btn-danger bg-error hover:bg-error-hover text-text-on-accent',
 };
 
 const sizeClasses = {

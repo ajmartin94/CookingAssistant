@@ -8,12 +8,13 @@
  * - Timer buttons for steps with duration
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { ChevronLeft, Clock, Users, Timer, Heart } from '../components/common/icons';
 import { recipeApi } from '../services/recipeApi';
 import type { Recipe } from '../types';
 import { useAuth } from '../contexts/AuthContext';
+import { useSidebar } from '../contexts/SidebarContext';
 import ShareModal from '../components/sharing/ShareModal';
 import IngredientsList from '../components/recipes/IngredientsList';
 import RecipeNotes from '../components/recipes/RecipeNotes';
@@ -25,14 +26,29 @@ export default function RecipeDetailPage() {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const { user } = useAuth();
+  const { setCookingMode: setSidebarCookingMode } = useSidebar();
 
   const [recipe, setRecipe] = useState<Recipe | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [deleting, setDeleting] = useState(false);
   const [showShareModal, setShowShareModal] = useState(false);
-  const [cookingMode, setCookingMode] = useState(false);
+  const [cookingMode, setCookingModeState] = useState(false);
+  const setCookingMode = useCallback(
+    (active: boolean) => {
+      setCookingModeState(active);
+      setSidebarCookingMode(active);
+    },
+    [setSidebarCookingMode]
+  );
   const [cookingStep, setCookingStep] = useState(0);
+
+  // Clean up cooking mode on unmount
+  useEffect(() => {
+    return () => {
+      setSidebarCookingMode(false);
+    };
+  }, [setSidebarCookingMode]);
 
   // Fetch recipe
   useEffect(() => {

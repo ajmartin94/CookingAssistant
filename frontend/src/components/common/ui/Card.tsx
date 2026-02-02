@@ -14,11 +14,11 @@ export interface CardProps extends HTMLAttributes<HTMLDivElement> {
 }
 
 const variantStyles = {
-  default: 'bg-white shadow-soft',
-  elevated: 'bg-white shadow-soft-md',
-  outline: 'bg-white border border-neutral-200',
+  default: 'bg-card shadow-soft',
+  elevated: 'bg-card shadow-soft-md',
+  outline: 'bg-card border border-default',
   interactive:
-    'bg-white shadow-soft hover:shadow-soft-md transition-shadow duration-200 cursor-pointer',
+    'bg-card shadow-soft hover:shadow-soft-md transition-shadow duration-200 cursor-pointer',
 };
 
 const paddingStyles = {
@@ -56,7 +56,7 @@ export const CardHeader = ({
 }: {
   children: ReactNode;
   className?: string;
-}) => <div className={`border-b border-neutral-100 pb-4 mb-4 ${className}`}>{children}</div>;
+}) => <div className={`border-b border-default pb-4 mb-4 ${className}`}>{children}</div>;
 
 export const CardContent = ({
   children,
@@ -72,6 +72,6 @@ export const CardFooter = ({
 }: {
   children: ReactNode;
   className?: string;
-}) => <div className={`border-t border-neutral-100 pt-4 mt-4 ${className}`}>{children}</div>;
+}) => <div className={`border-t border-default pt-4 mt-4 ${className}`}>{children}</div>;
 
 export default Card;

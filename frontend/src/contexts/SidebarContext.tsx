@@ -11,10 +11,12 @@ import type { ReactNode } from 'react';
 interface SidebarContextType {
   isCollapsed: boolean;
   isMobileOpen: boolean;
+  isCookingMode: boolean;
   toggleCollapse: () => void;
   toggleMobileOpen: () => void;
   closeMobile: () => void;
   openMobile: () => void;
+  setCookingMode: (active: boolean) => void;
 }
 
 const SidebarContext = createContext<SidebarContextType | undefined>(undefined);
@@ -44,6 +46,9 @@ export function SidebarProvider({ children }: SidebarProviderProps) {
 
   // Mobile overlay state - not persisted
   const [isMobileOpen, setIsMobileOpen] = useState(false);
+
+  // Cooking mode - hides sidebar completely
+  const [isCookingMode, setIsCookingMode] = useState(false);
 
   // Persist collapse state
   useEffect(() => {
@@ -90,13 +95,19 @@ export function SidebarProvider({ children }: SidebarProviderProps) {
     setIsMobileOpen(true);
   }, []);
 
+  const setCookingMode = useCallback((active: boolean) => {
+    setIsCookingMode(active);
+  }, []);
+
   const value: SidebarContextType = {
     isCollapsed,
     isMobileOpen,
+    isCookingMode,
     toggleCollapse,
     toggleMobileOpen,
     closeMobile,
     openMobile,
+    setCookingMode,
   };
 
   return <SidebarContext.Provider value={value}>{children}</SidebarContext.Provider>;
