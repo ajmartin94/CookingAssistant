@@ -28,9 +28,13 @@ export interface SidebarProps {
 }
 
 export function Sidebar({ children }: SidebarProps) {
-  const { isCollapsed, isMobileOpen, toggleCollapse, closeMobile } = useSidebar();
+  const { isCollapsed, isMobileOpen, isCookingMode, toggleCollapse, closeMobile } = useSidebar();
   const [isFeedbackOpen, setIsFeedbackOpen] = useState(false);
   const { screenshot, isCapturing, capture } = useScreenshot();
+
+  if (isCookingMode) {
+    return null;
+  }
 
   return (
     <>
@@ -50,6 +54,7 @@ export function Sidebar({ children }: SidebarProps) {
           fixed top-0 left-0 z-40 h-full
           bg-card border-r border-default
           flex flex-col
+          overflow-hidden
           transition-all duration-200 ease-in-out
           ${isMobileOpen ? 'translate-x-0' : '-translate-x-full'}
           lg:translate-x-0
@@ -61,7 +66,7 @@ export function Sidebar({ children }: SidebarProps) {
         <div className="h-16" />
 
         {/* Navigation */}
-        <nav className="flex-1 overflow-y-auto p-3">
+        <nav className="flex-1 overflow-y-auto overflow-x-hidden p-3">
           {children || (
             <>
               <SidebarItem icon={<Home className="w-5 h-5" />} label="Home" to="/home" />
@@ -97,7 +102,7 @@ export function Sidebar({ children }: SidebarProps) {
         </div>
 
         {/* Feedback + Settings at bottom */}
-        <div className="p-3 border-t border-default">
+        <div className="p-3 border-t border-default overflow-hidden">
           <button
             aria-label="Give Feedback"
             onClick={() => {

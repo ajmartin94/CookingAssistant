@@ -19,13 +19,13 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 
 const variantStyles = {
   primary:
-    'bg-primary-500 text-white hover:bg-primary-600 focus:ring-primary-500 disabled:bg-primary-300',
+    'bg-accent text-text-on-accent hover:bg-accent-hover focus:ring-accent disabled:opacity-50',
   secondary:
-    'bg-secondary-500 text-white hover:bg-secondary-600 focus:ring-secondary-500 disabled:bg-secondary-300',
+    'bg-secondary text-text-on-accent hover:bg-hover focus:ring-secondary-500 disabled:bg-secondary-300',
   outline:
-    'border-2 border-primary-500 text-primary-600 hover:bg-primary-50 focus:ring-primary-500 disabled:border-neutral-300 disabled:text-neutral-400',
-  ghost: 'text-neutral-700 hover:bg-neutral-100 focus:ring-neutral-500 disabled:text-neutral-400',
-  danger: 'bg-error-500 text-white hover:bg-error-600 focus:ring-error-500 disabled:bg-error-300',
+    'border-2 border-accent text-accent hover:bg-accent-subtle focus:ring-accent disabled:opacity-50',
+  ghost: 'text-text-primary hover:bg-hover focus:ring-default disabled:opacity-50',
+  danger: 'bg-error text-text-on-accent hover:bg-error focus:ring-error disabled:opacity-50',
 };
 
 const sizeStyles = {

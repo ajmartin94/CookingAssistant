@@ -81,32 +81,32 @@ const ShareModal: React.FC<ShareModalProps> = ({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg shadow-soft-lg p-6 w-full max-w-md mx-4">
+      <div className="bg-card rounded-lg shadow-soft-lg p-6 w-full max-w-md mx-4">
         <div className="flex justify-between items-start mb-4">
-          <h2 className="text-2xl font-bold text-neutral-900">
+          <h2 className="text-2xl font-bold text-text-primary">
             Share {recipeId ? 'Recipe' : 'Library'}
           </h2>
           <button
             onClick={handleClose}
-            className="text-neutral-400 hover:text-neutral-600"
+            className="text-text-muted hover:text-text-secondary"
             aria-label="Close"
           >
             <X className="w-6 h-6" />
           </button>
         </div>
 
-        <p className="text-neutral-600 mb-4">Create a shareable link for "{itemName}"</p>
+        <p className="text-text-secondary mb-4">Create a shareable link for "{itemName}"</p>
 
         {error && (
-          <div className="bg-error-50 border border-error-200 rounded-lg p-3 mb-4">
-            <p className="text-error-700 text-sm">{error}</p>
+          <div className="bg-error-subtle border border-error rounded-lg p-3 mb-4">
+            <p className="text-error text-sm">{error}</p>
           </div>
         )}
 
         {!shareUrl ? (
           <>
             <div className="mb-4">
-              <label className="block text-sm font-medium text-neutral-700 mb-2">
+              <label className="block text-sm font-medium text-text-primary mb-2">
                 Permission Level
               </label>
               <div className="flex gap-4">
@@ -117,9 +117,9 @@ const ShareModal: React.FC<ShareModalProps> = ({
                     value="view"
                     checked={permission === 'view'}
                     onChange={() => setPermission('view')}
-                    className="w-4 h-4 text-primary-500 focus:ring-primary-500"
+                    className="w-4 h-4 text-accent focus:ring-accent"
                   />
-                  <span className="text-sm text-neutral-700">View only</span>
+                  <span className="text-sm text-text-primary">View only</span>
                 </label>
                 <label className="flex items-center gap-2 cursor-pointer">
                   <input
@@ -128,9 +128,9 @@ const ShareModal: React.FC<ShareModalProps> = ({
                     value="edit"
                     checked={permission === 'edit'}
                     onChange={() => setPermission('edit')}
-                    className="w-4 h-4 text-primary-500 focus:ring-primary-500"
+                    className="w-4 h-4 text-accent focus:ring-accent"
                   />
-                  <span className="text-sm text-neutral-700">Can edit</span>
+                  <span className="text-sm text-text-primary">Can edit</span>
                 </label>
               </div>
             </div>
@@ -138,14 +138,14 @@ const ShareModal: React.FC<ShareModalProps> = ({
             <div className="flex justify-end gap-3">
               <button
                 onClick={handleClose}
-                className="px-4 py-2 text-neutral-700 hover:text-neutral-900 font-medium"
+                className="px-4 py-2 text-text-primary hover:text-text-primary font-medium"
               >
                 Cancel
               </button>
               <button
                 onClick={handleCreateShare}
                 disabled={loading}
-                className="px-4 py-2 bg-primary-500 text-white rounded-lg font-semibold hover:bg-primary-600 transition disabled:opacity-50"
+                className="px-4 py-2 bg-accent text-text-on-accent rounded-lg font-semibold hover:bg-accent-hover transition disabled:opacity-50"
               >
                 {loading ? 'Creating...' : 'Create Link'}
               </button>
@@ -154,20 +154,20 @@ const ShareModal: React.FC<ShareModalProps> = ({
         ) : (
           <>
             <div className="mb-4">
-              <label className="block text-sm font-medium text-neutral-700 mb-2">Share Link</label>
+              <label className="block text-sm font-medium text-text-primary mb-2">Share Link</label>
               <div className="flex gap-2">
                 <input
                   type="text"
                   value={shareUrl}
                   readOnly
-                  className="flex-1 px-3 py-2 border border-neutral-300 rounded-lg bg-neutral-50 text-neutral-700 text-sm"
+                  className="flex-1 px-3 py-2 border border-default rounded-lg bg-secondary text-text-primary text-sm"
                 />
                 <button
                   onClick={handleCopyLink}
                   className={`px-4 py-2 rounded-lg font-medium transition ${
                     copied
-                      ? 'bg-success-500 text-white'
-                      : 'bg-primary-500 text-white hover:bg-primary-600'
+                      ? 'bg-success text-text-on-accent'
+                      : 'bg-accent text-text-on-accent hover:bg-accent-hover'
                   }`}
                 >
                   {copied ? 'Copied!' : 'Copy'}
@@ -175,8 +175,8 @@ const ShareModal: React.FC<ShareModalProps> = ({
               </div>
             </div>
 
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
-              <p className="text-blue-800 text-sm">
+            <div className="bg-accent-subtle border border-accent rounded-lg p-3 mb-4">
+              <p className="text-accent text-sm">
                 Anyone with this link can {permission === 'view' ? 'view' : 'view and edit'} this{' '}
                 {recipeId ? 'recipe' : 'library'}.
               </p>
@@ -185,7 +185,7 @@ const ShareModal: React.FC<ShareModalProps> = ({
             <div className="flex justify-end">
               <button
                 onClick={handleClose}
-                className="px-4 py-2 bg-neutral-600 text-white rounded-lg font-semibold hover:bg-neutral-700 transition"
+                className="px-4 py-2 bg-secondary text-text-primary rounded-lg font-semibold hover:bg-hover transition"
               >
                 Done
               </button>
